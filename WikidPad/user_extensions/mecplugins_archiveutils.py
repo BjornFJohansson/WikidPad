@@ -3,7 +3,7 @@
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1),("ToolbarFunctions",1))
 WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
 
-from . import mecplugins_ini
+#from . import mecplugins_ini
 import codecs
 import tempfile
 import zipfile

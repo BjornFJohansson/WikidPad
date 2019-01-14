@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
-from . import mecplugins_ini
+#from . import mecplugins_ini
 import wx
 import time
 

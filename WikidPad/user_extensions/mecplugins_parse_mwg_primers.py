@@ -13,7 +13,7 @@
 
 WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
 
-from . import mecplugins_ini
+#from . import mecplugins_ini
 
 from Bio                            import SeqIO
 from os                             import linesep
