@@ -42,14 +42,14 @@ from .mecplugins.analysis                       import restrictionanalyserecords
 
 def describeMenuItems(wiki):
     return (
-            (revcomp,           _("mecplugins|DNA Sequence Tools|Reverse complement")             + "\t",               _("revcomp")),
-            (comp,              _("mecplugins|DNA Sequence Tools|Complement")                     + "\t",               _("comp")),
-            (translate,         _("mecplugins|DNA Sequence Tools|Translate")                      + "\t",               _("pcr")),
-            (tm,                _("mecplugins|DNA Sequence Tools|Melting temperature")            + "\tCtrl-Shift-T",   _("tm")),
-            (toggle_format,     _("mecplugins|DNA Sequence Tools|Toggle sequence formats")        + "\t",               _("toggle_format")),
-            (fasta_tab,         _("mecplugins|DNA Sequence Tools|fasta->tab format")              + "\t",               _("fasta_tab")),
-            (pcr,               _("mecplugins|DNA Sequence Tools|PCR simulation")                 + "\tCtrl-Shift-P",   _("pcr")),
-            (reanal,            _("mecplugins|DNA Sequence Tools|Restriction analysis")           + "\t",               _("reanal")),
+            (revcomp,           _("mecplugins|DNA Sequence Tools|Reverse complement")      + "\t",               _("revcomp")),
+            (comp,              _("mecplugins|DNA Sequence Tools|Complement")              + "\t",               _("comp")),
+            (translate,         _("mecplugins|DNA Sequence Tools|Translate")               + "\t",               _("pcr")),
+            (tm,                _("mecplugins|DNA Sequence Tools|Melting temperature")     + "\tCtrl-Shift-T",   _("tm")),
+            (toggle_format,     _("mecplugins|DNA Sequence Tools|Toggle sequence formats") + "\t",               _("toggle_format")),
+            (fasta_tab,         _("mecplugins|DNA Sequence Tools|fasta->tab format")       + "\t",               _("fasta_tab")),
+            (pcr,               _("mecplugins|DNA Sequence Tools|PCR simulation")          + "\tCtrl-Shift-P",   _("pcr")),
+            (reanal,            _("mecplugins|DNA Sequence Tools|Restriction analysis")    + "\t",               _("reanal")),
             )
 
 def empty(wiki, evt):
@@ -57,13 +57,13 @@ def empty(wiki, evt):
 
 def describeToolbarItems(wiki):
     return (
-            (revcomp, "reverse complement", "reverse complement", "mec_reverse_com"),
-            (comp, "complement", "complement", "mec_complement"),
-            (translate, "translate", "translate", "mec_translate"),
-            (tm, "tm", "tm", "tm"),
-            (toggle_format,"Toggle format","Toggle format","mec_toggle_format"),
-            (pcr, "PCR simulation", "PCR simulation", "mec_pcr"),
-            (reanal, "resctriction analysis", "resctriction analysis", "mec_digest"),
+            (revcomp,        "reverse complement",    "reverse complement",    "mec_reverse_com"),
+            (comp,           "complement",            "complement",            "mec_complement"),
+            (translate,      "translate",             "translate",             "mec_translate"),
+            (tm,             "tm",                    "tm",                    "mec_tm"),
+            (toggle_format,  "Toggle format",         "Toggle format",         "mec_toggle_format"),
+            (pcr,            "PCR simulation",        "PCR simulation",        "mec_pcr"),
+            (reanal,         "resctriction analysis", "resctriction analysis", "mec_digest"),
            )
 
 def revcomp(wiki, evt):

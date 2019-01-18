@@ -35,8 +35,9 @@ def describeMenuItems(wiki):
             (prev,                _(u"mecplugins|Date utils|Previous date"),               _(u"previous")),
             (yesterday,           _(u"mecplugins|Date utils|Yesterday"),                   _(u"yesterday")),
             (today,               _(u"mecplugins|Date utils|Today"),                       _(u"today")),
+            (close_tabs,          _(u"mecplugins|Date utils|close tabs"),                  _(u"close tabs")),
             (tomorrow,            _(u"mecplugins|Date utils|Tomorrow"),                    _(u"tomorrow")),
-            (next_,                _(u"mecplugins|Date utils|Next date"),                   _(u"next")),
+            (next_,               _(u"mecplugins|Date utils|Next date"),                   _(u"next")),
             (nextyear,            _(u"mecplugins|Date utils|Next year"),                   _(u"next year")),
             (copydatetoclipboard, _(u"mecplugins|Date utils|Copy date to clipboard"),      _(u"copy date to clipboard")),
             (copylink,            _(u"mecplugins|Date utils|Copy current page name"),      _(u"copy current page name")),
@@ -44,27 +45,39 @@ def describeMenuItems(wiki):
             (nextweek,            _(u"mecplugins|Date utils|next week"),                   _(u"next week")),
             (nextmonth,           _(u"mecplugins|Date utils|next month"),                  _(u"next month")),
             (nextyear,            _(u"mecplugins|Date utils|next year"),                   _(u"next year")),
-            (inserttime,          _(u"mecplugins|Date utils|insert time / uuid\tF5"),      _(u"insert time")),            
-            (weekday_list,          _(u"mecplugins|Date utils|weekday list"),                _(u"weekday list")),
+            (inserttime,          _(u"mecplugins|Date utils|insert time / uuid4\tF5"),      _(u"insert time")),            
+            (weekday_list,        _(u"mecplugins|Date utils|weekday list"),                _(u"weekday list")),
             )
 
 def describeToolbarItemsV02(wiki):
-    #now = datetime.date.today()
     return (
-            (prev,                      _(u"previous defined"),         _(u"previous defined"),         ("left arrow",),        None,   None, prevrightclick),
-            (yesterday,                 _(u"yesterday"),                _(u"yesterday"),                ("arrow_left",),        None,   None, yesterdayrightclick),
-            (today,                     _(u"today "),                   _(u"today"),                    ("mec_today",),             None,   None, todayrightclick),
-            (tomorrow,                  _(u"tomorrow"),                 _(u"tomorrow"),                 ("arrow_right",),       None,   None, tomorrowrightclick),
-            (next_,                      _(u"next defined"),             _(u"next defined"),            ("right arrow",),       None,   None, nextrightclick),
+            (close_tabs,                _(u"close tabs"),               _(u"close tabs"),               ("up arrow",),            None,   None, close_tabsrightclick),
+            (prev,                      _(u"previous defined"),         _(u"previous defined"),         ("left arrow",),          None,   None, prevrightclick),
+            (yesterday,                 _(u"yesterday"),                _(u"yesterday"),                ("arrow_left",),          None,   None, yesterdayrightclick),
+            (today,                     _(u"today"),                    _(u"today"),                    ("mec_today",),           None,   None, todayrightclick),    
+            (tomorrow,                  _(u"tomorrow"),                 _(u"tomorrow"),                 ("arrow_right",),         None,   None, tomorrowrightclick),
+            (next_,                     _(u"next defined"),             _(u"next defined"),             ("right arrow",),         None,   None, nextrightclick),
             (calctrl,                   _(u"calendar"),                 _(u"calendar"),                 ("calendar",),),
             (copylink,                  _(u"copy link"),                _(u"copy link"),                ("mec_anchor",),),
-            (thisweek,                  _(u"thisweek"),                 _(u"this week"),                ("mec_thisweekandnext",),   None,   None, nextweek),
-            (nextyear,                  _(u"last or next year"),        _(u"last or next year"),        ("user",),              None,   None, lastyear),
-            (inserttime,                _(u"insert time / uuid"),       _(u"insert time / uuid"),       ("time",),              None,   None, insertuuid),
+            (thisweek,                  _(u"thisweek"),                 _(u"this week"),                ("mec_thisweekandnext",), None,   None, nextweek),
+            (nextyear,                  _(u"last or next year"),        _(u"last or next year"),        ("user",),                None,   None, lastyear),
+            (inserttime,                _(u"insert time / uuid4"),      _(u"insert time / uuid4"),      ("time",),                None,   None, insertuuid),
             )
 
+
+def close_tabs(wiki, evt):
+    here = wiki.getCurrentWikiWord()
+    openpages =  wiki.getMainAreaPanel().getDocPagePresenters()
+    for page in openpages:
+        if page.getWikiWord()!=here:
+            wiki.getMainAreaPanel().closePresenterTab(page)
+    return
+
+def close_tabsrightclick(wiki, evt):
+    return
+
 def inserttime(wiki, evt):
-    wiki.getActiveEditor().ReplaceSelection("### {}\n".format(time.strftime("%H:%M:%S", time.localtime())))
+    wiki.getActiveEditor().ReplaceSelection("{} ".format(time.strftime("%H:%M:%S", time.localtime())))
     return
 
 def insertuuid(wiki, evt):
@@ -195,8 +208,8 @@ def todayrightclick(wiki, evt):
         if page.getWikiWord()==today:
             wiki.getMainAreaPanel().showPresenter(page)
             todaywasopen = True      
-        elif re.match("^\d{4}-\d{2}-\d{2}$",page.getWikiWord()):
-            wiki.getMainAreaPanel().closePresenterTab(page)
+        #elif re.match("^\d{4}-\d{2}-\d{2}$",page.getWikiWord()):
+        #    wiki.getMainAreaPanel().closePresenterTab(page)
     if not todaywasopen:
         presenter = wiki.createNewDocPagePresenterTab()
         presenter.openWikiPage(today)
