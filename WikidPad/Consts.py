@@ -71,7 +71,7 @@ class Enumeration:
 # (2, 0, 300, 0) is 2.0final
 
 VERSION_TUPLE = ("wikidPad", 2, 4, 1, 0)
-VERSION_STRING = "wikidPad 2.4alpha01"
+VERSION_STRING = "wikidPad 2.4alpha01dev1"
 HOMEPAGE = "http://wikidpad.sourceforge.net"
 
 CONFIG_FILENAME = "WikidPad.config"
