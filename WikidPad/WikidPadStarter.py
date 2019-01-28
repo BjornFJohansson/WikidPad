@@ -8,7 +8,13 @@
 
 
 
-import sys, os, traceback, os.path, glob, shutil, imp, warnings, configparser
+import sys, os
+
+if sys.platform == 'darwin' and not sys.executable.endswith('MacOS/Python'):  # https://wiki.wxpython.org/Automatically%20Calling%20pythonw%20on%20Mac%20OS%20X
+    print(>>sys.stderr,'re-executing using pythonw')
+    os.execvp('pythonw',['pythonw',__file__] + sys.argv[1:])
+
+import traceback, os.path, glob, shutil, imp, warnings, configparser
 
 if not hasattr(sys, 'frozen'):
     origin = __spec__.origin
