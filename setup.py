@@ -34,7 +34,7 @@ setup(
                           "excludes": excludes,
                           "dll_excludes": ["msvcp90.dll"]}},
 
-    name='WikidPad',
+    name='WikidPadMP',
     version = Consts.VERSION_STRING.split(" ")[1],
     author = 'Michael Butscher',
     author_email = 'mbutscher@gmx.de',
