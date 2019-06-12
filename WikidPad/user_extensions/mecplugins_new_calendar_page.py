@@ -12,8 +12,8 @@ def newWikiWord(docPagePresenter, wikiWord):
     mns=['January','February','March','April','May','June','July','August','September','October','November', 'December']
     wd = wds[int(strftimeUB("%w",timestamp))-1]
     mn = mns[int(strftimeUB("%m",timestamp))-1]
-    #newtitle = strftimeUB("%Y-%m-%d|{A} {B} %d|Week %W [alias: %d {B} %Y] [now] [someday] [todo_todo]\nhttps://calendar.google.com/calendar/r/week/%Y/%m/%d\n\ntodo:\ndone:\n\n".format(A=wd,B=mn), timestamp)
-    newtitle = strftimeUB("%Y-%m-%d|{A} {B} %d|Week %W [alias: %d {B} %Y] [now] [someday] [todo_todo]\nhttps://calendar.google.com/calendar/r/week/%Y/%m/%d\n\n\n".format(A=wd,B=mn), timestamp)
+    #newtitle = strftimeUB("%Y-%m-%d {A} {B} %d week %W [alias: %d {B} %Y] [now] [someday] [todo_todo]\nhttps://calendar.google.com/calendar/r/week/%Y/%m/%d\n\ntodo:\ndone:\n\n".format(A=wd,B=mn), timestamp)
+    newtitle = strftimeUB("%Y-%m-%d {A} {B} %d week %W [alias: %d {B} %Y] [now] [someday] [todo_todo]\nhttps://calendar.google.com/calendar/r/week/%Y/%m/%d\n\n\n".format(A=wd,B=mn), timestamp)
     #underline = "-"*len(newtitle) + "---"
     newtitle+="\n"  #+underline
     #print(newtitle)

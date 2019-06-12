@@ -1,4 +1,4 @@
-#!python3.4
+#!/usr/bin/env python
 
 from . import WikidPadStarter
 

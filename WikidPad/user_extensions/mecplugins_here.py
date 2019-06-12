@@ -17,10 +17,8 @@ def here(wiki,evt):
     
     bracketWords = langHelper.createLinkFromWikiWord
     
-    #wiki.getActiveEditor().saveLoadedDocPage()
-
     parents = wiki.wikiData.getParentRelationships(wiki.getCurrentWikiWord())
     
-    parents = [bracketWords(word,) for word in parents]
+    parents = [bracketWords(word, wikiPage=wiki.getWikiDocument().getWikiPage(wiki.getCurrentWikiWord())) for word in parents]
     
     wiki.getActiveEditor().AddText( "\n".join( sorted(parents) ) )

@@ -8,10 +8,11 @@
 
 
 
-import sys, os
+import sys,os
 
-if sys.platform == 'darwin' and not sys.executable.endswith('MacOS/Python'):  # https://wiki.wxpython.org/Automatically%20Calling%20pythonw%20on%20Mac%20OS%20X
-    os.execvp('pythonw',['pythonw',__file__] + sys.argv[1:])
+def reexec_with_pythonw():
+    if sys.platform == 'darwin' and not sys.executable.endswith('MacOS/Python'):
+        os.execvp('pythonw',['pythonw',__file__] + sys.argv[1:])
 
 import traceback, os.path, glob, shutil, imp, warnings, configparser
 

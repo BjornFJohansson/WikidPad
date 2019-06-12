@@ -91,8 +91,8 @@ def ziplists(wiki, evt):
 
     rows = content.splitlines()
 
-    even = rows[:len(rows)//2]
-    odd  = rows[len(rows)//2:]
+    even = rows[             :len(rows)//2]
+    odd  = rows[ len(rows)//2:            ]
 
     merged = list(itertools.chain(*list(itertools.izip_longest(even,odd,fillvalue=""))))
 
