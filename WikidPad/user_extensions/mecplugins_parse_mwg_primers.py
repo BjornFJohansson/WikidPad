@@ -17,7 +17,7 @@ WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
 
 from Bio                            import SeqIO
 from os                             import linesep
-from io                      import StringIO
+from io                             import StringIO
 from Bio.Seq                        import Seq
 from Bio.SeqRecord                  import SeqRecord
 from Bio.Alphabet                   import SingleLetterAlphabet

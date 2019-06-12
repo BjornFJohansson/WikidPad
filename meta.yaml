@@ -1,5 +1,5 @@
 package:
-  name: wikidpad
+  name: wikidpadmp
   version: "2.4.0"
 
 build:
@@ -15,10 +15,16 @@ requirements:
   build:
     - python {{ python }}
     - wxpython >=4.0.3
+    - biopython
+    - pyparsing
+    - pillow
 
   run:
     - python {{ python }}
     - wxpython >=4.0.3
+    - biopython
+    - pyparsing
+    - pillow
 
 test:
   imports:

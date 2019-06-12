@@ -60,7 +60,7 @@ setup(
             "WikidPad.WikidPadHelp.files",
         ],
     
-    install_requires =["wxpython"],
+    install_requires =["wxpython", "biopython", "pyparsing", "pillow"],
     
     include_package_data=False,
     package_data={
@@ -85,7 +85,7 @@ setup(
                  'Intended Audience :: End Users/Desktop',
                  'Operating System :: OS Independent',
                  'License :: OSI Approved :: BSD License',
-                 'Programming Language :: Python :: 3.4',
+                 'Programming Language :: Python :: 3.7',
                  'Topic :: Office/Business',],
 
 )
