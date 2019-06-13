@@ -19,12 +19,14 @@ requirements:
     - pyparsing
     - pillow
 
+
   run:
     - python {{ python }}
     - wxpython >=4.0.3
     - biopython
     - pyparsing
     - pillow
+    - sqlite
 
 test:
   imports:
