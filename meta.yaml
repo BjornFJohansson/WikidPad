@@ -1,6 +1,6 @@
 package:
   name: wikidpadmp
-  version: "2.4.0"
+  version: "2.4.1"
 
 build:
   number: 0
@@ -18,6 +18,8 @@ requirements:
     - biopython
     - pyparsing
     - pillow
+    - setuptoools
+    - pip
 
 
   run:
