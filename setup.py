@@ -37,7 +37,7 @@ setup(
                           "dll_excludes": ["msvcp90.dll"]}},
 
 
-    name='WikidPad',
+    name='WikidPadMP',
     version = Consts.VERSION_STRING.split(" ")[1] + "",
     author = 'Michael Butscher',
     author_email = 'mbutscher@gmx.de',
@@ -65,7 +65,7 @@ setup(
         ],
     
 
-    install_requires =["wxpython>=4.0"],
+    install_requires =["wxpython", "biopython", "pyparsing", "pillow"],
     
     include_package_data=False,
     package_data={

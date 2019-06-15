@@ -1,7 +1,7 @@
 {% set data = load_setup_py_data() %}
 
 package:
-  name: wikidpad
+  name: wikidpadmp
   version: {{ data.get('version') }}
 
 build:
@@ -24,6 +24,9 @@ requirements:
   run:
     - python
     - wxpython >=4.0.4
+    - biopython
+    - pyparsing
+    - pillow
     - sqlite
 
 test:
