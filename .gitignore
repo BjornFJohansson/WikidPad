@@ -3,7 +3,6 @@
 /.hgignore
 /.hgtags
 *.pyc
-/user_extensions
 
 *~
 
