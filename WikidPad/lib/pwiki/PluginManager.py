@@ -1,15 +1,11 @@
 
 
 from zipimport import zipimporter
-import os, sys, traceback, os.path, imp, collections
-
-# sys.path.append(ur"C:\Daten\Projekte\Wikidpad\Next20\extensions")
+import sys, traceback, os.path
 
 import wx
 
-from . import Utilities
-
-from .StringOps import mbcsEnc, pathEnc
+from .StringOps import mbcsEnc
 from functools import reduce
 
 
@@ -65,7 +61,7 @@ class SimplePluginAPI:
        plugins implementing that api. It takes a unique descriptor and a list
        of function names at creation time. For each function name a member is
        created that calls the registered plugin functions. The descriptor must 
-       appear in the WIKIDPAD_PLUGIN sequence object of the any module to have
+       appear in the WIKIDPAD_PLUGIN sequence object of a module to have
        the module registered. After that the module just has to implement a 
        subset of the api's functions to be registered."""
 
@@ -300,7 +296,29 @@ class PluginManager:
 #             del self.plugins[name]
         
     def loadPlugins(self, excludeFiles):
-        """load and register plugins with apis. the directories in the list
+        """
+        load and register plugins with apis.
+        
+        Step one loads from the fixed directories (WikidPad installation
+        plugin directories)
+        Step two uses Python's package management to find plugins
+        installed by PIP or similar measures.
+        
+        Files and directories given in exludeFiles are not loaded from fixed
+        directories.
+        
+        Fixed directories are searched in order for plugins. Therefore plugins
+        appearing in earlier directories are not loaded from later ones.
+        The names of plugins from package management are not processed so
+        all of these plugins are loaded.
+        """
+        self.loadPluginsFixed(excludeFiles)
+        self.loadPluginsPackageManaged()
+        
+           
+
+    def loadPluginsFixed(self, excludeFiles):
+        """load and register plugins with apis. The directories in the list
            directories are searched in order for all files ending with .py or 
            all directories. These are assumed to be possible plugins for 
            WikidPad. All such files and directories are loaded as modules and if
@@ -337,7 +355,7 @@ class PluginManager:
                         continue
                     if os.path.isfile(fullname):
                         if ext == '.py':
-                            with open(fullname,encoding="utf-8") as f:   # HACK changed here !
+                            with open(fullname, "rb") as f:
                                 module = imp.load_module(packageName + "." + moduleName, f,
                                         fullname, (".py", "r", imp.PY_SOURCE))
                         elif ext == '.zip':
@@ -357,6 +375,15 @@ class PluginManager:
                 except:
                     traceback.print_exc()
             del sys.path[-1]
+            
+    def loadPluginsPackageManaged(self):
+        import pkg_resources
+        
+        for entry_point in pkg_resources.iter_entry_points('WikidPad.plugins'):
+            module = entry_point.load()
+            if hasattr(module, "WIKIDPAD_PLUGIN"):
+                self.registerPlugin(module)
+
           
     def importDirectory(self, name, add_to_sys_modules = False): 
         name = mbcsEnc(name, "replace")[0]

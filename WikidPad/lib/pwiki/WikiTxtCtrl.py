@@ -77,6 +77,10 @@ except:
 CO_FUTURE_DIVISION = 0x2000
 
 
+# Disable setting of wx.MouseEvent.m_wheelRotation in OnMouseWheel in case
+# of AttributeError
+disableMouseWheelSetting = False
+
 
 
 class WikiTxtCtrl(SearchableScintillaControl):
@@ -156,8 +160,8 @@ class WikiTxtCtrl(SearchableScintillaControl):
             self.SetMarginWidth(self.FOLD_MARGIN, 16)
         else:
             self.SetMarginWidth(self.FOLD_MARGIN, 0)
-        self.SetMarginWidth(self.SELECT_MARGIN, 16)
-        self.SetMarginWidth(self.NUMBER_MARGIN, 0)
+        # self.SetMarginWidth(self.SELECT_MARGIN, 16)
+        # self.SetMarginWidth(self.NUMBER_MARGIN, 0)
 
         self.SetMarginType(self.FOLD_MARGIN, wx.stc.STC_MARGIN_SYMBOL)
         self.SetMarginType(self.SELECT_MARGIN, wx.stc.STC_MARGIN_SYMBOL)
@@ -3502,12 +3506,24 @@ class WikiTxtCtrl(SearchableScintillaControl):
         # So the sign of rotation value must be changed if wheel zoom is NOT
         # reversed by option
 
+        global disableMouseWheelSetting
+
+        if disableMouseWheelSetting:
+            # Previously an error occurred.
+            evt.Skip()
+            return
+
         if evt.ControlDown() and not self.presenter.getConfig().getboolean(
                 "main", "mouse_reverseWheelZoom", False):
             try:                                            # HACK changed here !
-                evt.m_wheelRotation = -evt.m_wheelRotation
+                evt.WheelRotation = -evt.WheelRotation
             except AttributeError:
-                pass
+                import ExceptionLogger
+                ExceptionLogger.logOptionalComponentException(
+                        "Error when setting mouse wheel rotation (WheelRotation). "
+                        "You need wxPython version > 4.0.4")
+                disableMouseWheelSetting = True
+
         evt.Skip()
 
 

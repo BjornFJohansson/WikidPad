@@ -51,12 +51,18 @@ class IndentInfo:
 
 
 
-def buildRegex(regex, name=None, hideOnEmpty=False):
-    if name is None:
-        element = Regex(regex, RE_FLAGS)
-    else:
-        element = Regex(regex, RE_FLAGS).setResultsName(name).setName(name)
+def buildRegex(regex, resultsName=None, hideOnEmpty=False, name=None):
+    element = Regex(regex, RE_FLAGS)
     
+    if name is None:
+        name = resultsName
+    
+    if resultsName is not None:
+        element = element.setResultsNameNoCopy(resultsName)
+    
+    if name is not None:
+        element = element.setName(name)
+
     if hideOnEmpty:
         element.setParseAction(actionHideOnEmpty)
         
@@ -369,14 +375,14 @@ def preActEscapedNewLine(s, l, st, pe):
 
 
 def preActUlPrepareStack(s, l, st, pe):
-    oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
+#     oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
     newIdInfo = IndentInfo("ul")
 
     newIdInfo.level = st.dictStack.get("lastIdentation", 0)
     st.dictStack["indentInfo"] = newIdInfo
 
 def preActOlPrepareStack(s, l, st, pe):
-    oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
+#     oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
     newIdInfo = IndentInfo("ol")
 
     newIdInfo.level = st.dictStack.get("lastIdentation", 0)
@@ -451,28 +457,44 @@ listStartIndentation = listStartIndentation.\
         setParseAction(actionListStartIndent).setName("listStartIndentation")
 
 
-bullet = buildRegex(r"\*[ \t]", "bullet")
 
-bulletEntry = equalIndentation.copy()\
-        .addParseStartAction(inmostIndentChecker("ul")) + bullet  # + \
-        
+bulletFirst = buildRegex(r"\*[ \t]", "bullet", name="bulletFirst")
+bulletEntryFirst = bulletFirst + content
+bulletEntryFirst = bulletEntryFirst.setResultsNameNoCopy("bulletEntry")\
+        .setName("bulletEntryFirst")
 
 
-unorderedList = listStartIndentation + bullet + \
-        (content + FollowedBy(lessIndentOrEnd))\
+bullet = equalIndentation.copy()\
+            .addParseStartAction(inmostIndentChecker("ul")) + \
+            buildRegex(r"\*[ \t]", "bullet")
+
+bulletEntry = bullet + content
+bulletEntry = bulletEntry.setResultsNameNoCopy("bulletEntry")
+
+
+unorderedList = listStartIndentation + (bulletEntryFirst + ZeroOrMore(bulletEntry) + \
+        FollowedBy(lessIndentOrEnd))\
         .addParseStartAction(preActUlPrepareStack)
 unorderedList = unorderedList.setResultsNameNoCopy("unorderedList")
 
 
-number = buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number")
+numberFirst = buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number",
+        name="numberFirst")
+numberEntryFirst = numberFirst + content
+numberEntryFirst = numberEntryFirst.setResultsNameNoCopy("numberEntry")\
+        .setName("numberEntryFirst")
 
-numberEntry = equalIndentation.copy()\
-        .addParseStartAction(inmostIndentChecker("ol")) + number
+
+number = equalIndentation.copy()\
+            .addParseStartAction(inmostIndentChecker("ol")) + \
+            buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number")
+
+numberEntry = number + content
+numberEntry = numberEntry.setResultsNameNoCopy("numberEntry")
 
 
-
-orderedList = listStartIndentation + number + \
-        (content + FollowedBy(lessIndentOrEnd))\
+orderedList = listStartIndentation + (numberEntryFirst + ZeroOrMore(numberEntry) + \
+        FollowedBy(lessIndentOrEnd))\
         .addParseStartAction(preActOlPrepareStack)
 orderedList = orderedList.setResultsNameNoCopy("orderedList")
 
@@ -1233,7 +1255,9 @@ TOKEN_TO_END = {
         "bold": boldEnd,
         "italics": italicsEnd,
         "unorderedList": lessIndentOrEnd,
+        "bulletEntry": (bullet | lessIndentOrEnd),
         "orderedList": lessIndentOrEnd,
+        "numberEntry": (number | lessIndentOrEnd),
         "indentedText": lessIndentOrEnd,
         "wikiWord": bracketEnd,
         "urlLinkBracketed": bracketEnd,
@@ -1328,7 +1352,7 @@ findMarkupInCharacterAttribution = FindFirst([bold, italics, noExportSingleLine,
         newLinesParagraph, newLineLineBreak, newLineWhitespace,
         escapedNewLine, escapedChar,
         todoEntryWithTermination, anchorDef, preHtmlTag, bodyHtmlTag, htmlTag,
-        htmlEntity, bulletEntry, unorderedList, numberEntry, orderedList,
+        htmlEntity, unorderedList, orderedList,
         indentedText, table, preBlock, noExportMultipleLines,
         suppressHighlightingMultipleLines, equivalIndentation],
         endTokenInCharacterAttribution)
@@ -1348,7 +1372,7 @@ findMarkup = FindFirst([bold, italics, noExportSingleLine,
         newLinesParagraph, newLineLineBreak, newLineWhitespace,
         escapedNewLine, escapedChar, heading,
         todoEntryWithTermination, anchorDef, preHtmlTag, bodyHtmlTag, htmlTag,
-        htmlEntity, bulletEntry, unorderedList, numberEntry, orderedList,
+        htmlEntity, unorderedList, orderedList,
         indentedText, table, preBlock, noExportMultipleLines,
         suppressHighlightingMultipleLines,
         script, horizontalLine, equivalIndentation], endToken)
@@ -2627,7 +2651,7 @@ These are your default global settings.
     
     _RECURSIVE_STYLING_NODE_NAMES = frozenset(("table", "tableRow", "tableCell",
                         "orderedList", "unorderedList", "indentedText",
-                        "noExport"))
+                        "noExport", "bulletEntry", "numberEntry"))
                         
     @staticmethod
     def getRecursiveStylingNodeNames():
