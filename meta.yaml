@@ -1,6 +1,8 @@
+{% set data = load_setup_py_data() %}
+
 package:
-  name: wikidpadmp
-  version: "2.4.1"
+  name: wikidpad
+  version: {{ data.get('version') }}
 
 build:
   number: 0
@@ -15,9 +17,6 @@ requirements:
   build:
     - python
     - wxpython >=4.0.4
-    - biopython
-    - pyparsing
-    - pillow
     - setuptools
     - pip
 
@@ -25,9 +24,6 @@ requirements:
   run:
     - python
     - wxpython >=4.0.4
-    - biopython
-    - pyparsing
-    - pillow
     - sqlite
 
 test:
@@ -41,4 +37,3 @@ app:
   icon: WikidPad/Wikidpad_128x128x32.png
   summary: WikidPad is a single user desktop wiki. http://wikidpad.sourceforge.net/
   type: desk
-  own_environment: True

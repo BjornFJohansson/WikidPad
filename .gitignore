@@ -5,7 +5,7 @@
 *.pyc
 /user_extensions
 
-
+*~
 
 
 # Byte-compiled / optimized
