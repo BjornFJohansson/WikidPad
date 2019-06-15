@@ -13,18 +13,18 @@ source:
 
 requirements:
   build:
-    - python {{ python }}
-    - wxpython >=4.0.3
+    - python
+    - wxpython >=4.0.4
     - biopython
     - pyparsing
     - pillow
-    - setuptoools
+    - setuptools
     - pip
 
 
   run:
-    - python {{ python }}
-    - wxpython >=4.0.3
+    - python
+    - wxpython >=4.0.4
     - biopython
     - pyparsing
     - pillow
