@@ -71,7 +71,9 @@ def addtolist(wiki, evt):
     dataStart = end - start
 
     wiki.getActiveEditor().SetSelectionByCharPos(start,start+dataStart)
-    from parse_string                   import parse_seqs
+
+    from .mecplugins.parse_string import parse_seqs
+
     seqs = parse_seqs(raw_string)
     
     last = seqs[-1]
@@ -79,6 +81,7 @@ def addtolist(wiki, evt):
     seqs = seqs[:-1]
     
     from pyparsing import Word, Literal, Combine, nums
+
     fastaheader = Combine(Literal('>').suppress()+Word(nums).setResultsName("number")+Literal('_').suppress())
     
     data, dataStart, dataEnd = next(fastaheader.scanString(last.format("fasta")))

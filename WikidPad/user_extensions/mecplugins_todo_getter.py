@@ -136,8 +136,7 @@ todo = namedtuple('todo', 'type categories page message')
 
 def openedWikiWord(docPagePresenter, wikiWord):
 
-    if (wikiWord[:5] != "todo_"):
-        return
+    if (wikiWord[:5] != "todo_"): return
 
     categories = wikiWord[5:].lower().split("_")
 
@@ -165,8 +164,6 @@ def openedWikiWord(docPagePresenter, wikiWord):
 
     dated_todos = sorted([t for t in todos if re.match("[1-2][0-9]{3}-[0-1][0-9]-[0-3][0-9]", t.page)], key=operator.attrgetter("page"), reverse=True)
 
-
-
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
     weekdates = [(tomorrow+datetime.timedelta(days=R)).isoformat() for R in range(7)]
@@ -185,35 +182,26 @@ def openedWikiWord(docPagePresenter, wikiWord):
     today_todos_text      = u"\n".join([u"[{}] {} {}".format(t.page, " ".join(t.categories), t.message) for t in todays_todos])
     past_todos_text       = u"\n".join([u"[{}] {} {}".format(t.page, " ".join(t.categories), t.message) for t in past_todos])
 
-    text = u'''
-++Future
-{}
-
-++Next week
-{}
-
-++Tomorrow!
-{}
-
-++Today!!
-{}
-
-++Past
-{}
-
-++Undated
-{}              '''.format(  future_todos_text,
-                                next_weeks_todos_text,
-                                tomorrow_todos_text,
-                                today_todos_text,
-                                past_todos_text,
-                                undated_todos_text)
+    text = f'''\
+### future
+{future_todos_text}
+### next week
+{next_weeks_todos_text}
+### tomorrow
+{tomorrow_todos_text}
+### today
+{today_todos_text}
+### past
+{past_todos_text}
+### undated
+{undated_todos_text}'''
 
     text = textwrap.dedent(text.strip())
-    docPagePresenter.getActiveEditor().SetText(text)  #SetTextUTF8
+    oldtext = docPagePresenter.getActiveEditor().GetText().split("### future")[0]
+    docPagePresenter.getActiveEditor().SetText(oldtext+text)  #SetTextUTF8
     docPagePresenter.saveCurrentDocPage()
     docPagePresenter.getActiveEditor().AppendText("\n")
-    start = len(future_todos_text)+len(next_weeks_todos_text)+len(tomorrow_todos_text)+49
+    start = len(future_todos_text)+len(next_weeks_todos_text)+len(tomorrow_todos_text)+51
     stop  = start + len(today_todos_text)
     docPagePresenter.getActiveEditor().unfoldAll()
     docPagePresenter.getActiveEditor().foldAll()

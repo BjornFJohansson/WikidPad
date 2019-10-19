@@ -81,6 +81,7 @@ import wx
 if wx.version() < "2.9" or "gtk2" in wx.version():
     import gtk
 else:
+    print(123)
     import gi
     gi.require_version('Gtk', '3.0')
     from gi.repository import Gtk, Gdk

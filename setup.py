@@ -65,7 +65,7 @@ setup(
         ],
     
 
-    install_requires =["wxpython", "biopython", "pyparsing", "pillow"],
+    install_requires =["wxpython", "biopython", "pyparsing" ],
     
     include_package_data=False,
     package_data={
@@ -86,11 +86,11 @@ setup(
     
     data_files=None,
     
-    classifiers = ['Development Status :: 3 - Alpha',
-                 'Intended Audience :: End Users/Desktop',
-                 'Operating System :: OS Independent',
-                 'License :: OSI Approved :: BSD License',
-                 'Programming Language :: Python :: 3.7',
-                 'Topic :: Office/Business',],
+    classifiers = [ 'Development Status      :: 3 - Alpha',
+                    'Intended Audience       :: End Users/Desktop',
+                    'Operating System        :: OS Independent',
+                    'License :: OSI Approved :: BSD License',
+                    'Programming Language    :: Python :: 3.7',
+                    'Topic                   :: Office/Business',],
 
 )

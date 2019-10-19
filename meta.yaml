@@ -16,14 +16,15 @@ source:
 requirements:
   build:
     - python
-    - wxpython >=4.0.4
+    - wxpython >=4.0.6
     - setuptools
     - pip
+    - python.app  #[osx]
 
 
   run:
     - python
-    - wxpython >=4.0.4
+    - wxpython >=4.0.6
     - biopython
     - pyparsing
     - pillow

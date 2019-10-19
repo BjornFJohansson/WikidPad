@@ -264,7 +264,7 @@ def actionTodoEntry(s, l, st, t):
 
 
 
-todoKey = buildRegex(r"\b(?:todo|done|wait|action|track|issue|idea|rem|"
+todoKey = buildRegex(r"\b(?:todo|done|wait|action|track|issue|idea|cool|"
                       r"question|project|read)(?:\.[^:\s]+)?", "key")   ## HACK changed here!
 # todoKey = todoKey.setParseStartAction(preActCheckNothingLeft)
 

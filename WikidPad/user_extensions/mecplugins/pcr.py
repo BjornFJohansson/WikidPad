@@ -240,32 +240,32 @@ class Anneal:
             self.topology = "linear"
         self.homology_limit = homology_limit
 
-        tm = template.seq.tostring()
-        tm_rc = template.seq.reverse_complement().tostring()
+        tm = str(template.seq)
+        tm_rc = str(template.seq.reverse_complement)
         if self.topology == "linear":
             for p in primers:
                 self.fwd_primers.extend((primer(p, pos, Seq(footprint)) for
                                          pos, footprint in annealing_positions(
-                                                            p.seq.tostring(),
+                                                            str(p.seq),
                                                             tm,
                                                             homology_limit)))
                 self.rev_primers.extend((primer(p,len(template)-pos, Seq(footprint))
                                          for pos, footprint in annealing_positions(
-                                                            p.seq.tostring(),
+                                                            str(p.seq),
                                                             tm_rc,
                                                             homology_limit)))
         else:
             ct = 2*tm
             ct_rc = 2*tm_rc
             for p in primers:
-                ann1 = annealing_positions(p.seq.tostring(), tm, homology_limit)
-                ann2 = annealing_positions(p.seq.tostring(), ct, homology_limit)
+                ann1 = annealing_positions(str(p.seq), tm, homology_limit)
+                ann2 = annealing_positions(str(p.seq), ct, homology_limit)
                 ann  = set(ann2) - set(ann1)
                 ann  = [primer(p, pos%len(template), Seq(footprint)) for (pos, footprint) in ann]
                 self.fwd_primers.extend(ann)
 
-                ann1 = annealing_positions(p.seq.tostring(), tm_rc, homology_limit)
-                ann2 = annealing_positions(p.seq.tostring(), ct_rc, homology_limit)
+                ann1 = annealing_positions(str(p.seq), tm_rc, homology_limit)
+                ann2 = annealing_positions(str(p.seq), ct_rc, homology_limit)
                 ann  = set(ann2) - set(ann1)
                 ann  = [primer(p, len(template)-pos%len(template), Seq(footprint)) for (pos, footprint) in ann]
                 self.rev_primers.extend(ann)

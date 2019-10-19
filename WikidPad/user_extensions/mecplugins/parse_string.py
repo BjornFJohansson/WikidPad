@@ -67,10 +67,10 @@ class FormattedRecord(SeqRecord):
         if filter:
             IUPAC_single_alphabet_letters = "ACBEDGFIHKJMLONQPSRUTWVYXZacbedgfihkjmlonqpsrutwvyxz"
 
-            filtered_out = "".join([c for c in self.seq.tostring() if c not in IUPAC_single_alphabet_letters])
+            filtered_out = "".join([c for c in str(self.seq) if c not in IUPAC_single_alphabet_letters])
 
             if filtered_out:
-                filtered = "".join([c for c in self.seq.tostring() if c in IUPAC_single_alphabet_letters])
+                filtered = "".join([c for c in str(self.seq) if c in IUPAC_single_alphabet_letters])
                 self.seq = Seq(filtered, self.seq.alphabet)
                 self.filtered = filtered_out
                 self.warnings += "non-permitted chars {0} were filtered from the sequence!\n".format(filtered_out)
@@ -212,10 +212,10 @@ def guess_alphabet(sequence):
     from Bio.SeqRecord      import SeqRecord
 
     if isinstance(sequence, Seq):
-        sequence = sequence.tostring()
+        sequence = str(sequence)
 
     elif isinstance(sequence, SeqRecord):
-        sequence = sequence.seq.tostring()
+        sequence = str(sequence.seq)
 
     elif not isinstance(sequence, str):
         sequence = str(sequence)

@@ -64,8 +64,8 @@ def sortSelection(wiki, evt):
     content = wiki.getActiveEditor().GetSelectedText()
     if not content:
         content = wiki.getActiveEditor().GetText()
-    rows = content.split('\n')
-    rows.sort()
+    rows = sorted( content.splitlines(),key=str.lower)
+
     wiki.getActiveEditor().ReplaceSelection( u'\n'.join(rows))
     wiki.getActiveEditor().SetSelection(start, end)
 
