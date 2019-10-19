@@ -7,24 +7,26 @@ package:
 build:
   number: 0
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  include_recipe: False
+  osx_is_app: True
   entry_points:
     - wikidpad = WikidPad.WikidPadStarter:main
 
 source:
-  path: .
+  path: ../
 
 requirements:
   build:
     - python
-    - wxpython >=4.0.6
+    - wxpython >=4.0.4
     - setuptools
     - pip
     - python.app  #[osx]
 
-
   run:
     - python
-    - wxpython >=4.0.6
+    - python.app  #[osx]
+    - wxpython >=4.0.4
     - biopython
     - pyparsing
     - pillow
@@ -38,6 +40,6 @@ test:
 
 app:
   entry: wikidpad
-  icon: WikidPad/Wikidpad_128x128x32.png
+  icon: ../WikidPad/Wikidpad_128x128x32.png
   summary: WikidPad is a single user desktop wiki. http://wikidpad.sourceforge.net/
   type: desk
