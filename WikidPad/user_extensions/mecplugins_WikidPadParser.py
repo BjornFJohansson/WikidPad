@@ -22,16 +22,15 @@ sys.stderr = sys.stdout
 # wx.Locale(wx.LANGUAGE_DEFAULT)
 Localization.setLocale("")
 
-from WikidPad.lib.pwiki.WikiPyparsing import *
-
+from pwiki.WikiPyparsing import *
 
 
 WIKIDPAD_PLUGIN = (("WikiParser", 1),)
 
-#WIKI_LANGUAGE_NAME = "wikidpad_default_2_0"
-#WIKI_HR_LANGUAGE_NAME = "WikidPad default 2.0"
-WIKI_LANGUAGE_NAME = "wikidpad_mec_2_0"                                        # HACK changed here !
-WIKI_HR_LANGUAGE_NAME = "WikidPad mec 2.0"                                     # HACK changed here !
+WIKI_LANGUAGE_NAME = "wikidpad_mec_2_0"                # HACK changed here !
+WIKI_HR_LANGUAGE_NAME = "WikidPad mec 2.0"             # HACK changed here !
+
+
 LETTERS = UPPERCASE + LOWERCASE
 
 
@@ -52,12 +51,18 @@ class IndentInfo:
 
 
 
-def buildRegex(regex, name=None, hideOnEmpty=False):
-    if name is None:
-        element = Regex(regex, RE_FLAGS)
-    else:
-        element = Regex(regex, RE_FLAGS).setResultsName(name).setName(name)
+def buildRegex(regex, resultsName=None, hideOnEmpty=False, name=None):
+    element = Regex(regex, RE_FLAGS)
     
+    if name is None:
+        name = resultsName
+    
+    if resultsName is not None:
+        element = element.setResultsNameNoCopy(resultsName)
+    
+    if name is not None:
+        element = element.setName(name)
+
     if hideOnEmpty:
         element.setParseAction(actionHideOnEmpty)
         
@@ -241,14 +246,8 @@ def actionHeading(s, l, st, t):
 
 headingEnd = buildRegex(r"\n")
 
-heading = buildRegex(r"^\+{1,15}(?!\+)") + Optional(buildRegex(r" ")) + \
-        headingContent + headingEnd
-# HACK changed here !
-
 heading = buildRegex(r"^(?:\+{1,15}(?!\+)|\#{1,15}(?!\#))") + Optional(buildRegex(r" ")) + \
-        headingContent + headingEnd 
-
-
+        headingContent + headingEnd # HACK changed here !
 heading = heading.setResultsNameNoCopy("heading").setParseAction(actionHeading)
 
 
@@ -264,8 +263,8 @@ def actionTodoEntry(s, l, st, t):
 
 
 
-todoKey = buildRegex(r"\b(?:todo|done|wait|action|track|issue|idea|cool|"
-                      r"question|project|read)(?:\.[^:\s]+)?", "key")   ## HACK changed here!
+todoKey = buildRegex(r"\b(?:todo|done|wait|action|track|issue|"
+        r"question|project)(?:\.[^:\s]+)?", "key")
 # todoKey = todoKey.setParseStartAction(preActCheckNothingLeft)
 
 todoEnd = buildRegex(r"\n|\||(?!.)")
@@ -376,14 +375,14 @@ def preActEscapedNewLine(s, l, st, pe):
 
 
 def preActUlPrepareStack(s, l, st, pe):
-    oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
+#     oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
     newIdInfo = IndentInfo("ul")
 
     newIdInfo.level = st.dictStack.get("lastIdentation", 0)
     st.dictStack["indentInfo"] = newIdInfo
 
 def preActOlPrepareStack(s, l, st, pe):
-    oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
+#     oldIdInfo = st.dictStack.getSubTopDict().get("indentInfo")
     newIdInfo = IndentInfo("ol")
 
     newIdInfo.level = st.dictStack.get("lastIdentation", 0)
@@ -458,28 +457,44 @@ listStartIndentation = listStartIndentation.\
         setParseAction(actionListStartIndent).setName("listStartIndentation")
 
 
-bullet = buildRegex(r"\*[ \t]", "bullet")
 
-bulletEntry = equalIndentation.copy()\
-        .addParseStartAction(inmostIndentChecker("ul")) + bullet  # + \
-        
+bulletFirst = buildRegex(r"\*[ \t]", "bullet", name="bulletFirst")
+bulletEntryFirst = bulletFirst + content
+bulletEntryFirst = bulletEntryFirst.setResultsNameNoCopy("bulletEntry")\
+        .setName("bulletEntryFirst")
 
 
-unorderedList = listStartIndentation + bullet + \
-        (content + FollowedBy(lessIndentOrEnd))\
+bullet = equalIndentation.copy()\
+            .addParseStartAction(inmostIndentChecker("ul")) + \
+            buildRegex(r"\*[ \t]", "bullet")
+
+bulletEntry = bullet + content
+bulletEntry = bulletEntry.setResultsNameNoCopy("bulletEntry")
+
+
+unorderedList = listStartIndentation + (bulletEntryFirst + ZeroOrMore(bulletEntry) + \
+        FollowedBy(lessIndentOrEnd))\
         .addParseStartAction(preActUlPrepareStack)
 unorderedList = unorderedList.setResultsNameNoCopy("unorderedList")
 
 
-number = buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number")
+numberFirst = buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number",
+        name="numberFirst")
+numberEntryFirst = numberFirst + content
+numberEntryFirst = numberEntryFirst.setResultsNameNoCopy("numberEntry")\
+        .setName("numberEntryFirst")
 
-numberEntry = equalIndentation.copy()\
-        .addParseStartAction(inmostIndentChecker("ol")) + number
+
+number = equalIndentation.copy()\
+            .addParseStartAction(inmostIndentChecker("ol")) + \
+            buildRegex(r"(?:\d+\.)*(\d+)\.[ \t]|#[ \t]", "number")
+
+numberEntry = number + content
+numberEntry = numberEntry.setResultsNameNoCopy("numberEntry")
 
 
-
-orderedList = listStartIndentation + number + \
-        (content + FollowedBy(lessIndentOrEnd))\
+orderedList = listStartIndentation + (numberEntryFirst + ZeroOrMore(numberEntry) + \
+        FollowedBy(lessIndentOrEnd))\
         .addParseStartAction(preActOlPrepareStack)
 orderedList = orderedList.setResultsNameNoCopy("orderedList")
 
@@ -767,19 +782,7 @@ WikiWordNccRevPAT = r"[^\\\[\]\|\000-\037=:;#!]+?"  # r"[\w\-\_ \t.]+?"
 
 
 
-WikiWordCcPAT = (r"(?:[" +
-        UPPERCASE +
-        r"]+[" +
-        LOWERCASE +
-        r"]+[" +
-        UPPERCASE +
-        r"]+[" +
-        LETTERS + string.digits +
-        r"]*|[" +
-        UPPERCASE +
-        r"]{2,}[" +
-        LOWERCASE +
-        r"]+)")
+
 
 # HACK changed here !
 WikiWordCcPAT = (r"(?:"
@@ -789,6 +792,12 @@ WikiWordCcPAT = (r"(?:"
 +r"[" + LOWERCASE + r"]+[" + UPPERCASE + r"]+[" + LETTERS + string.digits + r"\-" + r"]*|"
 +r"[" + UPPERCASE + r"]{2,30}"
 +r")")
+
+
+
+
+
+
 
 UrlPAT = r'(?:(?:https?|ftp|rel|wikirel)://|mailto:|Outlook:\S|wiki:/|file:/)'\
         r'(?:(?![.,;:!?)]+(?:["\s]|$))[^"\s|\]<>])*'
@@ -1248,7 +1257,9 @@ TOKEN_TO_END = {
         "bold": boldEnd,
         "italics": italicsEnd,
         "unorderedList": lessIndentOrEnd,
+        "bulletEntry": (bullet | lessIndentOrEnd),
         "orderedList": lessIndentOrEnd,
+        "numberEntry": (number | lessIndentOrEnd),
         "indentedText": lessIndentOrEnd,
         "wikiWord": bracketEnd,
         "urlLinkBracketed": bracketEnd,
@@ -1343,7 +1354,7 @@ findMarkupInCharacterAttribution = FindFirst([bold, italics, noExportSingleLine,
         newLinesParagraph, newLineLineBreak, newLineWhitespace,
         escapedNewLine, escapedChar,
         todoEntryWithTermination, anchorDef, preHtmlTag, bodyHtmlTag, htmlTag,
-        htmlEntity, bulletEntry, unorderedList, numberEntry, orderedList,
+        htmlEntity, unorderedList, orderedList,
         indentedText, table, preBlock, noExportMultipleLines,
         suppressHighlightingMultipleLines, equivalIndentation],
         endTokenInCharacterAttribution)
@@ -1363,7 +1374,7 @@ findMarkup = FindFirst([bold, italics, noExportSingleLine,
         newLinesParagraph, newLineLineBreak, newLineWhitespace,
         escapedNewLine, escapedChar, heading,
         todoEntryWithTermination, anchorDef, preHtmlTag, bodyHtmlTag, htmlTag,
-        htmlEntity, bulletEntry, unorderedList, numberEntry, orderedList,
+        htmlEntity, unorderedList, orderedList,
         indentedText, table, preBlock, noExportMultipleLines,
         suppressHighlightingMultipleLines,
         script, horizontalLine, equivalIndentation], endToken)
@@ -1398,7 +1409,7 @@ def _buildBaseDict(wikiDocument=None, formatDetails=None):
             # Do import of WikiDocument here, i.e., only when we need it.
             # This way we can test the parser by loading only a handful
             # of WikiPad modules, see tests/
-            from WikidPad.lib.pwiki.WikiDocument import WikiDocument
+            from pwiki.WikiDocument import WikiDocument
             formatDetails = WikiDocument.getUserDefaultWikiPageFormatDetails()
             formatDetails.setWikiLanguageDetails(WikiLanguageDetails(None, None))
         else:
@@ -2160,7 +2171,6 @@ class _TheHelper:
                 url = "wiki:" + StringOps.urlFromPathname(path, addSafe=addSafe)
             else:
                 url = "file:" + StringOps.urlFromPathname(path, addSafe=addSafe)
-                #url = u"file:" + unicode(StringOps.urlFromPathname(path, addSafe=addSafe), "utf-8") # HACK changed here !
 
         if bracketed:
             url = BracketStart + url + BracketEnd
@@ -2531,7 +2541,7 @@ class _TheHelper:
             indentedStartPos = startPos + editor.bytelenSct(indent)
             text = editor.GetTextRange(indentedStartPos, endPos)
             # remove spaces, newlines, etc
-            text = re.sub("[\s\r\n]+", " ", text)
+            text = re.sub(r"[\s\r\n]+", " ", text)
 
             # wrap the text
             wrapPosition = 70
@@ -2643,7 +2653,7 @@ These are your default global settings.
     
     _RECURSIVE_STYLING_NODE_NAMES = frozenset(("table", "tableRow", "tableCell",
                         "orderedList", "unorderedList", "indentedText",
-                        "noExport"))
+                        "noExport", "bulletEntry", "numberEntry"))
                         
     @staticmethod
     def getRecursiveStylingNodeNames():
