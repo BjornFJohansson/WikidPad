@@ -25,6 +25,7 @@ from email.mime.multipart       import MIMEMultipart
 from email.mime.base            import MIMEBase
 from email.mime.text            import MIMEText
 
+
 def describeMenuItems(wiki):
     return ((sendbymail, _(u"mecplugins|Send selected text by mail"), _(u"mail selection")),)
 
@@ -123,11 +124,28 @@ def sendbymail(wiki, evt):
 
     now  = strftimeUB("%H:%M:%S")
     subj = cont.splitlines()[0] # The first line of the content is the subject
+    
+    global smtpserver      
+    global smtpport          
+    global smtptimeout       
+    global smtphostname      
+    global smtpuser          
+    global smtppass          
+    global sender            
+    global extra_recipient   
+    global contacts_page 
 
-    settings={}
-    exec(wiki.getWikiDocument().getWikiPage("mecplugins_settings").getContent().encode(), globals(), settings)
-    for k,v in settings.items():
-        globals()[k]=v
+    exec(wiki.getWikiDocument().getWikiPage("mecplugins_settings").getContent().encode(), globals())
+
+    assert smtpserver        != None
+    assert smtpport          != None
+    assert smtptimeout       != None
+    assert smtphostname      != None
+    assert smtpuser          != None
+    assert smtppass          != None
+    assert sender            != None
+    assert extra_recipient   != None
+    assert contacts_page     != None
 
     recipients_from_contacts_page = []
     if wiki.wikiDocument.isDefinedWikiWord(contacts_page):
@@ -137,14 +155,18 @@ def sendbymail(wiki, evt):
             wiki.stdDialog("o", u"Mail selected text","Contacts page {0} in wiki is empty!".format(contacts_page))
     else:
         wiki.stdDialog("o", u"Mail selected text","No mail contacts page {0} in wiki".format(contacts_page))
-    selected_recipients=[]
+    
+    recipients=[]
     if recipients_from_contacts_page:
-        selected_recipients=wiki.stdDialog("listmcstr", "Mail selected text", "Choose one or more recipients:", recipients_from_contacts_page)
-    recipients = recipients_in_text + selected_recipients
+        recipients=wiki.stdDialog("listmcstr", "Mail selected text", "Choose one or more recipients:", recipients_from_contacts_page)
+    if extra_recipient and not extra_recipient.isspace():
+        recipients.append(extra_recipient)
+    recipients = recipients + recipients_in_text
+
     if not recipients:
         wiki.stdDialog("o", "Mail selected text","No recipients selected")
         return
-    #cont = cont.encode('utf8')
+    
     themsg['From']         = sender
     themsg['To']           = ", ".join(recipients)
     themsg['Subject']      = subj
@@ -153,16 +175,13 @@ def sendbymail(wiki, evt):
     htmlcont= '<span style="font-family: Consolas, monaco, monospace"><pre>{}</pre></span>'.format(cont)
 
     themsg.attach(MIMEText(htmlcont,'html'))
-
-    if extra_recipient and not extra_recipient.isspace():
-        recipients.append(extra_recipient)
-    assert type(recipients) == list
+        
     session = smtplib.SMTP(smtpserver,smtpport,smtphostname,smtptimeout)
     session.ehlo()
     session.starttls()
     session.ehlo()
     session.login(smtpuser, smtppass)
-    smtpresult = session.sendmail(sender, recipients, themsg.as_string())
+    smtpresult = session.send_message(themsg)
     if smtpresult:
         report = "Mail(s) could not be sent!\n"
         for recip in smtpresult.keys():
