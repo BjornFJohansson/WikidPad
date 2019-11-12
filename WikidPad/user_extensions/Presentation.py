@@ -37,7 +37,7 @@ elif Platform == '__WXMAC__':
 
 else:
     INTHTML_FONTSIZES = (10, 12, 14, 16, 19, 24, 32)
-
+    INTHTML_FONTSIZES = (10, 10, 10, 10, 10, 12, 14)
 
 
 def getStyles(styleFaces, config):
