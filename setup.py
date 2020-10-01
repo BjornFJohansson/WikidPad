@@ -16,7 +16,7 @@ try:
         copyright = '(C) 2005-2019 Michael Butscher, Jason Horman, Gerhard Reitmayr',
         description = DESCRIPTION,
         comments='',
-    
+
         # what to build
         script = 'WikidPad.py',
         icon_resources = [(0, 'WikidPad/icons/pwiki.ico'), (1, 'WikidPad/icons/pwiki.ico')]
@@ -54,7 +54,7 @@ setup(
             "WikidPad.extensions",
             "WikidPad.extensions.mediaWikiParser",
             "WikidPad.extensions.wikidPadParser",
-            
+
             # Not really packages, but data folders (shows warning messages)
             "WikidPad.lib.js",
             "WikidPad.lib.js.jquery",
@@ -63,10 +63,18 @@ setup(
             "WikidPad.WikidPadHelp.data",
             "WikidPad.WikidPadHelp.files",
         ],
-    
 
-    install_requires =["wxpython", "biopython", "pyparsing", "pydna" ],
-    
+
+    install_requires =["wxpython",
+                       "pillow",
+                       "biopython",
+                       "pyparsing",
+                       "pydna",
+                       "natsort",
+                       "scipy",
+                       "matplotlib",
+                       "dateparser"],
+
     include_package_data=False,
     package_data={
         'WikidPad': ['*'],
@@ -83,14 +91,15 @@ setup(
         'WikidPad': ['WikidPad_Error.log', 'WikidPad.config', 'pytest.ini'],
         'WikidPad.tests': ['*'],
     },
-    
+
     data_files=None,
-    
+
     classifiers = [ 'Development Status      :: 3 - Alpha',
                     'Intended Audience       :: End Users/Desktop',
                     'Operating System        :: OS Independent',
                     'License :: OSI Approved :: BSD License',
-                    'Programming Language    :: Python :: 3.7',
+                    "Programming Language :: Python :: 3.7",
+                    "Programming Language :: Python :: 3.8",
                     'Topic                   :: Office/Business',],
 
 )
