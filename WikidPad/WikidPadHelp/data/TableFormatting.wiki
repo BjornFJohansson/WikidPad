@@ -106,7 +106,7 @@ Example:
 ;Ac *Overall title* | <
 tall and wide cell | cell 1
 ^ | wide wide wide cell 2
-^ | cell 3
+^ | cell _3_
 >>
 
 

@@ -13,14 +13,11 @@
 
 WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
 
-#from . import mecplugins_ini
-
 from Bio                            import SeqIO
 from os                             import linesep
 from io                             import StringIO
 from Bio.Seq                        import Seq
 from Bio.SeqRecord                  import SeqRecord
-from Bio.Alphabet                   import SingleLetterAlphabet
 
 def describeMenuItems(wiki):
     return (
@@ -75,36 +72,36 @@ def addtolist(wiki, evt):
     from .mecplugins.parse_string import parse_seqs
 
     seqs = parse_seqs(raw_string)
-    
+
     last = seqs[-1]
-    
+
     seqs = seqs[:-1]
-    
+
     from pyparsing import Word, Literal, Combine, nums
 
     fastaheader = Combine(Literal('>').suppress()+Word(nums).setResultsName("number")+Literal('_').suppress())
-    
+
     data, dataStart, dataEnd = next(fastaheader.scanString(last.format("fasta")))
-    
+
     number = int(data.number)
-    
+
     fasta_string = ""
-    
+
     for s in seqs[::-1]:
         number+=1
         s.id=(str(number)+"_"+s.id).strip()
         s.name=""
         s.description = "({length}-mer)".format(length = len(s))
         fasta_string = s.format("fasta")+"\n"+fasta_string
-        
+
     fasta_string = fasta_string+last.format("fasta") + "\n"
-        
+
     wiki.getActiveEditor().ReplaceSelection(fasta_string)
-    wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(fasta_string)) 
-     
-    
-    
-    
+    wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(fasta_string))
+
+
+
+
 def mwgtofasta__OLD(wiki, evt):
 
     from pyparsing import Word, Literal, printables, LineStart, SkipTo, Combine, nums

@@ -3,7 +3,6 @@
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1),("ToolbarFunctions",1))
 WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
 
-#from . import mecplugins_ini
 import codecs
 import tempfile
 import zipfile
@@ -27,8 +26,6 @@ from WikidPad.lib.pwiki.StringOps            import pathnameFromUrl, strftimeUB,
 from WikidPad.lib.pwiki.WikiExceptions       import WikiFileNotFoundException
 from WikidPad.lib.pwiki.PersonalWikiFrame    import PersonalWikiFrame
 from WikidPad.lib.pwiki                      import urllib_red as urllib
-
-#from mecplugins_settings.archive import *
 
 def describeMenuItems(wiki):
     return ((archive, _("mecplugins|Archive and stamp pages and linked files"), _("archive & stamp")),)

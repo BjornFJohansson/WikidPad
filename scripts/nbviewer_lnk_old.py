@@ -1,4 +1,6 @@
 #!/usr/bin/env python2
+# This was a previewer of jupyter notebook files in a public dropbox using nbviewer
+
 import os
 from urllib.parse import unquote_plus
 import urllib.parse as parse  #from urllib import parse
@@ -45,11 +47,6 @@ class NBviewerExtension(GObject.GObject, Verne.MenuProvider):
 
         return item,
 
-
-        
-        
-        
-        
         #https://dl.dropboxusercontent.com/u/1263722/pydna-DNA-assembly/constructs/pCAPs_E_AgTEFt.py
         #http://nbviewer.ipython.org/urls/dl.dropboxusercontent.com/u/1263722/pydna-DNA-assembly/pydna-DNA-Assembly.ipynb
         #file:///home/bjorn/Dropbox/Public/pydna-DNA-assembly/pydna-DNA-Assembly.ipynb

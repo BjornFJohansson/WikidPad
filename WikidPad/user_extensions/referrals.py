@@ -135,8 +135,7 @@ def referrals(wiki, evt):
     if wiki.getCurrentWikiWord() is None:
         return
 
-    langHelper = wx.GetApp().createWikiLanguageHelper(
-            wiki.getWikiDefaultWikiLanguage())
+    langHelper = wx.GetApp().createWikiLanguageHelper(wiki.getWikiDefaultWikiLanguage())
 
     bracketWords = langHelper.createAbsoluteLinksFromWikiWords
 

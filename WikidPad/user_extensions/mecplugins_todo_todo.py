@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 WIKIDPAD_PLUGIN = (("MenuFunctions",1),("ToolbarFunctions",1))
-#from . import mecplugins_ini
 
 def describeMenuItems(wiki):
     return ((shortcut,_(u"mecplugins|Misc|todo_todo"),_(u"todo_todo")),)

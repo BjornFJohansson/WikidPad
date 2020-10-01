@@ -840,6 +840,7 @@ class RenameWikiWordDialog(wx.Dialog, ModalDialogMixin):
 
 
     def updateValidToWikiWord(self):
+
         msg = self._checkValidToWikiWord()
         if msg is None:
             self.ctrls.btnOk.Enable(True)

@@ -22,9 +22,8 @@ import tempfile
 import sys
 import os
 import subprocess
-from .mecplugins.parse_string import parse_seqs
-
-#from mecplugins_settings.open_with_ape import *
+import re
+from pydna.parsers import parse
 
 def describeMenuItems(wiki):
     return((openwithape, _("mecplugins|DNA Sequence Tools|Open selection with ApE"), _("ApE")),
@@ -70,13 +69,13 @@ def openwithape(wiki, evt):
         except OSError:
             pass
         path = tempfile.mkdtemp(dir=path)
-        seqs = parse_seqs(cont)
+        seqs = parse(cont)
         if not seqs:
-            seqs = parse_seqs(">sequence_"+str(len(cont))+"bp\n" + cont)
+            seqs = parse(">sequence_"+str(len(cont))+"bp\n" + cont)
         pathstofiles=[]
         for seq in seqs:
-            filename = "{0}.{1}".format(seq.id, seq.original_format)
-            pathtofile = os.path.join(path,filename)
+            filename = "{0}.gb".format(re.sub('\W|^(?=\d)','_', seq.id))
+            pathtofile = os.path.join(path, filename)
             f = open(pathtofile,"w")
             f.write(seq.format("genbank"))
             f.close()

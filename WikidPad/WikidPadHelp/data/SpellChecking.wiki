@@ -1,12 +1,19 @@
 ﻿++ Spell Checking
 
-If you have installed the spell check add-on (for Windows binary distribution) or the pyEnchant library (for source distribution) you can run a spell check for a page or the whole wiki.
+If you have installed the spell check add-on (for Windows binary
+distribution) or the pyEnchant library (for source distribution) you
+can run a spell check for a page or the whole wiki.
 
-You should be able to retrieve the add-on from the same place where you loaded WikidPad from. The add-on should be installed after WikidPad is installed and in the same directory as WikidPad. When deinstalling WikidPad, the add-on must be deinstalled separately.
+You should be able to retrieve the add-on from the same place where
+you loaded WikidPad from. The add-on should be installed after
+WikidPad is installed and in the same directory as WikidPad. When
+deinstalling WikidPad, the add-on must be deinstalled separately.
 
-The enchant library allows to use multiple of the available spell checker programs (like ISpell) and the dictionaries created for them.
+The enchant library allows to use multiple of the available spell
+checker programs (like ISpell) and the dictionaries created for them.
 
-The standard pyEnchant library (and the add-on package) provides ISpell and MySpell as spell checkers.
+The standard pyEnchant library (and the add-on package) provides
+ISpell and MySpell as spell checkers.
 
 
 ++ Available dictionaries
@@ -42,7 +49,7 @@ for the whole wiki write:
 
 [global.language: en_US]
 
-the page must be saved then to bring the attribute into effect.
+the page must be saved then to bring the attribute into effect. 
 
 
 

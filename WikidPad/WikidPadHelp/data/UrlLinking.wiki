@@ -22,6 +22,8 @@ Switch to preview to see the "Go somewhere" only. You can also use an image URL 
 
 [https://somewheresecure.com|rel://files/testimg.gif>r40%]
 
+[https://somewheresecure.com|rel://files/testimg.gif]
+
 If the image URL contains spaces, enclose it in an additional pair of brackets:
 
 [https://somewheresecure.com|[rel://files/spaced testimg.gif]]

@@ -63,16 +63,6 @@ Image links:
 [[rel://files/testimg.gif|left|100pxx100px]] Some options are supported
 
 
-{|
-|+Tables with caption
-|-
-!Header cells
-over multiple lines
-|-
-|bgcolor="#ffff00"| and HTML attributes
-|}
-
-
 From WikidPad syntax also supported:
 
 todo: Todo entries

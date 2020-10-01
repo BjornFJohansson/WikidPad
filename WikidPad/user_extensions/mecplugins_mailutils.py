@@ -15,7 +15,6 @@ import zipfile
 import smtplib
 import os
 import string
-#import cgi
 
 from WikidPad.lib.pwiki.StringOps            import strftimeUB
 from WikidPad.lib.pwiki.StringOps            import pathnameFromUrl

@@ -65,7 +65,7 @@ setup(
         ],
     
 
-    install_requires =["wxpython", "biopython", "pyparsing" ],
+    install_requires =["wxpython", "biopython", "pyparsing", "pydna" ],
     
     include_package_data=False,
     package_data={

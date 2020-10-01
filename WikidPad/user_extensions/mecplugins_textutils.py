@@ -11,8 +11,6 @@
 WIKIDPAD_PLUGIN = (("MenuFunctions",1),("ToolbarFunctions",1))
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
 
-#from . import mecplugins_ini
-
 def describeMenuItems(wiki):
     kb = wiki.getKeyBindings()
     return (	(dewrap, 	 _(u"mecplugins|Text utils|Dewrap selected text")+ u"\t" + kb.Plugin_dewrap , _(u"dewrap selection")),

@@ -1,31 +1,63 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-########################################
-#  _      _     _   _    _ _   _ _
-# | |    (_)   | | | |  | | | (_) |
-# | |     _ ___| |_| |  | | |_ _| |___
-# | |    | / __| __| |  | | __| | / __|
-# | |____| \__ \ |_| |__| | |_| | \__ \
-# |______|_|___/\__|\____/ \__|_|_|___/
-########################################
-# -*- coding: latin-1 -*-
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
 WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
+
+import re
 import itertools
-from WikidPad.user_extensions.mecplugins.toggle_list_and_table import split_table_to_list, join_list_to_table
-from WikidPad.user_extensions.mecplugins.expand_to_list        import expandtolist
+
+from pydna.utils import parse_text_table
+from pydna.utils import join_list_to_table
+from pydna.utils import expandtolist
+from natsort import natsorted  
+
 def describeMenuItems(wiki):
-    return (	(sortSelection,		_(u"mecplugins|List utils|Sort selected lines")	           , _(u"sort selection")),
-                (invertSelection,	_(u"mecplugins|List utils|Invert selected lines")	   , _(u"invert selection")),
-                (remove_duplicates,     _(u"mecplugins|List utils|Remove duplicate lines")	   , _(u"remove_duplicates")),
-                (ziplists,	        _(u"mecplugins|List utils|Zip lists")	                   , _(u"ziplists")),
-                (unziplists,	        _(u"mecplugins|List utils|Unzip lists")	                   , _(u"unziplists")),
-                (table,	                _(u"mecplugins|List utils|table<->list")                   , _(u"table")),
-                (expand_to_list,        _(u"mecplugins|List utils|expand bracket to list")         , _(u"expand_to_list")), #mecplugins|List utils|
+    return (	(sortSelection,	    _(u"mecplugins|List utils|Sort selected lines")	   , _(u"sort selection")),
+                (invertSelection,	_(u"mecplugins|List utils|Invert selected lines")  , _(u"invert selection")),
+                (remove_duplicates, _(u"mecplugins|List utils|Remove duplicate lines") , _(u"remove_duplicates")),
+                (ziplists,	        _(u"mecplugins|List utils|Zip lists")	           , _(u"ziplists")),
+                (unziplists,	    _(u"mecplugins|List utils|Unzip lists")	           , _(u"unziplists")),
+                (table,	            _(u"mecplugins|List utils|table<->list")           , _(u"table")),
+                (expand_to_list,    _(u"mecplugins|List utils|expand bracket to list") , _(u"expand_to_list")), #mecplugins|List utils|
+                (bullet_list,       _(u"mecplugins|List utils|bullet list")            , _(u"bullet list")), #mecplugins|List utils|
+    
                 )
 
+
 def describeToolbarItems(wiki):
-    return ((table, _(u"table"), _(u"table"), "grid"),)
+    return ((table,       _(u"table"),       _(u"table"),       "mec_table"),
+            (bullet_list, _(u"bullet list"), _(u"bullet list"), "list"     ),
+            )
+
+
+def bullet_list(wiki, evt):
+    if not wiki.getCurrentWikiWord():
+        return
+    start, end = wiki.getActiveEditor().GetSelectionCharPos()
+    content = wiki.getActiveEditor().GetSelectedText()
+
+    contentlist = content.strip().splitlines()
+    
+    wobullets = []
+    newbullets = []
+    
+    all_bullets = all( re.match("^\d+\.",r) for r in contentlist )
+    no_bullets  = not any( re.match("^\d+\.",r) for r in contentlist )
+
+    for i,r in enumerate(contentlist):
+        row = re.split("^\d+\.",r)[-1]
+        wobullets.append(row.strip())
+        newbullets.append(f"{i+1}. {row.strip()}")
+    
+    if all_bullets or no_bullets:
+        contentstring = "\n".join(newbullets)
+    else:
+        contentstring = "\n".join(wobullets)
+    
+    wiki.getActiveEditor().ReplaceSelection(contentstring.strip())
+    wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(contentstring))
+    return 
+
 
 def expand_to_list(wiki, evt):
     if not wiki.getCurrentWikiWord():
@@ -64,7 +96,7 @@ def sortSelection(wiki, evt):
     content = wiki.getActiveEditor().GetSelectedText()
     if not content:
         content = wiki.getActiveEditor().GetText()
-    rows = sorted( content.splitlines(),key=str.lower)
+    rows = natsorted( content.splitlines(),key=str.lower)
 
     wiki.getActiveEditor().ReplaceSelection( u'\n'.join(rows))
     wiki.getActiveEditor().SetSelection(start, end)
@@ -99,7 +131,6 @@ def ziplists(wiki, evt):
     wiki.getActiveEditor().ReplaceSelection("\n".join(merged))
     wiki.getActiveEditor().SetSelectionByCharPos(start, end+2)
 
-
 def unziplists(wiki, evt):
     start, end = wiki.getActiveEditor().GetSelection()
     if wiki.getCurrentWikiWord() is None:
@@ -122,10 +153,14 @@ def table(wiki, evt):
     content = wiki.getActiveEditor().GetSelectedText()
 
     if "\n|||\n" in content or "\n---\n" in content:
-        new_text = join_list_to_table(content)
+        f = join_list_to_table(content)
     else:
-        new_text = split_table_to_list(content)
-    wiki.getActiveEditor().ReplaceSelection(new_text)
-    wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(new_text))
+        f, cs,rs,rc,cr = parse_text_table(content)
+    
+    if content.strip() == f.strip():
+        f = cs
+        
+    wiki.getActiveEditor().ReplaceSelection(f)
+    wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(f))
 
     return

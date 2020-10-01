@@ -2629,7 +2629,7 @@ class _TheHelper:
         """
         Return default text of the "WikiSettings" page for a new wiki.
         """
-        return _("""++ Wiki Settings
+        return _("""## Wiki Settings
 
 These are your default global settings.
 

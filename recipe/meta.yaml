@@ -31,6 +31,7 @@ requirements:
     - pyparsing
     - pillow
     - sqlite
+    - pydna
 
 test:
   imports:
