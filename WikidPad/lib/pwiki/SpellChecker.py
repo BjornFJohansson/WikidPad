@@ -14,20 +14,22 @@ from .wxHelper import GUI_ID, XrcControls, autosizeColumn, wxKeyFunctionSink
 
 from .WikiPyparsing import buildSyntaxNode
 
+from enchant import Dict
+import enchant as EnchantDriver
 
-try:
-    from .EnchantDriver import Dict
-    from . import EnchantDriver
-except (AttributeError, ImportError, WindowsError):
-    import ExceptionLogger
-    ExceptionLogger.logOptionalComponentException(
-            "Initialize enchant driver (spell checking)")
-    Dict = None
+# try:
+#     from .EnchantDriver import Dict
+#     from . import EnchantDriver
+# except (AttributeError, ImportError, WindowsError):
+#     import ExceptionLogger
+#     ExceptionLogger.logOptionalComponentException(
+#             "Initialize enchant driver (spell checking)")
+#     Dict = None
 
-    # traceback.print_exc()
-    
-    # WindowsError may happen if an incomplete enchant installation is found
-    # in the system
+#     # traceback.print_exc()
+
+#     # WindowsError may happen if an incomplete enchant installation is found
+#     # in the system
 
 
 from .DocPages import AliasWikiPage, WikiPage
@@ -63,7 +65,7 @@ class SpellCheckerDialog(wx.Dialog):
         self.currentCheckedWord = None
         self.currentStart = -1
         self.currentEnd = -1
-        
+
         self.session.setCurrentDocPage(
                 self.mainControl.getActiveEditor().getLoadedDocPage())
 
@@ -77,10 +79,10 @@ class SpellCheckerDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.OnReplaceAll, id=GUI_ID.btnReplaceAll)
         self.Bind(wx.EVT_BUTTON, self.OnAddWordGlobal, id=GUI_ID.btnAddWordGlobal)
         self.Bind(wx.EVT_BUTTON, self.OnAddWordLocal, id=GUI_ID.btnAddWordLocal)
-        self.Bind(wx.EVT_BUTTON, self.OnClose, id=wx.ID_CANCEL)        
+        self.Bind(wx.EVT_BUTTON, self.OnClose, id=wx.ID_CANCEL)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-                
+
 #         EVT_LISTBOX(self, GUI_ID.lbReplaceSuggestions,
 #                 self.OnLbReplaceSuggestions)
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnLbReplaceSuggestions,
@@ -95,7 +97,7 @@ class SpellCheckerDialog(wx.Dialog):
         """
         Set dialog controls to show an info/error message
         """
-        
+
         self.ctrls.tfToCheck.SetValue("")
         # Show message in blue
         self.ctrls.tfToCheck.SetDefaultStyle(wx.TextAttr(wx.BLUE))
@@ -105,7 +107,7 @@ class SpellCheckerDialog(wx.Dialog):
         self.ctrls.tfToCheck.SetInsertionPoint(0)
         self.ctrls.tfReplaceWith.SetValue("")
         self.ctrls.lbReplaceSuggestions.DeleteAllItems()
-        
+
         self.ctrls.tfReplaceWith.SetFocus()
 
 
@@ -135,7 +137,7 @@ class SpellCheckerDialog(wx.Dialog):
 
             firstCheckedWikiWord = self.session.findAndLoadNextWikiPage(None,
                     firstCheckedWikiWord)
-                    
+
             if firstCheckedWikiWord is None:
                 self._showInfo(_("No (more) misspelled words found"))
                 return False
@@ -169,7 +171,7 @@ class SpellCheckerDialog(wx.Dialog):
                 if self.ctrls.cbGoToNextPage.GetValue():
                     checkedWikiWord = self.session.findAndLoadNextWikiPage(
                             firstCheckedWikiWord, checkedWikiWord)
-                    
+
                     if checkedWikiWord is None:
                         self._showInfo(_("No (more) misspelled words found"))
                         return False
@@ -213,7 +215,7 @@ class SpellCheckerDialog(wx.Dialog):
 
         contextPre = text[conStart:start]
         contextPost = text[end:end+60]
-        
+
         contextPre = contextPre.split("\n")[-1]
         contextPost = contextPost.split("\n", 1)[0]
 
@@ -226,10 +228,10 @@ class SpellCheckerDialog(wx.Dialog):
         self.ctrls.tfToCheck.AppendText(contextPost)
         # To scroll text to beginning
         self.ctrls.tfToCheck.SetInsertionPoint(0)
-        
+
         # List suggestions
         sugglist = self.session.suggest(spWord)
-        
+
         self.ctrls.lbReplaceSuggestions.DeleteAllItems()
         for s in sugglist:
             self.ctrls.lbReplaceSuggestions.InsertItem(
@@ -275,7 +277,7 @@ class SpellCheckerDialog(wx.Dialog):
 
 
     def OnReplaceAll(self, evt):
-        self.session.addAutoReplace(self.currentCheckedWord, 
+        self.session.addAutoReplace(self.currentCheckedWord,
                 self.ctrls.tfReplaceWith.GetValue())
         self.OnReplace(None)
 
@@ -341,7 +343,7 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
 
         self.enchantDict = None
         self.dictLanguage = None
-        
+
         # For current session
         self.autoReplaceWords = {}
         self.spellChkIgnore = set()  # set of words to ignore during spell checking
@@ -351,7 +353,7 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
         self.globalPwlPage = None
         self.spellChkAddedLocal = None
         self.localPwlPage = None
-        
+
         self.__sinkWikiDocument = wxKeyFunctionSink((
                 ("reread personal word list needed",
                     self.onRereadPersonalWordlistNeeded),
@@ -365,7 +367,7 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
 
 
 #         self.currentDocPage = self.mainControl.getActiveEditor().getLoadedDocPage()
-# 
+#
 #         self._refreshDictionary()
 
     def close(self):
@@ -388,11 +390,11 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
         """
         Generates a clone which can be run in a different thread independently
         of other clones.
-        
+
         """
         result = SpellCheckerSession(self.wikiDocument)
         result.currentDocPage = self.currentDocPage
-        
+
         # For current session
         result.autoReplaceWords = self.autoReplaceWords
         result.spellChkIgnore = self.spellChkIgnore
@@ -554,12 +556,12 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
     def buildUnknownWordList(self, text, threadstop=DUMBTHREADSTOP):
         if not self.hasEnchantDict():
             return buildSyntaxNode([], -1, "unknownSpellList")
-        
+
         docPage = self.getCurrentDocPage()
-        
+
         if docPage is None:
             return buildSyntaxNode([], -1, "unknownSpellList")
-        
+
         result = []
 
         langHelper = wx.GetApp().createWikiLanguageHelper(
@@ -572,7 +574,7 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
 
             start, end, spWord = langHelper.findNextWordForSpellcheck(text,
                     startPos, docPage)
-            
+
 
             if start is None:
                 # End of page reached
@@ -584,13 +586,14 @@ class SpellCheckerSession(MiscEvent.MiscEventSourceMixin):
                 # Ignore if word is in the ignore lists or is seen as correct
                 # by the spell checker
                 continue
-            
+
             # Word is unknown -> add to result
             # It is added as a WikiPyparsing.TerminalNode
-            
+
             result.append(buildSyntaxNode(spWord, start, "unknownSpelling"))
-            
+
 
 
 def isSpellCheckSupported():
     return Dict is not None
+
