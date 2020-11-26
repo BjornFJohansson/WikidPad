@@ -40,7 +40,7 @@ class InlineDiffControl(SearchableScintillaControl):
     def __init__(self, presenter, mainControl, parent, ID):
         SearchableScintillaControl.__init__(self, presenter, mainControl,
                 parent, ID)
-        
+
         self.fromText = None
         self.toText = None
         self.fromVerNo = None
@@ -95,7 +95,7 @@ class InlineDiffControl(SearchableScintillaControl):
         """
         pass
 #         self.calltipThreadHolder.setThread(None)
-# 
+#
 #         self.presenterListener.disconnect()
 
 
@@ -142,11 +142,11 @@ class InlineDiffControl(SearchableScintillaControl):
         self.toText = toText
         self.fromVerNo = fromVerNo
         self.toVerNo = toVerNo
-                       
+
 
         font = self.baseDocPage.getAttributeOrGlobal("font",
                 self.defaultFont)
-                
+
         # this updates depending on attribute "wrap_type" (word or character)
         self.setWrapMode(self.getWrapMode())
 
@@ -163,7 +163,7 @@ class InlineDiffControl(SearchableScintillaControl):
         self.SetReadOnly(False)
         self.setTextScrollProtected(text)
         self.SetReadOnly(readOnly)
-        
+
         self.presenter.setTitle(_("<Diff from %s to %s>") % (fromVerNo, toVerNo))
 
 
@@ -215,19 +215,19 @@ class InlineDiffControl(SearchableScintillaControl):
 
     def _calcProcTokensCharWiseMyersUkkonen(self, fromText, toText):
         from .StringOps import muCompactDiff
-        
+
         cops = muCompactDiff(fromText, toText)
-        
+
         procList = []
         charPos = 0
         fromPos = 0
-        
+
         for op in cops:
             if fromPos < op[1]:    # there was equal text before charPos
                 node = TerminalNode(fromText[fromPos:op[1]], charPos, "equal")
                 procList.append(node)
                 charPos += op[1] - fromPos
-    
+
             if op[0] == 0:  # replace
                 procText = fromText[op[1]:op[2]].replace("\n", "\n ")
                 node = TerminalNode(procText, charPos, "delete")
@@ -250,7 +250,7 @@ class InlineDiffControl(SearchableScintillaControl):
                 charPos += len(procText)
 
             fromPos = op[1]
-    
+
         if fromPos < len(fromText):
             node = TerminalNode(fromText[fromPos:], charPos, "equal")
             procList.append(node)
@@ -267,24 +267,24 @@ class InlineDiffControl(SearchableScintillaControl):
         divided = _WORD_DIVIDER.split(text)
         if len(divided) == 0:
             return [], []
-        
+
         if divided[0] == "":
             del divided[0]
             if len(divided) == 0:
                 return [], []
-        
+
         if divided[-1] == "":
             del divided[-1]
             if len(divided) == 0:
                 return [], []
-        
-        posIdx = [None] * (len(divided) + 1)    # len(divided)   # 
+
+        posIdx = [None] * (len(divided) + 1)    # len(divided)   #
         pos = 0
-        
+
         for i, s in enumerate(divided):
             posIdx[i] = pos
             pos += len(s)
-            
+
         posIdx[-1] = pos
 
         return divided, posIdx
@@ -293,7 +293,7 @@ class InlineDiffControl(SearchableScintillaControl):
     def _calcProcTokensWordWise(self, fromText, toText):
         fromDivided, fromPosIdx = self._divideToWords(fromText)
         toDivided, toPosIdx = self._divideToWords(toText)
-        
+
         sm = difflib.SequenceMatcher(None, fromDivided, toDivided, autojunk=False)
         ops = sm.get_opcodes()
 
@@ -346,13 +346,13 @@ class InlineDiffControl(SearchableScintillaControl):
     def _calcViewStylebytes(self, text):
         stylebytes = StyleCollector(wx.stc.STC_STYLE_DEFAULT, text,
                 bytelenSct)
-                
+
         _NODENAME_TO_STYLEBYTE = self._NODENAME_TO_STYLEBYTE
-        
+
         for node in self.procTokens:
             stylebytes.bindStyle(node.pos, node.strLength,
                     _NODENAME_TO_STYLEBYTE[node.name])
-        
+
         self.stylebytes = stylebytes.value()
 
 
@@ -423,7 +423,7 @@ class InlineDiffControl(SearchableScintillaControl):
 
     def setStyles(self, styleFaces=None):
         self.SetStyleBits(5)
-        
+
         if styleFaces is None:
             styleFaces = self.mainControl.getPresentationExt().faces
 
@@ -437,7 +437,7 @@ class InlineDiffControl(SearchableScintillaControl):
             if type == FormatTypes.Default:
                 for i in range(3):
                     self.StyleSetSpec(i, style)
-                
+
                 break
 
 #             if type == wx.stc.STC_STYLE_CALLTIP:
@@ -470,13 +470,13 @@ class InlineDiffControl(SearchableScintillaControl):
         """
         Stops further styling requests from Scintilla until text is modified
         """
-        self.StartStyling(self.GetLength(), 0xff)
+        self.StartStyling(self.GetLength() # , 0xff)  # changed here !
         self.SetStyling(0, 0)
 
 
     def applyStyling(self, stylebytes, styleMask=0xff):
         if len(stylebytes) == self.GetLength():
-            self.StartStyling(0, styleMask)
+            self.StartStyling(0) # , styleMask) # changed here !
             self.SetStyleBytes(len(stylebytes), stylebytes)
 
 
@@ -485,7 +485,7 @@ class InlineDiffControl(SearchableScintillaControl):
             lastPos = self.GetCurrentPos()
             scrollPosX = self.GetScrollPos(wx.HORIZONTAL)
             scrollPosY = self.GetScrollPos(wx.VERTICAL)
-            
+
             self.SetText(text)
 
             self.GotoPos(lastPos)
@@ -497,7 +497,7 @@ class InlineDiffControl(SearchableScintillaControl):
         if len(text) == 0:
             return
 
-        cbIcept = self.mainControl.getClipboardInterceptor()  
+        cbIcept = self.mainControl.getClipboardInterceptor()
         if cbIcept is not None:
             cbIcept.informCopyInWikidPadStart(text=text)
             try:
@@ -514,7 +514,7 @@ class InlineDiffControl(SearchableScintillaControl):
         menu = wx.Menu()
 
         appendToMenuByMenuDesc(menu, _CONTEXT_MENU_INTEXT_BASE)
-        
+
         self.PopupMenu(menu)
         menu.Destroy()
 
@@ -525,17 +525,17 @@ class InlineDiffControl(SearchableScintillaControl):
 #         # create the styles
 #         if styleFaces is None:
 #             styleFaces = self.presenter.getDefaultFontFaces()
-# 
+#
 #         config = self.presenter.getConfig()
 #         styles = self.presenter.getMainControl().getPresentationExt()\
 #                 .getStyles(styleFaces, config)
-# 
+#
 #         for type, style in styles:
 #             self.StyleSetSpec(type, style)
-# 
+#
 #             if type == wx.stc.STC_STYLE_CALLTIP:
 #                 self.CallTipUseStyle(10)
-# 
+#
 #         self.IndicatorSetStyle(2, wx.stc.STC_INDIC_SQUIGGLE)
 #         self.IndicatorSetForeground(2, wx.Colour(255, 0, 0))
 

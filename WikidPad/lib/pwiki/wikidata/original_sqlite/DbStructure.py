@@ -32,13 +32,13 @@ class ConnectWrapBase:
     def __init__(self, connection):
         self.__dict__["dbConn"] = connection
         self.__dict__["dbCursor"] = connection.cursor()
-     
+
 #         self.__dict__["execute"] = self.dbCursor.execute
 #         self.__dict__["executemany"] = self.dbCursor.executemany
 #         self.__dict__["fetchone"] = self.dbCursor.fetchone
 #         self.__dict__["fetchall"] = self.dbCursor.fetchall
 
-   
+
     def __setattr__(self, attr, value):
         setattr(self.dbCursor, attr, value)
 
@@ -77,7 +77,7 @@ class ConnectWrapBase:
 #             self.dbCursor.execute(sql, params, typeDetect=sqlite.TYPEDET_FIRST)
 #         else:
 #             self.dbCursor.execute(sql, typeDetect=sqlite.TYPEDET_FIRST)
-# 
+#
 #         return iter(self.dbCursor)
 
 
@@ -85,7 +85,7 @@ class ConnectWrapBase:
         "utility method, executes the sql, returns query result"
         data = self.execSqlQuery(sql, params)
         return [row[0] for row in data]
-        
+
 
     def execSqlQuerySingleItem(self, sql, params=None, default=None):
         """
@@ -101,10 +101,10 @@ class ConnectWrapBase:
         row = self.fetchone()
         if row is None:
             return default
-            
+
         return row[0]
 
-        
+
     def execSqlNoError(self, sql):
         """
         Ignore sqlite errors on execution
@@ -140,13 +140,13 @@ class ConnectWrapBase:
         on deletion, the connection is not.
         """
         self.closeCursor()
-     
+
     def getConnection(self):
         """
         Return wrapped DB-API connection
         """
         return self.dbConn
-        
+
     def getCursor(self):
         return self.dbCursor
 
@@ -158,7 +158,7 @@ class ConnectWrapSyncCommit(ConnectWrapBase):
     """
     def __init__(self, connection):
         ConnectWrapBase.__init__(self, connection)
-        
+
         # To make access a bit faster
         self.__dict__["commit"] = self.dbConn.commit
         self.__dict__["syncCommit"] = self.dbConn.commit
@@ -175,7 +175,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
     """
     def __init__(self, connection):
         ConnectWrapBase.__init__(self, connection)
-        
+
         self.__dict__["accessLock"] = threading.RLock()
         self.__dict__["commitTimer"] = None
         self.__dict__["commitNeeded"] = False
@@ -200,14 +200,14 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
         Called by timer to commit.
         """
         self.accessLock.acquire()
-        try:    
+        try:
             if not self.commitNeeded:
                 return
             self.dbConn.commit()
             self.commitNeeded = False
         finally:
             self.accessLock.release()
-        
+
 
     def syncCommit(self):
         """
@@ -225,7 +225,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
 
     def rollback(self):
         self.accessLock.acquire()
-        try:    
+        try:
             if self.commitTimer is not None and self.commitTimer.isAlive():
                 self.commitTimer.cancel()
             self.dbConn.rollback()
@@ -279,7 +279,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
 #             self.dbCursor.execute(sql, params, typeDetect=sqlite.TYPEDET_FIRST)
 #         else:
 #             self.dbCursor.execute(sql, typeDetect=sqlite.TYPEDET_FIRST)
-# 
+#
 #         return iter(self.dbCursor)
 
 
@@ -290,7 +290,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
             return ConnectWrapBase.execSqlQuerySingleColumn(self, sql, params)
         finally:
             self.accessLock.release()
-        
+
 
     def execSqlQuerySingleItem(self, sql, params=None, default=None):
         """
@@ -305,7 +305,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
         finally:
             self.accessLock.release()
 
-        
+
     def execSqlNoError(self, sql):
         """
         Ignore sqlite errors on execution
@@ -327,7 +327,7 @@ class ConnectWrapAsyncCommit(ConnectWrapBase):
         finally:
             self.accessLock.release()
 
-        
+
     def closeCursor(self):
         self.accessLock.acquire()
         try:
@@ -361,7 +361,7 @@ VERSION_READCOMPAT = 3
 # Helper for the following definitions
 class t:
     pass
-    
+
 t.r = "real not null default 0.0"
 t.i = "integer not null default 0"
 t.pi = "integer primary key not null"
@@ -396,8 +396,8 @@ TABLE_DEFINITIONS = {
         ("firstcharpos", t.imo),  # Position of the link from word to relation in chars
         ("charlength", t.imo)  # Length of the link
         ),
-    
-    
+
+
     "wikiwordattrs": (     # Cache, previous name: "wikiwordprops"
         ("word", t.t),
         ("key", t.t),
@@ -422,13 +422,13 @@ TABLE_DEFINITIONS = {
         ("charlength", t.imo)  # Length of the todo
         ),
 
-    
-    "search_views": (     # Deleted since 2.0alpha1. For updating format only 
+
+    "search_views": (     # Deleted since 2.0alpha1. For updating format only
         ("title", t.pt),
         ("datablock", t.b)
         ),
-    
-    
+
+
     "settings": (     # Essential
         ("key", t.pt),    # !!! primary key?
         ("value", t.t)
@@ -491,7 +491,7 @@ def rebuildIndices(connwrap):
     connwrap.execSqlNoError("drop index wikiwordmatchterms_matchtermnormcase")
     connwrap.execSqlNoError("drop index wikirelations_pkey")
     connwrap.execSqlNoError("drop index wikirelations_word")
-    connwrap.execSqlNoError("drop index wikirelations_relation")    
+    connwrap.execSqlNoError("drop index wikirelations_relation")
     connwrap.execSqlNoError("drop index wikiwordattrs_word")
     connwrap.execSqlNoError("drop index wikiwordattrs_keyvalue")
     connwrap.execSqlNoError("drop index datablocks_unifiedname")
@@ -519,7 +519,7 @@ def recreateCacheTables(connwrap):
     """
     CACHE_TABLES = ("wikirelations", "wikiwordattrs", "todos",
             "wikiwordmatchterms")
-    
+
     for tn in CACHE_TABLES:
         connwrap.execSqlNoError("drop table %s" % tn)
 
@@ -549,7 +549,7 @@ def changeTableSchema(connwrap, tablename, schema, forcechange=False):
     The commit-state of the connection is not modified
 
     Indices may need separate recreation.
-    
+
     connwrap -- a ConnectWrap object
     schema -- sequence of tuples (<col name>, <col definition>)
         with <col definition>: type and constraints of the column
@@ -566,7 +566,7 @@ def changeTableSchema(connwrap, tablename, schema, forcechange=False):
     sqlcreate = "create table %s (" % tablename
     sqlcreate += ", ".join(["%s %s" % sc for sc in schema])
     sqlcreate += ")"
-    
+
 
     # Test if table already exists
 
@@ -582,25 +582,25 @@ def changeTableSchema(connwrap, tablename, schema, forcechange=False):
 
 
     # Table exists, so retrieve list of columns
-    
+
     # A pragma statement would trigger a commit but we don't want this
     oldAc = connwrap.getConnection().getAutoCommit()
     # If autoCommit is on, no automatic begin or commit statements will
     # be created by the DB-interface (this sounds contradictional, but is true
     # because sqlite itself is then responsible for the automatic commit)
-    
+
     # Without silent=True, the command would create a commit here
     connwrap.getConnection().setAutoCommit(True, silent=True)
 
     # This statement would automatically issue a commit if auto commit is off
     connwrap.execSql("pragma table_info(%s)" % tablename)
     oldcolumns = [r[1] for r in connwrap.fetchall()]
-    
+
     # Set autoCommit state back
     connwrap.getConnection().setAutoCommit(oldAc, silent=True)
-    
 
-    # Which columns have old and new schema in common?    
+
+    # Which columns have old and new schema in common?
     intersect = []
     for n, d in schema:
         if n in oldcolumns:
@@ -638,11 +638,11 @@ def createWikiDB(wikiName, dataDir, overwrite=False, wikiDocument=None):
     creates the initial db
     Warning: If overwrite is True, a previous file will be deleted!
     """
-    
+
     if (wikiDocument is not None):
         dbPath = wikiDocument.getWikiConfig().get("wiki_db", "db_filename",
                     "").strip()
-                    
+
         if (dbPath == ""):
             dbPath = "wikiovw.sli"
     else:
@@ -662,7 +662,7 @@ def createWikiDB(wikiName, dataDir, overwrite=False, wikiDocument=None):
         try:
             for tn in MAIN_TABLES:
                 changeTableSchema(connwrap, tn, TABLE_DEFINITIONS[tn])
-    
+
             connwrap.executemany("insert or replace into settings(key, value) "+
                         "values (?, ?)", (
                     ("formatver", str(VERSION_DB)),  # Version of database format the data was written
@@ -674,7 +674,7 @@ def createWikiDB(wikiName, dataDir, overwrite=False, wikiDocument=None):
 
             rebuildIndices(connwrap)
             connwrap.syncCommit()
-            
+
         finally:
             # close the connection
             connwrap.close()
@@ -740,10 +740,10 @@ def utf8_bind_fctfinder(stmt, parno, data):
 
     if type(data) is str:
         return bind_utftext
-            
+
     return sqlite.def_bind_fctfinder(stmt, parno, data)
 
-    
+
 
 def utf8_column_fctfinder(stmt, col):
     """
@@ -753,9 +753,9 @@ def utf8_column_fctfinder(stmt, col):
     result = sqlite.def_column_fctfinder(stmt, col)
     if result != column_text:
         return result
-        
+
     return column_utftext
-    
+
 
 def registerSqliteFunctions(connwrap):
     """
@@ -800,12 +800,12 @@ def checkDatabaseFormat(connwrap):
     Check the database format.
     Returns: 0: Up to date,  1: Update needed,  2: Unknown format, update not possible
     """
-    
+
 #     indices = connwrap.execSqlQuerySingleColumn(
 #             "select name from sqlite_master where type='index'")
 #     tables = connwrap.execSqlQuerySingleColumn(
 #             "select name from sqlite_master where type='table'")
-# 
+#
 #     indices = map(string.upper, indices)
 #     tables = map(string.upper, tables)
 
@@ -818,10 +818,10 @@ def checkDatabaseFormat(connwrap):
 
     if writecompatver > VERSION_WRITECOMPAT:
         # TODO: Check compatibility
-        
+
         return 2, _("Database has unknown format version='%i'") \
                 % formatver
-                
+
     if formatver < VERSION_DB:
         return 1, _("Update needed, current format version='%i'") \
                 % formatver
@@ -835,7 +835,7 @@ def updateDatabase(connwrap, dataDir, pagefileSuffix):
     should have returned 1 before calling this function)
     """
     connwrap.syncCommit()
-    
+
     # Always remember that there is no automatic unicode<->utf-8 conversion
     # during this function!
 
@@ -843,7 +843,7 @@ def updateDatabase(connwrap, dataDir, pagefileSuffix):
 
     if formatver == 0:
         # Insert in table wikiwords column wordnormcase
-        changeTableSchema(connwrap, "wikiwords", 
+        changeTableSchema(connwrap, "wikiwords",
                 TABLE_DEFINITIONS["wikiwords"])
 
         formatver = 1
@@ -892,7 +892,7 @@ def updateDatabase(connwrap, dataDir, pagefileSuffix):
             except (IOError, WindowsError):
                 traceback.print_exc()
                 continue
-            
+
             connwrap.execSql("update wikiwords set filepath = ?, "
                     "filenamelowercase = ?, filesignature = ? "
                     "where word = ?", (filename.encode("utf-8"),
@@ -903,12 +903,12 @@ def updateDatabase(connwrap, dataDir, pagefileSuffix):
         for funcWord in funcWords:
             if funcWord not in ("[TextBlocks]", "[PWL]", "[CCBlacklist]"):
                 continue # Error ?!
-            
+
             unifName = "wiki/" + funcWord[1:-1]
             fullPath = join(dataDir, funcWord + pagefileSuffix)
-            
+
             icf = iterCompatibleFilename(unifName, ".data")
-            
+
             for i in range(10):  # Actual "while True", but that's too dangerous
                 newFilename = next(icf)
                 newPath = join(dataDir, newFilename)
@@ -936,10 +936,10 @@ def updateDatabase(connwrap, dataDir, pagefileSuffix):
                     continue
 
         formatver = 2
-        
+
     # --- WikiPad 2.0alpha1 reached (formatver=2, writecompatver=2,
     #         readcompatver=2) ---
-    
+
     if formatver == 2:
         # Recreate table "todos"
         connwrap.execSql("drop table todos;")
@@ -1016,37 +1016,37 @@ Schema changes in WikidPad:
         ("created", t.t),
         ("modified", t.t)
         ),
-    
-    
+
+
     "wikirelations": (     # Cache
         ("word", t.t),
         ("relation", t.t),
         ("firstcharpos", t.imo)  # Position of the link from word to relation in chars
         ),
-    
-    
+
+
     "wikiwordprops": (     # Cache
         ("word", t.t),
         ("key", t.t),
         ("value", t.t),
         ("firstcharpos", t.imo)  # Position of the property in page in chars
         ),
-    
-    
+
+
     "todos": (     # Cache
         ("word", t.t),
         ("todo", t.t),
         ("firstcharpos", t.imo)  # Position of the todo in page in chars
         ),
-        
-    
+
+
     "search_views": (     # Essential
 ##        ("id", t.pi),   # ??????
         ("title", t.pt),
         ("datablock", t.b)
         ),
-    
-    
+
+
     "settings": (     # Essential
         ("key", t.pt),    # !!! primary key?
         ("value", t.t)
@@ -1070,7 +1070,7 @@ a particular page (window scroll and cursor position). Its content is
 en/decoded by the WikiDocument.
 
 Added column "wordnormcase" contains byte string returned by the normCase method
-of a Collator object (see "Localization.py"). The column's content should 
+of a Collator object (see "Localization.py"). The column's content should
 be recreated at a rebuild.
 
 Added "locale" key in "settings" table. This is the name of the locale used to
@@ -1079,9 +1079,9 @@ invalid data.
 
 
 ++ 1.9final to 2.0alpha1 (formatver=2):
-    
+
     Table "search_views" removed (taken over by "datablocks")
-    
+
     Table "wikiwords" modified:
         "wordnormcase" removed (taken over by table "wikiwordmatchterms")
         "visited" added, float, time as returned by time.time()
@@ -1131,7 +1131,7 @@ invalid data.
         unifiedname: unistring with unified name of the data
         data: binary data
 
-        
+
     Table "datablocksexternal" added:
         Store links to e.g. functional pages, revision infos here
         (not applicable for compact sqlite db)
@@ -1156,12 +1156,12 @@ invalid data.
 
 
 ++ 2.0 to 2.1alpha1 (formatver=3):
-    
+
     Table "todos" modified:
         "todo" column replaced by "key" and "value" columns
 
     Table "wikiwordprops" renamed to "wikiwordattrs"
-    
+
     Tables "todos", "wikiwordattrs", "wikirelations", "wikiwordmatchterms":
         charlength: Integer. Length of the selection whose position is given in
             respective firstcharpos. Invalid if firstcharpos is -1.

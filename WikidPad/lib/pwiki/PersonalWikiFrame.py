@@ -84,10 +84,10 @@ class KeyBindingsCache:
     def __init__(self, kbModule):
         self.kbModule = kbModule
         self.accelPairCache = {}
-        
+
     def __getattr__(self, attr):
         return getattr(self.kbModule, attr, "")
-    
+
     def get(self, attr, default=None):
         return getattr(self.kbModule, attr, None)
 
@@ -156,7 +156,7 @@ class PersonalWikiFrame(wx.Frame, MiscEventSourceMixin):
         # if the file doesn't exist yet.
         tbLoc = os.path.join(self.globalConfigSubDir, "[TextBlocks].wiki")
         if not os.path.exists(pathEnc(tbLoc)):
-            StringOps.writeEntireFile(tbLoc, 
+            StringOps.writeEntireFile(tbLoc,
 """importance: high;a=[importance: high]\\n
 importance: low;a=[importance: low]\\n
 tree_position: 0;a=[tree_position: 0]\\n
@@ -167,7 +167,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         # Listen to application events
         wx.GetApp().getMiscEvent().addListener(self)
-        
+
         self.wikiPadHelp = os.path.join(self.wikiAppDir, 'WikidPadHelp',
                 'WikidPadHelp.wiki')
         self.windowLayouter = None  # will be set by initializeGui()
@@ -185,7 +185,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.printer = None  # Stores Printer object (initialized on demand)
         self.continuousExporter = None   # Exporter-derived object if continuous export is in effect
         self.statusBarStack = []  # Internal stack with statusbar information
-        
+
         self.mainAreaPanel = None
         self.mainmenu = None
 
@@ -196,15 +196,15 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.textBlocksActivation = wxHelper.IdRecycler() # See self.fillTextBlocksMenu()
 
         self.favoriteWikisMenu = None
-        self.favoriteWikisActivation = wxHelper.IdRecycler() 
+        self.favoriteWikisActivation = wxHelper.IdRecycler()
 
         self.pluginsMenu = None
         self.fastSearchField = None   # Text field in toolbar
-        
+
         self.cmdIdToIconNameForAttribute = None # Maps command id (=menu id) to icon name
                                     # needed for "Editor"->"Add icon attribute"
         self.cmdIdToColorNameForAttribute = None # Same for color names
-        
+
         self.cmdIdToInsertString = None
 
         self.sleepMode = True
@@ -218,7 +218,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         # State here: Global configuration available
 
         self.loadFixedExtensions()
-        
+
         self.nonCoreMenuItems = PWikiNonCore(self, self)
 
         # setup plugin manager and hooks API
@@ -243,7 +243,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     "openedWiki", "openWikiWord", "newWikiWord",
                     "openedWikiWord", "savingWikiWord", "savedWikiWord",
                     "renamedWikiWord", "deletedWikiWord", "exit",
-                    "closingWiki", "droppingWiki", "closedWiki", 
+                    "closingWiki", "droppingWiki", "closedWiki",
                     "previewPageNavigation", "previewPageLoaded",
                     ] ),
 
@@ -272,17 +272,17 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     )
                 )
 
-        self.viPluginFunctions = plm.registerSimplePluginAPI(("ViFunctions",1), 
+        self.viPluginFunctions = plm.registerSimplePluginAPI(("ViFunctions",1),
                                 ("describeViFunctions",))
 
         # interfaces for menu and toolbar plugins
-        self.menuFunctions = plm.registerSimplePluginAPI(("MenuFunctions",1), 
+        self.menuFunctions = plm.registerSimplePluginAPI(("MenuFunctions",1),
                                 ("describeMenuItems",))
-        
+
         self.toolbarFunctions = PluginManager.PluginAPIAggregation(
                 plm.registerWrappedPluginAPI(("ToolbarFunctions",2),
                                 describeToolbarItems="describeToolbarItemsV02"),
-                plm.registerSimplePluginAPI(("ToolbarFunctions",1), 
+                plm.registerSimplePluginAPI(("ToolbarFunctions",1),
                                 ("describeToolbarItems",))
                 )
 
@@ -306,7 +306,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if history:
             self.wikiHistory = history.split(";")
 
-        # clipboard catcher  
+        # clipboard catcher
         if WindowsHacks is not None:
             self.clipboardInterceptor = WindowsHacks.ClipboardCatchIceptor(self)
             self.browserMoveInterceptor = WindowsHacks.BrowserMoveIceptor(self)
@@ -336,7 +336,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         # get the position of the splitter
         self.lastSplitterPos = self.configuration.getint("main", "splitter_pos")
-                
+
         # if a wiki to open wasn't passed in use the last_wiki from the global config
         self.cmdLineAction = cmdLineAction
         wikiToOpen = cmdLineAction.wikiToOpen
@@ -354,7 +354,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         # initialize the GUI
         self.initializeGui()
-        
+
         # Minimize on tray?
         self.tbIcon = None
         self.setShowOnTray()
@@ -379,7 +379,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if wikiToOpen:
             # Resolve if relative
             wikiToOpen = os.path.join(self.wikiAppDir, wikiToOpen)
-            
+
             if os.path.exists(pathEnc(wikiToOpen)):
 #                tracer.runctx('self.openWiki(wikiToOpen, wikiWordsToOpen, anchorToOpen=anchorToOpen)', globals(), locals())
                 self.openWiki(wikiToOpen, wikiWordsToOpen,
@@ -402,7 +402,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         # State here: Wiki opened (if possible), additional command line actions
         # not done yet.
-        
+
         if cmdLineAction.rebuild == cmdLineAction.NOT_SET and \
                 self.isWikiLoaded():
             cmdLineAction.rebuild = self.getConfig().getint("main",
@@ -418,7 +418,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.userActionCoord.applyConfiguration()
 
         self.Show(True)
-        
+
         self.Bind(EVT_REMOTE_COMMAND,  self.OnRemoteCommand)
 
         # Inform that idle handlers and window-specific threads can now be started
@@ -478,7 +478,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
     def getMainAreaPanel(self):
         return self.mainAreaPanel
-        
+
     def isMainWindowConstructed(self):
         return self.mainWindowConstructed
 
@@ -528,7 +528,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             return None
 
         return self.wikiDocument.getWikiConfigPath()
-        
+
     def getWikiDefaultWikiLanguage(self):
         if self.wikiDocument is None:
             # No wiki loaded, so take users default
@@ -559,7 +559,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
     def getKeyBindings(self):
         return self.keyBindings
-        
+
     def getClipboardInterceptor(self):
         return self.clipboardInterceptor
 
@@ -601,13 +601,13 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         """
         Used for plugins of type "MenuFunctions" or "ToolbarFunctions".
         Tries to find and return an appropriate wx.Bitmap object.
-        
+
         An icon descriptor can be one of the following:
             - None
             - a wx.Bitmap object
             - the filename of a bitmap
             - a tuple of filenames, first existing file is used
-        
+
         If no bitmap can be found, default is returned instead.
         """
         return wx.GetApp().getIconCache().resolveIconDescriptor(desc, default)
@@ -618,7 +618,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         Special event handler for events which must be handled by the
         window which has currently the focus (e.g. "copy to clipboard" which
         must be done by either editor or HTML preview).
-        
+
         These events are sent further to the currently focused window.
         If they are not consumed they go up to the parent window until
         they are here again (make a "roundtrip").
@@ -664,7 +664,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         dpp = self.getCurrentDocPagePresenter()
         if dpp is None:
             return (0, 0)
-        
+
         return dpp.getPageHistory().getDeepness()
 
 
@@ -691,7 +691,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             menuID=None, updatefct=None, kind=wx.ITEM_NORMAL):
         if menuID is None:
             menuID = wx.NewId()
-            
+
         if kind is None:
             kind = wx.ITEM_NORMAL
 
@@ -721,7 +721,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
     def addMenuItemByInternalDescriptor(self, menu, desc):
         if desc is None:
             return
-        
+
         def internalAddMenuItem(function, label, statustext, shortcut=None,
                 icondesc=None, menuID=None, updateFunction=None, kind=None,
                 *dummy):
@@ -821,22 +821,22 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     _('Current Wiki Word as HTML Page'),
                     _('Publish Current Wiki Word as HTML Page'), self.OnExportWiki,
                     menuID=GUI_ID.MENU_EXPORT_WORD_AS_PAGE)
-    
+
             self.addMenuItem(exportWikisMenu,
                     _('Sub-Tree as Single HTML Page'),
                     _('Publish Sub-Tree as Single HTML Page'), self.OnExportWiki,
                     menuID=GUI_ID.MENU_EXPORT_SUB_AS_PAGE)
-    
+
             self.addMenuItem(exportWikisMenu,
                     _('Sub-Tree as Set of HTML Pages'),
                     _('Publish Sub-Tree as Set of HTML Pages'), self.OnExportWiki,
                     menuID=GUI_ID.MENU_EXPORT_SUB_AS_PAGES)
-    
+
 #             self.addMenuItem(exportWikisMenu,
 #                     _(u'Export Wiki to .wiki files'),
 #                     _(u'Export Wiki to .wiki files in UTF-8'), self.OnExportWiki,
 #                     menuID=GUI_ID.MENU_EXPORT_WHOLE_AS_RAW)
-    
+
             self.addMenuItem(exportWikisMenu, _('Other Export...'),
                     _('Open general export dialog'), self.OnCmdExportDialog)
 
@@ -876,7 +876,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         lambda evt: self.rebuildWiki(onlyDirty=False),
                         menuID=GUI_ID.MENU_REBUILD_WIKI,
                         updatefct=(self.OnUpdateDisReadOnlyWiki,))
-                
+
                 self.addMenuItem(maintenanceMenu, _('&Update cache...'),
                         _('Update cache where marked as not up to date'),
                         lambda evt: self.rebuildWiki(onlyDirty=True),
@@ -907,7 +907,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             self.addMenuItem(maintenanceMenu, _('Show job count...'),
                     _('Show how many update jobs are waiting in background'),
                     self.OnCmdShowWikiJobDialog)
-                    
+
             maintenanceMenu.AppendSeparator()
 
 
@@ -919,9 +919,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             self.addMenuItem(maintenanceMenu, _('Reconnect...'),
                     _('Reconnect to database after connection failure'),
                     self.OnCmdReconnectDatabase)
-                    
+
             maintenanceMenu.AppendSeparator()
-    
+
             if wikiData.checkCapability("compactify") == 1:
                 self.addMenuItem(maintenanceMenu, _('&Optimise Database'),
                         _('Free unused space in database'),
@@ -968,15 +968,15 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         # get info for any plugin menu items and create them as necessary
         menuItems = reduce(lambda a, b: a+list(b),
                 self.menuFunctions.describeMenuItems(self), [])
-        
+
         subStructure = {}
 
         if len(menuItems) > 0:
             def addPluginMenuItem(function, label, statustext, icondesc=None,
                     menuID=None, updateFunction=None, kind=None, *dummy):
-                
+
                 labelComponents = label.split("|")
-                
+
                 sub = subStructure
                 menu = pluginMenu
 
@@ -987,7 +987,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         menu.AppendSubMenu(newMenu, comp)
                         newSub = {}
                         sub[comp] = newMenu, newSub
-                    
+
                     menu = newMenu
                     sub = newSub
 
@@ -1067,7 +1067,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         Constructs the text blocks menu submenu and necessary subsubmenus.
         If this is called more than once, previously used menu ids are reused
         for the new menu.
-        
+
         menu -- An empty wx.Menu to add items and submenus to
         """
         # Clear IdRecycler
@@ -1120,11 +1120,11 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             self.addText(entry.value, replaceSel=True)
 
 
-    
+
     def OnRereadTextBlocks(self, evt):
         self.rereadTextBlocks()
-        
-        
+
+
     def rereadTextBlocks(self):
         """
         Starts rereading and rebuilding of the text blocks submenu
@@ -1141,7 +1141,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         Constructs the favorite wikis menu and necessary submenus.
         If this is called more than once, previously used menu ids are reused
         for the new menu.
-        
+
         menu -- An empty wx.Menu to add items and submenus to
         """
         self.favoriteWikisActivation.clearAssoc()
@@ -1222,7 +1222,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         clearMenu(self.favoriteWikisMenu)
         self.fillFavoriteWikisMenu(self.favoriteWikisMenu)
-        
+
         # Update also toolbar by recreating
         if self.getShowToolbar():
             self.Freeze()
@@ -1245,7 +1245,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         entry = TextTree.FavoriteWikisEntry(title, "", "",
                 self._getStorableWikiPath(path))
         entry = TextTree.AddWikiToFavoriteWikisDialog.runModal(self, -1, entry)
-        
+
         if entry is not None:
             page = WikiDocument.getGlobalFuncPage("global/FavoriteWikis")
             text = page.getLiveText()
@@ -1309,9 +1309,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         wikiMenu = self.buildWikiMenu()
 
-        
+
         editMenu = wx.Menu()
-        
+
         self.addMenuItem(editMenu, _('&Undo') + '\t' + self.keyBindings.Undo,
                 _('Undo'), self._OnRoundtripEvent, menuID=GUI_ID.CMD_UNDO,
                 updatefct=(self.OnUpdateDisReadOnlyPage, self.OnUpdateDisNotTextedit))
@@ -1319,12 +1319,12 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.addMenuItem(editMenu, _('&Redo') + '\t' + self.keyBindings.Redo,
                 _('Redo'), self._OnRoundtripEvent, menuID=GUI_ID.CMD_REDO,
                 updatefct=(self.OnUpdateDisReadOnlyPage, self.OnUpdateDisNotTextedit))
- 
+
         editMenu.AppendSeparator()
 
         # TODO: Incremental search
-        
-        self.addMenuItem(editMenu, _('&Search and Replace...') + '\t' + 
+
+        self.addMenuItem(editMenu, _('&Search and Replace...') + '\t' +
                 self.keyBindings.FindAndReplace,
                 _('Search and replace inside current page'),
                 lambda evt: self.showSearchReplaceDialog(),
@@ -1378,25 +1378,25 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             editMenu.AppendSubMenu(clipCatchMenu, _('C&lipboard Catcher'))
 
             self.addMenuItem(clipCatchMenu, _('Set at Page') + '\t' +
-                    self.keyBindings.CatchClipboardAtPage, 
+                    self.keyBindings.CatchClipboardAtPage,
                     _("Text copied to clipboard is also appended to this page"),
-                    self.OnClipboardCatcherAtPage, 
+                    self.OnClipboardCatcherAtPage,
                     menuID=GUI_ID.CMD_CLIPBOARD_CATCHER_AT_PAGE,
                     updatefct=self.OnUpdateClipboardCatcher,
                     kind=wx.ITEM_RADIO)
 
             self.addMenuItem(clipCatchMenu, _('Set at Cursor') + '\t' +
-                    self.keyBindings.CatchClipboardAtCursor, 
+                    self.keyBindings.CatchClipboardAtCursor,
                     _("Text copied to clipboard is also added to cursor position"),
-                    self.OnClipboardCatcherAtCursor, 
+                    self.OnClipboardCatcherAtCursor,
                     menuID=GUI_ID.CMD_CLIPBOARD_CATCHER_AT_CURSOR,
                     updatefct=self.OnUpdateClipboardCatcher,
                     kind=wx.ITEM_RADIO)
 
             self.addMenuItem(clipCatchMenu, _('Set Off') + '\t' +
-                    self.keyBindings.CatchClipboardOff, 
+                    self.keyBindings.CatchClipboardOff,
                     _("Switch off clipboard catcher"),
-                    self.OnClipboardCatcherOff, 
+                    self.OnClipboardCatcherOff,
                     menuID=GUI_ID.CMD_CLIPBOARD_CATCHER_OFF,
                     updatefct=self.OnUpdateClipboardCatcher,
                     kind=wx.ITEM_RADIO)
@@ -1404,7 +1404,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         logLineMoveMenu = wx.Menu()
         editMenu.AppendSubMenu(logLineMoveMenu, _('&Line Move'))
-        
+
         self.addMenuItem(logLineMoveMenu, _('&Up') +
                 '\t' + self.keyBindings.LogLineUp,
                 _("Move line upward"), self._OnRoundtripEvent,
@@ -1439,7 +1439,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
             self.addMenuItem(editMenu, _("Spell Check While Type"),
                     _("Set if editor should do spell checking during typing"),
-                    self.OnCmdCheckSpellCheckWhileType, 
+                    self.OnCmdCheckSpellCheckWhileType,
                     updatefct=(self.OnUpdateDisNotTextedit, self.OnUpdateSpellCheckWhileType),
                     kind=wx.ITEM_CHECK)
 
@@ -1463,12 +1463,12 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 menuItem/mainControl/builtin/insertCurrentDate
                 """)
 
-#         self.addMenuItem(insertMenu, _(u'&File URL...') + '\t' + 
+#         self.addMenuItem(insertMenu, _(u'&File URL...') + '\t' +
 #                 self.keyBindings.AddFileUrl, _(u'Use file dialog to add URL'),
 #                 self.nonCore.OnShowAddFileUrlDialog,
 #                 updatefct=(self.OnUpdateDisReadOnlyPage, self.OnUpdateDisNotTextedit))
 
-#         self.addMenuItem(insertMenu, _(u'Current &Date') + u'\t' + 
+#         self.addMenuItem(insertMenu, _(u'Current &Date') + u'\t' +
 #                 self.keyBindings.InsertDate, _(u'Insert current date'),
 #                 lambda evt: self.insertDate(), "date",
 #                 updatefct=(self.OnUpdateDisReadOnlyPage, self.OnUpdateDisNotTextedit,
@@ -1488,66 +1488,66 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         self.addMenuItem(settingsMenu, _("Auto-&Wrap"),
                 _("Set if editor should wrap long lines"),
-                self.OnCmdCheckWrapMode, 
+                self.OnCmdCheckWrapMode,
                 updatefct=self.OnUpdateWrapMode,
                 kind=wx.ITEM_CHECK)
 
 
         self.addMenuItem(settingsMenu, _("Auto-&Indent"),
                 _("Auto indentation"),
-                self.OnCmdCheckAutoIndent, 
+                self.OnCmdCheckAutoIndent,
                 updatefct=self.OnUpdateAutoIndent,
                 kind=wx.ITEM_CHECK)
 
 
         self.addMenuItem(settingsMenu, _("Auto-&Bullets"),
                 _("Show bullet on next line if current has one"),
-                self.OnCmdCheckAutoBullets, 
+                self.OnCmdCheckAutoBullets,
                 updatefct=self.OnUpdateAutoBullets,
                 kind=wx.ITEM_CHECK)
 
 
         self.addMenuItem(settingsMenu, _("Tabs to spaces"),
                 _("Write spaces when hitting TAB key"),
-                self.OnCmdCheckTabsToSpaces, 
+                self.OnCmdCheckTabsToSpaces,
                 updatefct=self.OnUpdateTabsToSpaces,
                 kind=wx.ITEM_CHECK)
 
 
         viewMenu = wx.Menu()
-        
+
         self.addMenuItem(viewMenu, _('Show T&oolbar') + '\t' +
-                self.keyBindings.ShowToolbar, 
+                self.keyBindings.ShowToolbar,
                 _("Show toolbar"),
                 lambda evt: self.setShowToolbar(
-                not self.getConfig().getboolean("main", "toolbar_show", True)), 
+                not self.getConfig().getboolean("main", "toolbar_show", True)),
                 menuID=GUI_ID.CMD_SHOW_TOOLBAR,
                 updatefct=self.OnUpdateToolbarMenuItem,
                 kind=wx.ITEM_CHECK)
 
         self.addMenuItem(viewMenu, _('Show &Tree View') + '\t' +
-                self.keyBindings.ShowTreeControl, 
+                self.keyBindings.ShowTreeControl,
                 _("Show Tree Control"),
                 lambda evt: self.setShowTreeControl(
-                self.windowLayouter.isWindowCollapsed("maintree")), 
+                self.windowLayouter.isWindowCollapsed("maintree")),
                 updatefct=self.OnUpdateTreeCtrlMenuItem,
                 kind=wx.ITEM_CHECK)
 
 
         self.addMenuItem(viewMenu, _('Show &Chron. View') + '\t' +
-                self.keyBindings.ShowTimeView, 
+                self.keyBindings.ShowTimeView,
                 _("Show chronological view"),
                 lambda evt: self.setShowTimeView(
-                self.windowLayouter.isWindowCollapsed("time view")), 
+                self.windowLayouter.isWindowCollapsed("time view")),
                 updatefct=self.OnUpdateTimeViewMenuItem,
                 kind=wx.ITEM_CHECK)
 
 
         self.addMenuItem(viewMenu, _('Show &Page Structure') + '\t' +
-                self.keyBindings.ShowDocStructure, 
+                self.keyBindings.ShowDocStructure,
                 _("Show structure (headings) of the page"),
                 lambda evt: self.setShowDocStructure(
-                self.windowLayouter.isWindowCollapsed("doc structure")), 
+                self.windowLayouter.isWindowCollapsed("doc structure")),
                 updatefct=self.OnUpdateDocStructureMenuItem,
                 kind=wx.ITEM_CHECK)
 
@@ -1557,30 +1557,30 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         viewMenu.AppendSeparator()
 
 
-        self.addMenuItem(viewMenu, _("Show &Indentation Guides"), 
+        self.addMenuItem(viewMenu, _("Show &Indentation Guides"),
                 _("Show indentation guides in editor"),
-                self.OnCmdCheckIndentationGuides, 
+                self.OnCmdCheckIndentationGuides,
                 updatefct=self.OnUpdateIndentationGuides,
                 kind=wx.ITEM_CHECK)
- 
-        self.addMenuItem(viewMenu, _("Show Line &Numbers"), 
+
+        self.addMenuItem(viewMenu, _("Show Line &Numbers"),
                 _("Show line numbers in editor"),
-                self.OnCmdCheckShowLineNumbers, 
+                self.OnCmdCheckShowLineNumbers,
                 updatefct=self.OnUpdateShowLineNumbers,
                 kind=wx.ITEM_CHECK)
-        
+
         viewMenu.AppendSeparator()
-        
+
         self.addMenuItem(viewMenu, _('Stay on Top') + '\t' +
-                self.keyBindings.StayOnTop, 
+                self.keyBindings.StayOnTop,
                 _("Stay on Top of all other windows"),
-                lambda evt: self.setStayOnTop(not self.getStayOnTop()), 
+                lambda evt: self.setStayOnTop(not self.getStayOnTop()),
                 menuID=GUI_ID.CMD_STAY_ON_TOP,
                 updatefct=self.OnUpdateStayOnTopMenuItem,
                 kind=wx.ITEM_CHECK)
-        
+
         viewMenu.AppendSeparator()
-       
+
         self.addMenuItem(viewMenu, _('&Zoom In') + '\t' + self.keyBindings.ZoomIn,
                 _('Zoom In'), self._OnRoundtripEvent, "tb_zoomin",
                 menuID=GUI_ID.CMD_ZOOM_IN)
@@ -1591,7 +1591,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 
 #         menuItem = wx.MenuItem(viewMenu, GUI_ID.CMD_SHOW_TOOLBAR,
-#                 _(u'Show Toolbar') + u'\t' + self.keyBindings.ShowToolbar, 
+#                 _(u'Show Toolbar') + u'\t' + self.keyBindings.ShowToolbar,
 #                 _(u"Show Toolbar"), wx.ITEM_CHECK)
 #         viewMenu.Append(menuItem)
 #         wx.EVT_MENU(self, GUI_ID.CMD_SHOW_TOOLBAR, lambda evt: self.setShowToolbar(
@@ -1602,7 +1602,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 
         tabsMenu = wx.Menu()
-        
+
         # TODO: open new tab              (now: no menuchoice; open with current item)
         # TODO: close current tab         (now: no menuchoice)
 
@@ -1641,7 +1641,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 id=GUI_ID.CMD_UNFOLD_ALL_IN_CURRENT)
         self.Bind(wx.EVT_MENU, lambda evt: self.getActiveEditor().foldAll(),
                 id=GUI_ID.CMD_FOLD_ALL_IN_CURRENT)
-        
+
 
 
         wikiPageMenu = wx.Menu()
@@ -1734,7 +1734,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 
         formatMenu = wx.Menu()
-        
+
         self.addMenuItem(formatMenu, _('&Bold') + '\t' + self.keyBindings.Bold,
                 _('Bold'), lambda evt: self.getActiveEditor().formatSelection("bold"),
                 "tb_bold",
@@ -1758,7 +1758,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         formatMenu.AppendSeparator()
 
-        self.addMenuItem(formatMenu, _('&Rewrap Text') + '\t' + 
+        self.addMenuItem(formatMenu, _('&Rewrap Text') + '\t' +
                 self.keyBindings.RewrapText,
                 _('Rewrap Text'),
                 lambda evt: self.getActiveEditor().rewrapText(),
@@ -1766,7 +1766,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         convertMenu = wx.Menu()
         formatMenu.AppendSubMenu(convertMenu, _('&Convert'))
-        
+
         self.addMenuItemByUnifNameTable(convertMenu,
         """
         menuItem/mainControl/builtin/selectionToLink
@@ -1779,15 +1779,15 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #                 lambda evt: self.keyBindings.makeWikiWord(self.getActiveEditor()),
 #                 "tb_wikize", menuID=GUI_ID.CMD_FORMAT_WIKIZE_SELECTED,
 #                 updatefct=(self.OnUpdateDisReadOnlyPage, self.OnUpdateDisNotTextedit))
-        
-        self.addMenuItem(convertMenu, _('Selection to &Wiki Word') + '\t' + 
+
+        self.addMenuItem(convertMenu, _('Selection to &Wiki Word') + '\t' +
                 self.keyBindings.ReplaceTextByWikiword,
                 _('Put selected text in a new or existing wiki word'),
                 lambda evt: self.showReplaceTextByWikiwordDialog(),
                 updatefct=(self.OnUpdateDisReadOnlyPage,))
 
 
-        self.addMenuItem(convertMenu, _('Absolute/Relative &File URL') + '\t' + 
+        self.addMenuItem(convertMenu, _('Absolute/Relative &File URL') + '\t' +
                 self.keyBindings.ConvertAbsoluteRelativeFileUrl,
                 _('Convert file URL from absolute to relative and vice versa'),
                 lambda evt: self.getActiveEditor().convertSelectedUrlAbsoluteRelative(),
@@ -1809,8 +1809,8 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 id=GUI_ID.MENU_ADD_ICON_NAME)
 
         self.cmdIdToInsertString = cmdIdToIconName
-        
-        
+
+
         colorsMenu, cmdIdToColorName = AttributeHandling.buildColorsSubmenu()
         for cmi in list(cmdIdToColorName.keys()):
             self.Bind(wx.EVT_MENU, self.OnInsertStringFromDict, id=cmi)
@@ -1873,7 +1873,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     forceTreeSyncFromRoot=True),
                 "tb_home", updatefct=(self.OnUpdateDisNoWiki,))
 
-        self.addMenuItem(navigateMenu, _('Up&ward') + '\t' + 
+        self.addMenuItem(navigateMenu, _('Up&ward') + '\t' +
                 self.keyBindings.GoUpwardFromSubpage,
                 _('Go upward from a subpage'), self._OnEventToCurrentDocPPresenter,
                 "tb_up", menuID=GUI_ID.CMD_PAGE_GO_UPWARD_FROM_SUBPAGE)
@@ -2017,7 +2017,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 #         menuID = wx.NewId()
 #         helpMenu.Append(menuID, _(u'View &License'), _(u'View License'))
-#         wx.EVT_MENU(self, menuID, lambda evt: OsAbstract.startFile(self, 
+#         wx.EVT_MENU(self, menuID, lambda evt: OsAbstract.startFile(self,
 #                 os.path.join(self.wikiAppDir, u'license.txt')))
 
 
@@ -2041,7 +2041,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.mainmenu.Append(navigateMenu, _('&Navigate'))
         self.mainmenu.Append(extraMenu, _('E&xtra'))
 
-        
+
 #         self.mainmenu.AppendSubMenu(wikiMenu, _(u'&Wiki'))
 #         self.mainmenu.AppendSubMenu(editMenu, _(u'&Edit'))
 #         self.mainmenu.AppendSubMenu(viewMenu, _(u'&View'))
@@ -2058,9 +2058,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.mainmenu.Append(self.pluginsMenu, _("Pl&ugins"))
 
 
-        # Mac does not use menu accelerators anyway and wx special cases &Help 
+        # Mac does not use menu accelerators anyway and wx special cases &Help
         # to the in build Help menu this check stops 2 help menus on mac
-        if wx.Platform == "__WXMAC__": 
+        if wx.Platform == "__WXMAC__":
             self.mainmenu.Append(helpMenu, _('&Help'))
         else:
             self.mainmenu.Append(helpMenu, _('He&lp'))
@@ -2085,14 +2085,14 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         # ------------------------------------------------------------------------------------
 
         tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
-        
+
         def addSimpleTool(tId, icon, longHelp, shortHelp):
             """
             Resemble deprecated wx.ToolBar.AddSimpleTool() function
             """
             return tb.AddTool(tId, shortHelp, icon, wx.NullBitmap,
                     shortHelp=shortHelp, longHelp=longHelp)
-        
+
         seperator = self.lookupSystemIcon("tb_seperator")
 
         icon = self.lookupSystemIcon("tb_back")
@@ -2250,7 +2250,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             if updateFunction is not None:
                 self.Bind(wx.EVT_UPDATE_UI, lambda evt: updateFunction(self, evt),
                 id=tbID)
-            
+
             if rightclickFunction is not None:
                 self.Bind(wx.EVT_TOOL_RCLICKED,
                 lambda evt: rightclickFunction(self, evt), id=tbID)
@@ -2270,7 +2270,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         # ------------------------------------------------------------------------------------
         self.statusBar = wx.StatusBar(self, -1)
         self.statusBar.SetFieldsCount(3)
-        
+
         self.statusBarTimer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.OnStatusBarTimer, self.statusBarTimer)
 #        self.Bind(wx.EVT_TIMER, self.OnStatusBarTimer, id=self.statusBarTimer.GetId())
@@ -2292,7 +2292,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 #         p = self.createNewDocPagePresenterTab()
 #         self.mainAreaPanel.prepareCurrentPresenter(p)
- 
+
         # ------------------------------------------------------------------------------------
         # Create menu and toolbar
         # ------------------------------------------------------------------------------------
@@ -2333,7 +2333,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     for fkey in range(wx.WXK_F1, wx.WXK_F24 + 1)] + \
                     [(wx.ACCEL_SHIFT, fkey, GUI_ID.SPECIAL_EAT_KEY)
                     for fkey in range(wx.WXK_F1, wx.WXK_F24 + 1)]
-    
+
             self.Bind(wx.EVT_MENU, lambda evt: None, id=GUI_ID.SPECIAL_EAT_KEY)
 
         self.SetAcceleratorTable(wx.AcceleratorTable(accs))
@@ -2374,7 +2374,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         self.Bind(wx.EVT_ICONIZE, self.OnIconize)
         self.Bind(wx.EVT_MAXIMIZE, self.OnMaximize)
-        
+
         self.Bind(wx.EVT_MENU, self._OnRoundtripEvent, id=GUI_ID.CMD_CLOSE_CURRENT_TAB)
         self.Bind(wx.EVT_MENU, self._OnRoundtripEvent, id=GUI_ID.CMD_GO_NEXT_TAB)
         self.Bind(wx.EVT_MENU, self._OnRoundtripEvent, id=GUI_ID.CMD_GO_PREVIOUS_TAB)
@@ -2406,7 +2406,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             wnd = self.windowLayouter.getWindowByName("doc structure")
             if wnd is not None:
                 switchList.append(wnd)
-        
+
         if not self.windowLayouter.isWindowCollapsed("time view"):
             wnd = self.windowLayouter.getWindowByName("time view")
             if wnd is not None:
@@ -2509,7 +2509,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     if answer != wx.YES:
                         break
 
-                
+
     def OnRemoteCommand(self, evt):
         try:
             clAction = CmdLineAction(evt.getCmdLineAction())
@@ -2541,7 +2541,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         wikiWord = self.getCurrentWikiWord()
         if wikiWord is None:
             return
-        
+
         path = self.getWikiDocument().getWikiConfigPath()
         wxHelper.copyTextToClipboard(pathWordAndAnchorToWikiUrl(path,
                 wikiWord, None))
@@ -2660,7 +2660,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #             self.mainAreaPanel.Reparent(parent)
 #             self.mainAreaPanel = MainAreaPanel(parent, self, -1)
 #             self.mainAreaPanel.getMiscEvent().addListener(self)
-# 
+#
 #             p = self.createNewDocPagePresenterTab()
 #             self.mainAreaPanel.setCurrentDocPagePresenter(p)
 
@@ -2669,7 +2669,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         elif winName == "vi input":
             from .ViHelper import ViInputDialog
             return ViInputDialog(parent, -1, self)
-            
+
 
     def perspectiveTypeFactory(self, parent, perspectType, data, typeFactory):
         """
@@ -2679,7 +2679,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if perspectType == "DocPagePresenter":
             return DocPagePresenter.createFromPerspective(self, parent,
                     perspectType, data, typeFactory)
-                    
+
         return None
 
 
@@ -2735,7 +2735,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             self.loadFixedExtensions()
             self.pluginManager.loadPlugins([ 'KeyBindings.py',
                     'EvalLibrary.py' ] )
-                    
+
             # TODO: Support for plugin menu modifiers wx.GetApp().reloadPluginMenuModifiers()
 
             # This is a rebuild of an existing menu (after loading a new wikiData)
@@ -2747,15 +2747,15 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 #     def testIt(self):
 #         from .FileManagementGui import InfoDatabase
-# 
+#
 #         progresshandler = ProgressHandler(
 #                 _(u"     Scanning     "),
 #                 _(u"     Scanning     "), 0, self)
-# 
+#
 #         infoDb = InfoDatabase(self.getWikiDocument())
-#         
+#
 #         infoDb.buildDatabaseBeforeDialog(progresshandler)
-        
+
 
 
 #     def testIt(self):
@@ -2765,7 +2765,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 #     def testIt(self):
 #         rect = self.statusBar.GetFieldRect(0)
-#         
+#
 #         dc = wx.WindowDC(self.statusBar)
 #         dc.SetBrush(wx.RED_BRUSH)
 #         dc.SetPen(wx.RED_PEN)
@@ -2787,30 +2787,30 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #         if self.sleepMode:
 #             return  # Already in sleep mode
 #         self.sleepMode = True
-#         
+#
 #         toolBar = self.GetToolBar()
 #         if toolBar is not None:
 #             toolBar.Destroy()
-# 
+#
 #         self.SetMenuBar(None)
 #         self.mainmenu.Destroy()
-# 
+#
 #         # Set menu/menu items to None
 #         self.mainmenu = None
 #         self.recentWikisMenu = None
 #         self.textBlocksMenu = None
 #         self.favoriteWikisMenu = None
 #         # self.showOnTrayMenuItem = None
-# 
+#
 #         # TODO Clear cache only if exactly one window uses centralized iconLookupCache
 #         #      Maybe weak references?
 # #         for k in self.iconLookupCache.keys():
 # #             self.iconLookupCache[k] = (self.iconLookupCache[k][0], None)
 # ##      Even worse:  wxGetApp().getIconCache().clearIconBitmaps()
-# 
+#
 #         gc.collect()
-# 
-# 
+#
+#
 #     def resourceWakeup(self):
 #         """
 #         Aquire resources after program is restored
@@ -2818,7 +2818,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #         if not self.sleepMode:
 #             return  # Already in wake mode
 #         self.sleepMode = False
-# 
+#
 #         self.buildMainMenu()
 #         self.setShowToolbar(self.getConfig().getboolean("main", "toolbar_show",
 #                 True))
@@ -2843,7 +2843,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if not self.sleepMode:
             return  # Already in wake mode
         self.sleepMode = False
-        
+
         self.Bind(wx.EVT_IDLE, self.OnIdle)
 
 
@@ -2875,12 +2875,12 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
     def resetGui(self):
         # delete everything in the current tree
         self.tree.DeleteAllItems()
-        
+
         viewsTree = self.windowLayouter.getWindowByName("viewstree")
         if viewsTree is not None:
             viewsTree.DeleteAllItems()
 
-        
+
         # reset the editor
         if self.getActiveEditor():
             self.getActiveEditor().loadWikiPage(None)
@@ -2898,7 +2898,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         the unmodified path is returned.
         """
         relPath = relativeFilePath(self.wikiAppDir, path)
-        
+
         if relPath is None:
             return path
         else:
@@ -2950,7 +2950,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #                     self)
 #             if index == -1:
 #                 return
-# 
+#
 #             wdhName = wdhandlers[index][0]
 
             wsett = AdditionalDialogs.NewWikiSettings.runModal(self, -1, self)
@@ -2989,20 +2989,20 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             except Exception as e:
                 self.displayErrorMessage(
                         _('There was an error creating the wiki database.'), e)
-                traceback.print_exc()                
+                traceback.print_exc()
                 allIsWell = False
-            
+
             if (allIsWell):
                 try:
                     self.hooks.newWiki(self, wikiName, wikiDir)
-    
+
                     # everything is ok, write out the config file
                     # create a new config file for the new wiki
                     wikiConfig = wx.GetApp().createWikiConfiguration()
-    #                 
+    #
                     wikiConfig.createEmptyConfig(configFileLoc)
                     wikiConfig.fillWithDefaults()
-                    
+
                     wikiConfig.set("main", "wiki_name", wikiName)
                     wikiConfig.set("main", "last_wiki_word", wikiName)
                     wikiConfig.set("main", "wiki_database_type", wdhName)
@@ -3011,7 +3011,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     wikiConfig.set("main", "editor_text_mode",
                             self.getConfig().getboolean("main",
                             "newWikiDefault_editor_text_mode", False))
-                            
+
                     # Set here because of legacy support.
                     # See option description in "Configuration.py"
                     wikiConfig.set("main", "wikiPageTitle_headingLevel", "2")
@@ -3033,7 +3033,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
                     text = langHelper.getNewDefaultWikiSettingsPage(self)
                     p.replaceLiveText(text, False)
-    
+
                     p = self.wikiDocument.createWikiPage("ScratchPad")
                     text = "++ Scratch Pad\n\n"
                     p.replaceLiveText(text, False)
@@ -3041,7 +3041,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #                     self.getActiveEditor().GotoPos(self.getActiveEditor().GetLength())
 #                     self.getActiveEditor().AddText(u"\n\n\t* WikiSettings\n")
 #                     self.saveAllDocPages()
-                    
+
                     # trigger hook
                     self.hooks.createdWiki(self, wikiName, wikiDir)
 
@@ -3070,7 +3070,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 self)
         if index == -1:
             return None
-            
+
         return wdhandlers[index][0]
 
 
@@ -3109,7 +3109,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         % wikiCombinedFilename)
 
             # Try to remove combined filename from recent files if existing
-            
+
             self.removeFromWikiHistory(wikiCombinedFilename)
 #             try:
 #                 self.wikiHistory.remove(
@@ -3126,7 +3126,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         # Remove path from recent file list if present (we will add it again
         # on top if everything went fine).
-        
+
         self.removeFromWikiHistory(cfgPath)
 
         # trigger hooks
@@ -3140,9 +3140,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         else:
             # Try to get handler name from wiki config file
             dbtype = None
-        
+
         wikiLang = None
-        
+
         ignoreLock = self.getConfig().getboolean("main", "wikiLockFile_ignore",
                 False)
         createLock = self.getConfig().getboolean("main", "wikiLockFile_create",
@@ -3234,7 +3234,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 wikiConfig.set("main", "wiki_database_type", wdhName)
                 wikiConfig.set("wiki_db", "data_dir", "data")
                 wikiConfig.save()
-                
+
                 continue # Try again
 
             except (IOError, OSError, DbReadAccessError,
@@ -3270,19 +3270,19 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         self.wikiName = self.wikiDocument.getWikiName()
         self.dataDir = self.wikiDocument.getDataDir()
-        
+
         self.getConfig().setWikiConfig(self.wikiDocument.getWikiConfig())
-        
+
         # Open wiki pages which were previously opened (old method before
         # introducing AUI and perspectives)
-        
+
         # Collect information
-        
+
         mainAreaPerspective = self.getConfig().get("main",
                 "wiki_mainArea_auiPerspective", "");
 
         defLtsc = None
-        
+
         if lastTabsSubCtrls is None:
             defLtsc = self.getConfig().get("main", "wiki_onOpen_tabsSubCtrl", "")
             if defLtsc:
@@ -3315,10 +3315,10 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                                     fwws.split(";")]
                         else:
                             furtherWikiWords = ()
-                        
+
                         wikiWordsToOpen = (lastWikiWord,) + \
                                 tuple(furtherWikiWords)
-                        
+
                         if lastTabsSubCtrls is None:
                             ltsc = self.getConfig().get("main",
                                     "wiki_lastTabsSubCtrls", "")
@@ -3339,52 +3339,52 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     self.mainmenu.EnableTop(1, 1)
                     self.mainmenu.EnableTop(2, 1)
                     self.mainmenu.EnableTop(3, 1)
-                    
+
                 self.fireMiscEventKeys(("opened wiki",))
-                
+
                 # open the home page    # TODO!
     #             self.openWikiPage(self.wikiName)
-    
+
                 self.tree.SetScrollPos(wx.VERTICAL, 0)
-                
+
                 lastRoot = self.getConfig().get("main", "tree_last_root_wiki_word",
                         None)
                 if not (lastRoot and
                         self.getWikiDocument().isDefinedWikiLinkTerm(lastRoot)):
                     lastRoot = self.wikiName
-                    
+
                 self.tree.setRootByWord(lastRoot)
                 self.tree.readExpandedNodesFromConfig()
                 self.tree.expandRoot()
                 self.getConfig().set("main", "tree_last_root_wiki_word", lastRoot)
-    
+
                 viewsTree = self.windowLayouter.getWindowByName("viewstree")
                 if viewsTree is not None:
                     viewsTree.setViewsAsRoot()
                     viewsTree.readExpandedNodesFromConfig()
                     viewsTree.expandRoot()
-    
+
                 # Normalize lastTabsSubCtrls
                 if not lastTabsSubCtrls:
                     lastTabsSubCtrls = ["textedit"]
                 if len(lastTabsSubCtrls) < len(wikiWordsToOpen):
                     lastTabsSubCtrls += [lastTabsSubCtrls[-1]] * \
                             (len(wikiWordsToOpen) - len(lastTabsSubCtrls))
-    
+
                 # Remove/Replace undefined wiki words
                 wwo = []
                 for word, subCtrl in zip(wikiWordsToOpen, lastTabsSubCtrls):
                     if self.getWikiDocument().isDefinedWikiLinkTerm(word):
                         wwo.append((word, subCtrl))
                         continue
-    
+
                     wordsStartingWith = self.getWikiData().getWikiPageLinkTermsStartingWith(
                             word)
                     if len(wordsStartingWith) > 0:
                         word = wordsStartingWith[0]
                         wwo.append((word, subCtrl))
                         continue
-                    
+
                     # Omitting word, so adjust activeTabNo
                     activeTabNo -= 1
 
@@ -3394,7 +3394,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     # now try and open the last wiki page as leftmost tab
                     if len(wwo) > 0: ## and wwo[0][0] != self.wikiName:
                         firstWikiWord = wwo[0][0]
-    
+
                         self.openWikiPage(firstWikiWord, anchor=anchorToOpen)
                         self.findCurrentWordInTree()
                         targetPresenter = self.getMainAreaPanel().getPresenters()[0]
@@ -3409,19 +3409,19 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                                 "wikipage/" + word, tabMode=3)
                         if targetPresenter is None:
                             break    # return instead?
-    
+
                         if targetPresenter.hasSubControl(subCtrl):
                             targetPresenter.switchSubControl(subCtrl)
-    
+
                     if activeTabNo > 0 and \
                             len(self.getMainAreaPanel().getPresenters()) > 0:
                         activeTabNo = min(activeTabNo,
                                 len(self.getMainAreaPanel().getPresenters()) - 1)
-    
+
                         targetPresenter = self.getMainAreaPanel().getPresenters()[
                                 activeTabNo]
                         self.getMainAreaPanel().showPresenter(targetPresenter)
-                        
+
                 else:
                     # Try and rebuild broken perspective
                     # occurs on non clean shutdowns
@@ -3429,16 +3429,16 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         a, b = mainAreaPerspective.split("=", 1)
 
                         mainAreaPerspective = "".join([
-                            a, 
-                            r"=*DocPagePresenter={0}=0=textedit\x7cwikipage/{0}".format( 
-                                self.getWikiDocument().getWikiName()), 
+                            a,
+                            r"=*DocPagePresenter={0}=0=textedit\x7cwikipage/{0}".format(
+                                self.getWikiDocument().getWikiName()),
                             b])
 
 
                     self.getMainAreaPanel().setByStoredPerspective(
                             "MainAreaPanel", mainAreaPerspective,
                             self.perspectiveTypeFactory)
-                    
+
                     if self.getMainAreaPanel().GetPageCount() == 0:
                         self.openWikiPage(self.getWikiDocument().getWikiName())
 
@@ -3455,15 +3455,15 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
             # Rebuild text blocks menu
             self.rereadTextBlocks()
-            
+
             self._refreshHotKeys()
-            
+
             # reset tray
             self.setShowOnTray()
 
             # trigger hook
             self.hooks.openedWiki(self, self.wikiName, wikiCombinedFilename)
-    
+
             self.getMainAreaPanel().SetFocus()
 
             # return that the wiki was opened successfully
@@ -3552,7 +3552,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 # We had already a problem, so ask what to do
                 if errCloseAnywayMsg() != wx.YES:
                     raise LossyWikiCloseDeniedException
-                
+
                 self.fireMiscEventKeys(("dropping current wiki",))
                 self.hooks.droppingWiki(self, wikiConfigPath)
 
@@ -3562,7 +3562,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                             .removeListener(self)
                     self.currentWikiDocumentProxyEvent.setWatchedEvent(None)
                     self.wikiDocument = None
-                
+
             self._refreshHotKeys()
             self.statusBarTimer.Stop()
 
@@ -3580,11 +3580,11 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         try:
             # write out the current config
             self.writeCurrentConfig()
-    
+
             # save the current wiki page if it is dirty
             if self.isWikiLoaded():
                 self.saveAllDocPages()
-    
+
             # database commits
             if self.getWikiData():
                 self.getWikiData().commit()
@@ -3648,7 +3648,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         """
         if not self.requireReadAccess():
             return False
-        
+
         if not self.getWikiDocument().getWriteAccessFailed():
             return True
 
@@ -3703,7 +3703,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if self.getWikiDocument().getReadAccessFailed():
             # Was already handled -> ignore
             return
-            
+
         self.SetFocus()
         wx.MessageBox(_("Database connection error: %s.\n"
                 "Try to re-establish, then run \"Wiki\"->\"Reconnect\"") % str(exc),
@@ -3778,7 +3778,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
             if dpp is None:
                 dpp = self.createNewDocPagePresenterTab()
-    
+
             dpp.openWikiPage(wikiWord, addToHistory, forceTreeSyncFromRoot,
                     forceReopen, **evtprops)
 
@@ -3795,7 +3795,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         dpp = self.getCurrentDocPagePresenter()
         if dpp is None:
             return
-            
+
         dpp.saveCurrentDocPage(force)
 
 
@@ -3920,7 +3920,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                        processSubpages=True):
         """
         Rename `word` to `toWord`, return True if successful.
-        
+
         modifyText (ModifyText) -- Update references to the renamed page(s)?
 
             ModifyText.off (0)
@@ -3973,7 +3973,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             raise
 
         except WikiDataException as e:
-            traceback.print_exc()                
+            traceback.print_exc()
             self.displayErrorMessage(str(e))
             return False
 
@@ -4018,7 +4018,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         elif link.startswith("rel://"):
             # Relative link
             link = self.getWikiDocument().makeRelUrlAbsolute(link)
-        
+
         if not link.startswith("wiki:"):
             try:
                 OsAbstract.startFile(self, link)
@@ -4131,8 +4131,8 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             # Add the canonical parent to the list if it does not exist
             if default not in parents:
                 parents.append(default)
-        
-            
+
+
         self.viewWordSelection(_("Parent nodes of '%s'") % ofWord, parents,
                 "parent", default)
 
@@ -4295,7 +4295,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
     def setStayOnTop(self, onOrOff):
         style = self.GetWindowStyleFlag()
-        
+
         if onOrOff:
             style |= wx.STAY_ON_TOP
         else:
@@ -4347,7 +4347,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 icon = wx.IconFromBitmap(bmp)
                 self.tbIcon.SetIcon(icon, tooltip)
             else:
-                if bmp is not None:                
+                if bmp is not None:
                     self.tbIcon.SetIcon(wx.IconFromBitmap(bmp), tooltip)
                 else:
                     self.tbIcon.SetIcon(wx.GetApp().standardIcon, tooltip)
@@ -4362,7 +4362,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 
 #         # TODO  Move to better function
-#         if bmp is not None:                
+#         if bmp is not None:
 #             self.SetIcon(wx.IconFromBitmap(bmp))
 #         else:
 #             print "setShowOnTray25", repr(os.path.join(self.wikiAppDir,
@@ -4389,7 +4389,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #             "layout sash position:170&layout sash effective position:170;"\
 #         "layout relation:below&layout relative to:main area panel&name:log&"\
 #             "layout sash position:1&layout sash effective position:120"
-# 
+#
 #     _LAYOUT_WITH_VIEWSTREE = "name:main area panel;"\
 #             "layout relation:%s&layout relative to:main area panel&name:maintree&"\
 #                 "layout sash position:170&layout sash effective position:170;"\
@@ -4443,7 +4443,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         cc = self.clipboardInterceptor
         if cc is None:
             return  # Shouldn't be called anyway
-            
+
         enableCatcher = not self.isReadOnlyPage()
 
         if evt.GetId() == GUI_ID.CMD_CLIPBOARD_CATCHER_OFF:
@@ -4455,7 +4455,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             evt.Enable(enableCatcher)
             if cc.getMode() == cc.MODE_AT_PAGE:
                 evt.Check(True)
-                evt.SetText(_("Set at Page: %s\t%s") % 
+                evt.SetText(_("Set at Page: %s\t%s") %
                         (self.clipboardInterceptor.getWikiWord(),
                         self.keyBindings.CatchClipboardAtPage))
             else:
@@ -4522,13 +4522,13 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
 #         dlg = wx.TextEntryDialog(self, uniToGui(_(u"Rename '%s' to:") %
 #                 wikiWord), _(u"Rename Wiki Word"), wikiWord, wx.OK | wx.CANCEL)
-# 
+#
 #         try:
 #             while dlg.ShowModal() == wx.ID_OK and \
 #                     not self.showWikiWordRenameConfirmDialog(wikiWord,
 #                             guiToUni(dlg.GetValue())):
 #                 pass
-# 
+#
 #         finally:
 #             dlg.Destroy()
 
@@ -4577,7 +4577,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if wikiWord is None:
             self.displayErrorMessage(_("No real wiki word to delete"))
             return
-            
+
         if self.isReadOnlyPage():
             return   # TODO Error message
 
@@ -4617,7 +4617,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         if self.getCurrentWikiWord() is None:
             self.displayErrorMessage(_("No real wiki word to modify"))
             return
-        
+
         if self.isReadOnlyPage():
             return
 
@@ -4625,9 +4625,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         try:
             langHelper = wx.GetApp().createWikiLanguageHelper(
                     self.getWikiDefaultWikiLanguage())
-                
+
             absoluteLink = False
-            
+
             text = self.getActiveEditor().GetSelectedText()
 
             wikiWord = langHelper.createWikiLinkFromText(
@@ -4638,17 +4638,17 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 wikiWord = wx.GetTextFromUser(
                         _("Replace text by WikiWord:"),
                         _("Replace by Wiki Word"), wikiWord, self)
-                        
+
                 if not wikiWord:
                     return False
 
                 validWikiLinkCore = langHelper.extractWikiWordFromLink(wikiWord,
                         self.getWikiDocument())
-        
+
                 if validWikiLinkCore is None:
                     self.displayErrorMessage(_("'%s' is an invalid wiki word.") % wikiWord)
                     continue
-                
+
                 absoluteLink = langHelper.isAbsoluteLinkCore(validWikiLinkCore)
 
                 validWikiWord = langHelper.resolveWikiWordLink(
@@ -4663,10 +4663,10 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                             'Would you like to append to the word?') %
                             knownWikiWord, _('Word exists'),
                             wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION, self)
-                    
+
                     if answer != wx.YES:
                         continue
-                        
+
                     validWikiWord = knownWikiWord
                     newWord = False
 
@@ -4701,9 +4701,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #         dlg.CenterOnParent(wx.BOTH)
 #         if dlg.ShowModal() == wx.ID_OK:
 #             iconname = dlg.GetValue()
-# 
+#
 #         dlg.Destroy()
-# 
+#
         iconname = AdditionalDialogs.SelectIconDialog.runModal(self, -1,
                 wx.GetApp().getIconCache())
 
@@ -4732,7 +4732,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
         answer = dlg.ShowModal()
         oldSettings = dlg.getOldSettings()
-        
+
         dlg.Destroy()
 
         if answer == wx.ID_OK:
@@ -4749,13 +4749,13 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             self.setHideUndefined()
             self.rereadRecentWikis()
             self.refreshPageStatus()
-            
+
             # TODO Move this to WikiDocument!
             # Set file storage according to configuration
-            
+
             if self.getWikiDocument() is not None:
                 fs = self.getWikiDocument().getFileStorage()
-                
+
                 fs.setModDateMustMatch(self.configuration.getboolean("main",
                         "fileStorage_identity_modDateMustMatch", False))
                 fs.setFilenameMustMatch(self.configuration.getboolean("main",
@@ -4772,7 +4772,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         int(oldSettings.get(setName, "0")):
                     relayoutNeeded = True
                     break
- 
+
             if relayoutNeeded:
                 layoutCfStr = WindowLayout.calculateMainWindowLayoutCfString(
                         self.configuration)
@@ -4781,7 +4781,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 # data beforehand
                 self.saveCurrentWikiState()
                 self.changeLayoutByCf(layoutCfStr)
-            
+
             self.userActionCoord.applyConfiguration()
             self._refreshHotKeys()
 
@@ -4812,7 +4812,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         dlg = AdditionalDialogs.ExportDialog(self, -1, continuousExport=True)
         try:
             dlg.CenterOnParent(wx.BOTH)
-    
+
             dlg.ShowModal()
             exporter = dlg.GetValue()
             self.continuousExporter = exporter
@@ -4846,7 +4846,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         defdir = self.getConfig().get("main", "export_default_dir", "")
         if defdir == "":
             defdir = self.getLastActiveDir()
-        
+
         typ = evt.GetId()
         # Export to dir
         with TopLevelLocker:
@@ -4859,7 +4859,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         GUI_ID.MENU_EXPORT_WHOLE_AS_PAGES,
                         GUI_ID.MENU_EXPORT_WHOLE_AS_RAW):
                     # Export whole wiki
-    
+
                     lpOp = Sar.ListWikiPagesOperation()
                     item = Sar.AllWikiPagesNode(lpOp)
                     lpOp.setSearchOpTree(item)
@@ -4868,7 +4868,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     sarOp.listWikiPagesOp = lpOp
 #                     wordList = self.getWikiDocument().searchWiki(lpOp)
                     wordList = self.getWikiDocument().searchWiki(sarOp)
-    
+
                 elif typ in (GUI_ID.MENU_EXPORT_SUB_AS_PAGE,
                         GUI_ID.MENU_EXPORT_SUB_AS_PAGES):
                     # Export a subtree of current word
@@ -4886,7 +4886,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     sarOp.listWikiPagesOp = lpOp
 #                     wordList = self.getWikiDocument().searchWiki(lpOp)
                     wordList = self.getWikiDocument().searchWiki(sarOp)
-    
+
                 else:
                     if self.getCurrentWikiWord() is None:
                         self.displayErrorMessage(
@@ -4896,7 +4896,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     wordList = (self.getCurrentWikiWord(),)
 
                 exptype, addopt = self.EXPORT_PARAMS[typ]
-                
+
                 self.saveAllDocPages()
                 self.getWikiData().commit()
 
@@ -4954,17 +4954,17 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         self.spellChkDlg.checkNext(startPos=0)
 
 
-    def OnCmdCheckSpellCheckWhileType(self, evt):        
+    def OnCmdCheckSpellCheckWhileType(self, evt):
         self.configuration.set("main", "editor_onlineSpellChecker_active",
                 evt.IsChecked())
         oldSettings = {"editor_onlineSpellChecker_active":
                 not evt.IsChecked()}
-                
+
         self.configuration.informChanged(oldSettings)
 
     def OnUpdateSpellCheckWhileType(self, evt):
         editor = self.getActiveEditor()
-        
+
         evt.Check( editor is not None and self.configuration.getboolean("main",
                 "editor_onlineSpellChecker_active", False) )
         evt.Enable(editor is not None)
@@ -4974,11 +4974,11 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         wikiDoc = self.getWikiDocument()
         if wikiDoc is None:
             return
-        
+
         scs = wikiDoc.getOnlineSpellCheckerSession()
         if scs is None:
             return
-        
+
         scs.resetIgnoreListSession()
 
 
@@ -4999,9 +4999,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         _("     Initiating update     "),
                         _("     Initiating update     "), 0, self)
                 self.getWikiDocument().initiateFullUpdate(progresshandler)
-        
+
     #         self.tree.collapse()
-    # 
+    #
     #         # TODO Adapt for functional pages
     #         if self.getCurrentWikiWord() is not None:
     #             self.openWikiPage(self.getCurrentWikiWord(),
@@ -5061,7 +5061,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 #                     u"You may want to backup your data first!"),
 #                     _(u'Rebuild wiki'),
 #                     wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION, self)
-# 
+#
 #         if skipConfirm or answer == wx.YES :
 #             try:
 #                 self.saveAllDocPages()
@@ -5147,20 +5147,20 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         presenter = self.getCurrentDocPagePresenter()
         if presenter is None:
             return
-        
+
         if scName is None:
             self.getMainAreaPanel().switchDocPagePresenterTabEditorPreview(
                     presenter)
         else:
             presenter.switchSubControl(scName, gainFocus=True)
 
-        
+
 
 #     def OnCmdSwitchEditorPreview(self, evt):
 #         presenter = self.getCurrentDocPagePresenter()
 #         if presenter is None:
 #             return
-# 
+#
 #         self.getMainAreaPanel().switchDocPagePresenterTabEditorPreview(presenter)
 
 
@@ -5212,7 +5212,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
     def getLastActiveDir(self):
         return self.configuration.get("main", "last_active_dir", os.getcwd())
 
-    
+
     def stdDialog(self, dlgtype, title, message, additional=None):
         """
         Used to show a dialog, especially in scripts.
@@ -5260,7 +5260,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 raise RuntimeError(_("Unknown dialog type"))
 
             answer = wx.MessageBox(message, title, style, self)
-            
+
             if answer == wx.OK:
                 return "ok"
             elif answer == wx.CANCEL:
@@ -5272,7 +5272,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 return "yes"
             elif answer == wx.NO:
                 return "no"
-                
+
             raise InternalError("Unexpected result from MessageBox in stdDialog()")
 
 
@@ -5283,23 +5283,23 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         If duration == -1 show for a default length (ten seconds currently)
         If duration == -2 show for a long default length (45 seconds currently).
                 Intended for error messages
-        
+
         key -- if given you can remove message(s) with this key by using
                 self.dropStatusMessage(key). Messages with other keys
                 remain until overwritten (for duration == 0) or the end
                 of their duration time.
         """
         self.statusBarTimer.Stop()
-        
+
         if duration == 0 and key == None:
             self.statusBar.SetStatusText(msg, 0)
             return
-        
+
         if duration == -1:
             duration = 10000
         elif duration == -2:
             duration = 45000
-            
+
         self.statusBarStack.append(_StatusBarStackEntry(msg, duration, key))
         self._updateStatusBarByStack()
 
@@ -5320,11 +5320,11 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         """
         if len(self.statusBarStack) == 0:
             return
-        
+
         update = self.statusBarStack[-1].key == key
-        
+
         self.statusBarStack = [e for e in self.statusBarStack if e.key != key]
-        
+
         if update:
             self._updateStatusBarByStack()
 
@@ -5340,13 +5340,13 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             if len(self.statusBarStack) == 0:
                 self.statusBar.SetStatusText("", 0)
                 return
-                
+
             # Just in case: Restrict stack size
             if len(self.statusBarStack) > 50:
                 self.statusBarStack = self.statusBarStack[(len(self.statusBarStack) - 50):]
-    
+
             msg, duration, key = self.statusBarStack[-1]
-    
+
             self.statusBar.SetStatusText(msg, 0)
             if duration != 0:
                     Utilities.callInMainThreadAsync(self.statusBarTimer.Stop)
@@ -5381,10 +5381,10 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
             msg = errorStr + "."
         else:
             msg = ""
-        
+
         if str(e) != "":
-            msg += " %s." % e 
-        
+            msg += " %s." % e
+
         dlg_m = wx.MessageDialog(self, msg,  # u"%s. %s." % (errorStr, e)
                 _('Error!'), wx.OK)
         dlg_m.ShowModal()
@@ -5399,7 +5399,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         dlg = AdditionalDialogs.AboutDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
-    
+
     def OnShowOptionalComponentErrorLog(self, evt):
         import ExceptionLogger
         AdditionalDialogs.ShowStaticHtmlTextDialog.runModal(self,
@@ -5443,9 +5443,9 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                     # trigger hooks
                     self.hooks.deletedWikiWord(self,
                             wikiPage.getWikiWord())
-    
+
 #                     self.fireMiscEventProps(miscEvt.getProps())
-    
+
                 elif "renamed wiki page" in miscEvt:
                     oldWord = miscEvt.get("wikiPage").getWikiWord()
                     newWord = miscEvt.get("newWord")
@@ -5470,7 +5470,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                         jobCount = miscEvt.get("jobCount")
                     else:
                         jobCount = 0
-                     
+
                     if jobCount > 0:
                         self.updateStatusMessage(
                                 _("Performing background jobs..."),
@@ -5513,7 +5513,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
                 startDir = self.getLastActiveDir()
             else:
                 startDir = dirname(dirname(startDir))
-        
+
         return startDir
 
 
@@ -5613,7 +5613,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
 
     def OnIdle(self, evt):
         self.fireMiscEventKeys(("idle visible",))
-        
+
         # TODO: Maybe called a bit too often for statusbar check?
         if self.statusBar.GetStatusText(0) == "":
             self._updateStatusBarByStack()
@@ -5664,7 +5664,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
     def isReadOnlyPage(self):
         docPage = self.getCurrentDocPage()
         return (docPage is None) or docPage.isReadOnlyEffect()
-                
+
 
     # All OnUpdateDis* methods only disable a menu/toolbar item, they
     # never enable. This allows to build chains of them where each
@@ -5706,14 +5706,14 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         Disables item if current presenter doesn't show a real wiki page.
         """
         if self.getCurrentWikiWord() is None:
-            evt.Enable(False)            
+            evt.Enable(False)
 
     def OnUpdateDisNotHtmlOnClipboard(self, evt):
         """
         Disables item if HTML data is not available on clipboard
         """
         if not wxHelper.getHasHtmlOnClipboard()[0]:
-            evt.Enable(False)            
+            evt.Enable(False)
 
 
     def OnCmdCheckWrapMode(self, evt):
@@ -5735,7 +5735,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckIndentationGuides(self, evt):        
+    def OnCmdCheckIndentationGuides(self, evt):
         self.getActiveEditor().SetIndentationGuides(evt.IsChecked())
         self.configuration.set("main", "indentation_guides", evt.IsChecked())
 
@@ -5745,7 +5745,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckAutoIndent(self, evt):        
+    def OnCmdCheckAutoIndent(self, evt):
         self.getActiveEditor().setAutoIndent(evt.IsChecked())
         self.configuration.set("main", "auto_indent", evt.IsChecked())
 
@@ -5755,7 +5755,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckAutoBullets(self, evt):        
+    def OnCmdCheckAutoBullets(self, evt):
         self.getActiveEditor().setAutoBullets(evt.IsChecked())
         self.configuration.set("main", "auto_bullets", evt.IsChecked())
 
@@ -5765,7 +5765,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckTabsToSpaces(self, evt):        
+    def OnCmdCheckTabsToSpaces(self, evt):
         self.getActiveEditor().setTabsToSpaces(evt.IsChecked())
         self.configuration.set("main", "editor_tabsToSpaces", evt.IsChecked())
 
@@ -5775,7 +5775,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckShowLineNumbers(self, evt):        
+    def OnCmdCheckShowLineNumbers(self, evt):
         self.getActiveEditor().setShowLineNumbers(evt.IsChecked())
         self.configuration.set("main", "show_lineNumbers", evt.IsChecked())
 
@@ -5785,7 +5785,7 @@ camelCaseWordsEnabled: false;a=[camelCaseWordsEnabled: false]\\n
         evt.Enable(editor is not None)
 
 
-    def OnCmdCheckShowFolding(self, evt):        
+    def OnCmdCheckShowFolding(self, evt):
         self.getActiveEditor().setFoldingActive(evt.IsChecked())
         self.configuration.set("main", "editor_useFolding", evt.IsChecked())
 
@@ -5936,7 +5936,7 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
             menuItem = wx.MenuItem(tbMenu, GUI_ID.CMD_CLIPBOARD_CATCHER_OFF,
                     _("Clipboard Catcher off"), "", wx.ITEM_CHECK)
             tbMenu.Append(menuItem)
-            
+
             tbMenu.AppendSeparator()
 
 
@@ -5948,7 +5948,7 @@ class TaskBarIcon(wx.adv.TaskBarIcon):
 
 def importCode(code, usercode, userUserCode, name, add_to_sys_modules=False):
     """
-    Import dynamically generated code as a module. 
+    Import dynamically generated code as a module.
     usercode and code are the objects containing the code
     (a string, a file handle or an actual compiled code object,
     same types as accepted by an exec statement), usercode

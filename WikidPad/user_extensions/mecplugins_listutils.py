@@ -9,7 +9,7 @@ import itertools
 from pydna.utils import parse_text_table
 from pydna.utils import join_list_to_table
 from pydna.utils import expandtolist
-from natsort import natsorted  
+from natsort import natsorted
 
 def describeMenuItems(wiki):
     return (	(sortSelection,	    _(u"mecplugins|List utils|Sort selected lines")	   , _(u"sort selection")),
@@ -20,7 +20,7 @@ def describeMenuItems(wiki):
                 (table,	            _(u"mecplugins|List utils|table<->list")           , _(u"table")),
                 (expand_to_list,    _(u"mecplugins|List utils|expand bracket to list") , _(u"expand_to_list")), #mecplugins|List utils|
                 (bullet_list,       _(u"mecplugins|List utils|bullet list")            , _(u"bullet list")), #mecplugins|List utils|
-    
+
                 )
 
 
@@ -37,26 +37,33 @@ def bullet_list(wiki, evt):
     content = wiki.getActiveEditor().GetSelectedText()
 
     contentlist = content.strip().splitlines()
-    
+
     wobullets = []
     newbullets = []
-    
-    all_bullets = all( re.match("^\d+\.",r) for r in contentlist )
-    no_bullets  = not any( re.match("^\d+\.",r) for r in contentlist )
+    newunordered = []
+
+    all_bullets = all( re.match("\d+\..*",r) for r in contentlist )
+    no_bullets  = not any( re.match("^\d+\..*|(\-|\*|\+)\s.*",r) for r in contentlist )
+    all_unordered = all( re.match("(\-|\*|\+)\s.*",r) for r in contentlist )
 
     for i,r in enumerate(contentlist):
         row = re.split("^\d+\.",r)[-1]
+        row = re.split("(\-|\*|\+)\s",row)[-1]
+        print(row)
         wobullets.append(row.strip())
         newbullets.append(f"{i+1}. {row.strip()}")
-    
-    if all_bullets or no_bullets:
+        newunordered.append(f"- {row.strip()}")
+
+    if no_bullets:
         contentstring = "\n".join(newbullets)
-    else:
+    elif all_unordered:
         contentstring = "\n".join(wobullets)
-    
+    elif all_bullets:
+        contentstring = "\n".join(newunordered)
+
     wiki.getActiveEditor().ReplaceSelection(contentstring.strip())
     wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(contentstring))
-    return 
+    return
 
 
 def expand_to_list(wiki, evt):
@@ -156,10 +163,10 @@ def table(wiki, evt):
         f = join_list_to_table(content)
     else:
         f, cs,rs,rc,cr = parse_text_table(content)
-    
+
     if content.strip() == f.strip():
         f = cs
-        
+
     wiki.getActiveEditor().ReplaceSelection(f)
     wiki.getActiveEditor().SetSelectionByCharPos(start, start+len(f))
 

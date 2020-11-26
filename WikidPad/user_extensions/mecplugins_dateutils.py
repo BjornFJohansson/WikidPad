@@ -43,7 +43,7 @@ def describeMenuItems(wiki):
             (nextweek,            _(u"mecplugins|Date utils|next week"),                   _(u"next week")),
             (nextmonth,           _(u"mecplugins|Date utils|next month"),                  _(u"next month")),
             (nextyear,            _(u"mecplugins|Date utils|next year"),                   _(u"next year")),
-            (inserttime,          _(u"mecplugins|Date utils|insert time"),                 _(u"insert time")),            
+            (inserttime,          _(u"mecplugins|Date utils|insert time"),                 _(u"insert time")),
             (weekday_list,        _(u"mecplugins|Date utils|weekday list"),                _(u"weekday list")),
             )
 
@@ -53,7 +53,7 @@ def describeToolbarItemsV02(wiki):
             (close_tabs,                _(u"close tabs"),               _(u"close tabs"),               ("up arrow",),            None,   None, close_tabsrightclick),
             (prev,                      _(u"previous defined"),         _(u"previous defined"),         ("left arrow",),          None,   None, prevrightclick),
             (yesterday,                 _(u"yesterday"),                _(u"yesterday"),                ("arrow_left",),          None,   None, yesterdayrightclick),
-            (today,                     _(u"today"),                    _(u"today"),                    ("mec_today",),           None,   None, todayrightclick),    
+            (today,                     _(u"today"),                    _(u"today"),                    ("mec_today",),           None,   None, todayrightclick),
             (tomorrow,                  _(u"tomorrow"),                 _(u"tomorrow"),                 ("arrow_right",),         None,   None, tomorrowrightclick),
             (next_,                     _(u"next defined"),             _(u"next defined"),             ("right arrow",),         None,   None, nextrightclick),
             (calctrl,                   _(u"calendar"),                 _(u"calendar"),                 ("calendar",),),
@@ -184,8 +184,10 @@ def prev(wiki, evt):
             wiki.openWikiPage(before)
             newpos = wiki.getActiveEditor().GetText().lower().rfind(searchfrag.lower())
 
+        wiki.getActiveEditor().ShowPosition(newpos)
         wiki.getActiveEditor().SetSelectionByCharPos(newpos,newpos+len(searchfrag))
         wiki.getActiveEditor().unfoldAll()
+
     return
 
 
@@ -207,7 +209,7 @@ def todayrightclick(wiki, evt):
     for page in openpages:
         if page.getWikiWord()==today:
             wiki.getMainAreaPanel().showPresenter(page)
-            todaywasopen = True      
+            todaywasopen = True
         #elif re.match("^\d{4}-\d{2}-\d{2}$",page.getWikiWord()):
         #    wiki.getMainAreaPanel().closePresenterTab(page)
     if not todaywasopen:
@@ -218,21 +220,21 @@ def todayrightclick(wiki, evt):
 
 
 def thisweek(wiki, evt):
-    today = datetime.date.today()    
+    today = datetime.date.today()
     start = today - datetime.timedelta(days=today.weekday())
     weekdates = [(start+datetime.timedelta(days=R)).isoformat() for R in range(7)]
     openpages =  wiki.getMainAreaPanel().getDocPagePresenters()
     for page in openpages:
         if re.match("^\d{4}-\d{2}-\d{2}$",page.getWikiWord()):
-            wiki.getMainAreaPanel().closePresenterTab(page) # RemovePage ?    
+            wiki.getMainAreaPanel().closePresenterTab(page) # RemovePage ?
     for day in weekdates:
         presenter = wiki.createNewDocPagePresenterTab()
         presenter.openWikiPage(day)
         if day==today.isoformat():
-            page = presenter       
-    wiki.getMainAreaPanel().showPresenter(page)   
+            page = presenter
+    wiki.getMainAreaPanel().showPresenter(page)
     return
-    
+
 
 def nextweek(wiki, evt):
     today = datetime.date.today()
@@ -242,13 +244,13 @@ def nextweek(wiki, evt):
     openpages =  wiki.getMainAreaPanel().getDocPagePresenters()
     for page in openpages:
         if re.match("^\d{4}-\d{2}-\d{2}$",page.getWikiWord()):
-            wiki.getMainAreaPanel().closePresenterTab(page) # RemovePage ?    
+            wiki.getMainAreaPanel().closePresenterTab(page) # RemovePage ?
     for day in weekdates:
         presenter = wiki.createNewDocPagePresenterTab()
         presenter.openWikiPage(day)
         if day==today.isoformat():
-            page = presenter       
-    wiki.getMainAreaPanel().showPresenter(page)   
+            page = presenter
+    wiki.getMainAreaPanel().showPresenter(page)
     return
 
 
@@ -376,8 +378,11 @@ def next_(wiki, evt):
                 next_ = datelist[0]
             wiki.openWikiPage(next_)
             newpos = wiki.getActiveEditor().GetText().lower().find(searchfrag.lower())
+
+        wiki.getActiveEditor().ShowPosition(newpos)
         wiki.getActiveEditor().SetSelectionByCharPos(newpos,newpos+len(searchfrag))
         wiki.getActiveEditor().unfoldAll()
+
     return
 
 
@@ -467,8 +472,8 @@ def opencal(wiki, evt):
 
 def weekday_list(wiki, evt):
     if wiki.getCurrentWikiWord() is None:
-        return        
-    start, end = wiki.getActiveEditor().GetSelection()    
+        return
+    start, end = wiki.getActiveEditor().GetSelection()
     potential_date = wiki.getActiveEditor().GetSelectedText().strip()
     if not potential_date:
         return
@@ -478,7 +483,7 @@ def weekday_list(wiki, evt):
         return
     dates = u"\n".join(d.isoformat() for d in [date + datetime.timedelta(weeks=n) for n in range(52)])
     wiki.getActiveEditor().ReplaceSelection(dates)
-    wiki.getActiveEditor().SetSelection(start+len(potential_date), end+len(dates)-len(potential_date))    
+    wiki.getActiveEditor().SetSelection(start+len(potential_date), end+len(dates)-len(potential_date))
 
 
 def copydatetoclipboard(wiki, evt):
@@ -592,7 +597,7 @@ class CalendarDialog(wx.Frame):
         event.Skip()
         self.Destroy()
 
-    def set_defined_dates(self):	
+    def set_defined_dates(self):
         entries =[]
         date = self.calendar_ctrl_1.GetDate()
         year =  date.GetYear()

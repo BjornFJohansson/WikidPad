@@ -368,25 +368,25 @@ class WikiTxtCtrl(SearchableScintillaControl):
         self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabBackgroundThis(
                 evt, "below"), id=GUI_ID.CMD_ACTIVATE_NEW_TAB_BACKGROUND_THIS_BELOW)
 
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateThis(evt, "above"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateThis(evt, "above"),
                 id=GUI_ID.CMD_ACTIVATE_THIS_ABOVE)
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabThis(evt, "above"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabThis(evt, "above"),
                 id=GUI_ID.CMD_ACTIVATE_NEW_TAB_THIS_ABOVE)
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabBackgroundThis(evt, "above"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabBackgroundThis(evt, "above"),
                 id=GUI_ID.CMD_ACTIVATE_NEW_TAB_BACKGROUND_THIS_ABOVE)
 
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateThis(evt, "below"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateThis(evt, "below"),
                 id=GUI_ID.CMD_ACTIVATE_THIS_BELOW)
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabThis(evt, "below"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabThis(evt, "below"),
                 id=GUI_ID.CMD_ACTIVATE_NEW_TAB_THIS_BELOW)
-        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabBackgroundThis(evt, "below"), 
+        self.Bind(wx.EVT_MENU, lambda evt: self.OnActivateNewTabBackgroundThis(evt, "below"),
                 id=GUI_ID.CMD_ACTIVATE_NEW_TAB_BACKGROUND_THIS_BELOW)
 
 
-        self.Bind(wx.EVT_MENU, self.OnConvertUrlAbsoluteRelativeThis, 
+        self.Bind(wx.EVT_MENU, self.OnConvertUrlAbsoluteRelativeThis,
                 id=GUI_ID.CMD_CONVERT_URL_ABSOLUTE_RELATIVE_THIS)
 
-        self.Bind(wx.EVT_MENU, self.OnOpenContainingFolderThis, 
+        self.Bind(wx.EVT_MENU, self.OnOpenContainingFolderThis,
                 id=GUI_ID.CMD_OPEN_CONTAINING_FOLDER_THIS)
 
         self.Bind(wx.EVT_MENU, self.OnDeleteFile, id=GUI_ID.CMD_DELETE_FILE)
@@ -398,10 +398,10 @@ class WikiTxtCtrl(SearchableScintillaControl):
 
         self.Bind(wx.EVT_MENU, self.OnSelectTemplate, id=GUI_ID.CMD_SELECT_TEMPLATE)
 
-    # 2.8 does not support SetEditable - Define a dummy function for now
-    if wx.version().startswith("2.8"):
-        def SetEditable(self, state):
-            pass
+    # # 2.8 does not support SetEditable - Define a dummy function for now
+    # if wx.version().startswith("2.8"):
+    #     def SetEditable(self, state):
+    #         pass
 
 #     def __getattr__(self, attr):
 #         return getattr(self.cnt, attr)
@@ -467,16 +467,16 @@ class WikiTxtCtrl(SearchableScintillaControl):
         """
         Try to get file(name)s from clipboard and paste it at current
         cursor position as links.
-        
+
         testOnly -- Don't paste, only check if clipboard provides appropriate data
-        
+
         Returns True iff successful.
         """
-        
+
         filenames = wxHelper.getFilesFromClipboard()
         if filenames is None:
             return False
-            
+
         if testOnly:
             return True
 
@@ -496,9 +496,9 @@ class WikiTxtCtrl(SearchableScintillaControl):
         """
         Try to get image from clipboard and paste it at current
         cursor position as link.
-        
+
         testOnly -- Don't paste, only check if clipboard provides appropriate data
-        
+
         Returns True iff successful.
         """
 
@@ -509,10 +509,10 @@ class WikiTxtCtrl(SearchableScintillaControl):
         bmp = wxHelper.getBitmapFromClipboard()
         if bmp is None:
             return False
-        
+
         if testOnly:
             return True
-            
+
         img = bmp.ConvertToImage()
         del bmp
 
@@ -542,8 +542,8 @@ class WikiTxtCtrl(SearchableScintillaControl):
 
         self.ReplaceSelection(url)
         return True
-        
-    
+
+
 
 
     def pasteWmf(self, testOnly=False):
@@ -551,15 +551,15 @@ class WikiTxtCtrl(SearchableScintillaControl):
         Try to get Windows meta file from clipboard and paste it at current
         cursor position as link.
         On non-Windows OSs it always returns False.
-        
+
         testOnly -- Don't paste, only check if clipboard provides appropriate data
-        
+
         Returns True iff successful.
         """
 
         if not WindowsHacks:
             return False
-            
+
         if testOnly:
             return WikiTxtDialogs.ImagePasteSaver.isWmfAvailableOnClipboard()
 
@@ -572,7 +572,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
         destPath = imgsav.saveWmfFromClipboardToFileStorage(fs)
         if destPath is None:
             return False
-            
+
         url = self.presenter.getWikiDocument().makeAbsPathRelUrl(destPath)
 
         if url is None:
@@ -586,19 +586,19 @@ class WikiTxtCtrl(SearchableScintillaControl):
         """
         Try to get text from clipboard and paste it at current
         cursor position.
-        
+
         testOnly -- Don't paste, only check if clipboard provides appropriate data
-        
+
         Returns True iff successful.
         """
-    
+
         text = getTextFromClipboard()
         if not text:
             return False
-        
+
         if testOnly:
             return True
-            
+
         self.ReplaceSelection(text)
         return True
 
@@ -610,17 +610,17 @@ class WikiTxtCtrl(SearchableScintillaControl):
         cursor position.
 
         testOnly -- Don't paste, only check if clipboard provides appropriate data
-        
+
         Returns True iff successful.
         """
         rawHtml, url = wxHelper.getHtmlFromClipboard()
 
         if not rawHtml:
             return False
-            
+
         if testOnly:
             return True
-            
+
         return self.wikiLanguageHelper.handlePasteRawHtml(self, rawHtml, {})
 
 
@@ -658,29 +658,29 @@ class WikiTxtCtrl(SearchableScintillaControl):
 #         filenames = wxHelper.getFilesFromClipboard()
 #         if filenames is not None:
 #             mc = self.presenter.getMainControl()
-# 
+#
 #             paramDict = {"editor": self, "filenames": filenames,
 #                     "x": -1, "y": -1, "main control": mc,
 #                     "processDirectly": True}
-# 
+#
 # #             mc.getUserActionCoord().runAction(
 # #                     u"action/editor/this/paste/files/insert/url/ask", paramDict)
-# 
+#
 #             mc.getUserActionCoord().reactOnUserEvent(
 #                     u"event/paste/editor/files", paramDict)
-# 
+#
 #             return True
-# 
+#
 #         fs = self.presenter.getWikiDocument().getFileStorage()
 #         imgsav = WikiTxtDialogs.ImagePasteSaver()
 #         imgsav.readOptionsFromConfig(self.presenter.getConfig())
-# 
+#
 #         # Bitmap pasted?
 #         bmp = wxHelper.getBitmapFromClipboard()
 #         if bmp is not None:
 #             img = bmp.ConvertToImage()
 #             del bmp
-# 
+#
 #             if self.presenter.getConfig().getboolean("main",
 #                     "editor_imagePaste_askOnEachPaste", True):
 #                 # Options say to present dialog on an image paste operation
@@ -692,40 +692,40 @@ class WikiTxtCtrl(SearchableScintillaControl):
 #                     imgsav = dlg.getImagePasteSaver()
 #                 finally:
 #                     dlg.Destroy()
-# 
+#
 #             destPath = imgsav.saveFile(fs, img)
 #             if destPath is None:
 #                 # Couldn't find unused filename or saving denied
 #                 return True
-# 
+#
 #             url = self.presenter.getWikiDocument().makeAbsPathRelUrl(destPath)
-# 
+#
 #             if url is None:
 #                 url = u"file:" + StringOps.urlFromPathname(destPath)
-# 
+#
 #             self.ReplaceSelection(url)
 #             return True
-# 
+#
 #         if WindowsHacks:
-# 
+#
 #             # Windows Meta File pasted?
 #             destPath = imgsav.saveWmfFromClipboardToFileStorage(fs)
 #             if destPath is not None:
 #                 url = self.presenter.getWikiDocument().makeAbsPathRelUrl(destPath)
-#     
+#
 #                 if url is None:
 #                     url = u"file:" + StringOps.urlFromPathname(destPath)
-#     
+#
 #                 self.ReplaceSelection(url)
 #                 return True
-# 
+#
 #         # Text pasted?
 #         text = getTextFromClipboard()
 #         if text:
 #             self.ReplaceSelection(text)
 #             return True
-# 
-# 
+#
+#
 #         return False
 
 
@@ -1445,16 +1445,15 @@ class WikiTxtCtrl(SearchableScintillaControl):
         text = docPage.getLiveText()  # self.GetText()
         textlen = len(text)
 
+
         t = self.stylingThreadHolder.getThread()
         if t is not None:
             self.stylingThreadHolder.setThread(None)
             self.clearStylingCache()
 
-
-        if textlen < self.presenter.getConfig().getint(
-                "main", "sync_highlight_byte_limit"):
-#         if True:
+        if textlen < self.presenter.getConfig().getint("main", "sync_highlight_byte_limit"):
             # Synchronous styling
+
             self.stylingThreadHolder.setThread(None)
             self.buildStyling(text, 0, threadstop=DUMBTHREADSTOP)
 
@@ -1468,7 +1467,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
         else:
             # Asynchronous styling
             # This avoids further request from STC:
-            self.stopStcStyler()
+            # self.stopStcStyler()         # changed here !
 
             sth = self.stylingThreadHolder
 
@@ -1768,8 +1767,13 @@ class WikiTxtCtrl(SearchableScintillaControl):
         """
         Stops further styling requests from Scintilla until text is modified
         """
-        self.StartStyling(self.GetLength(), 0xff)
+        self.StartStyling(self.GetLength()) #, 0xff)     # changed here !
         self.SetStyling(0, 0)
+
+        # TypeError: StyledTextCtrl.StartStyling(): too many arguments
+
+
+
 
 
 
@@ -1787,7 +1791,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
 
         wx.CallAfter(putStyle)
 
-#         self.AddPendingEvent(StyleDoneEvent(stylebytes, foldingseq))
+#         self.AddPendingEvent(StyleDTranåsoneEvent(stylebytes, foldingseq))
 
 
 
@@ -1809,6 +1813,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
                     continue
                 else:
                     break
+
 
             stylebytes = self.processTokens(text, pageAst, threadstop)
 
@@ -1907,7 +1912,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
 
         found = searchOp.searchDocPageAndText(targetPage,
                 targetPage.getLiveText(), 0)
-        
+
         # Python 2.6, None and int were comparable, in Py 3.4 no more
         if found[0] is None:
             return found
@@ -2110,7 +2115,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
 
     def applyStyling(self, stylebytes, styleMask=0xff):
         if len(stylebytes) == self.GetLength():
-            self.StartStyling(0, styleMask)
+            self.StartStyling(0)  # , styleMask)# changed here !
             self.SetStyleBytes(len(stylebytes), stylebytes)
 
     def applyFolding(self, foldingseq):
@@ -2541,7 +2546,7 @@ class WikiTxtCtrl(SearchableScintillaControl):
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
-               
+
 
 
 
@@ -5549,11 +5554,11 @@ class ViHandler(ViHelper):
 
     def GetUnichrAt(self, pos, checkstart=False):
         """
-        Returns the character under the caret. 
+        Returns the character under the caret.
         """
         if checkstart:
             return self.ctrl.GetTextRange(
-                    self.PositionBefore(self.PositionAfter(pos)), 
+                    self.PositionBefore(self.PositionAfter(pos)),
                     self.ctrl.PositionAfter(pos))
         else:
             return self.ctrl.GetTextRange(pos, self.ctrl.PositionAfter(pos))
@@ -6654,7 +6659,7 @@ class ViHandler(ViHelper):
         n = 0
         for i in range(count):
             pos = text.find(search_char.encode(), pos + 1)
-            
+
         if pos > -1:
             if not wrap_lines:
 

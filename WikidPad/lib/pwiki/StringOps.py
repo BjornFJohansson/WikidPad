@@ -57,12 +57,12 @@ def convertLineEndings(text, newLe):
     if isinstance(text, BYTETYPES):
         if isinstance(newLe, str):
             newLe = newLe.encode("latin-1")
-        
+
         return newLe.join(LINEEND_SPLIT_RE_BYTES.split(text))
     else:
         if isinstance(newLe, BYTETYPES):
             newLe = newLe.decode("latin-1")
-        
+
         return newLe.join(LINEEND_SPLIT_RE_STR.split(text))
 
 
@@ -79,7 +79,7 @@ def lineendToOs(text):
 if isOSX():
     # generate dependencies for py2app
     import encodings.mac_roman
-    
+
     MBCS_ENCODING = "mac_roman"
 
 elif isLinux():
@@ -90,7 +90,7 @@ elif isLinux():
 
     if not MBCS_ENCODING:
         MBCS_ENCODING = "utf-8"
-        
+
 else:
     # generate dependencies for py2exe
     import encodings.ascii
@@ -147,7 +147,7 @@ else:
 if isWindows():
     if not os.path.supports_unicode_filenames:
         raise InternalError("This Python version does not support unicode paths")
-    
+
     # To process paths longer than 255 characters, Windows (NT and following)
     # expects an absolute path prefixed with \\?\
 
@@ -194,7 +194,7 @@ def unicodeToCompFilename(us):
     any filesystem encoding by converting unicode to '=xx' for
     characters up to 255 and '$xxxx' above. Each 'x represents a hex
     character.
-    
+
     Be aware that the returned filename may be too long to be allowed in
     the used filesystem.
     """
@@ -218,13 +218,13 @@ def unicodeToCompFilename(us):
 def strWithNone(s):
     if s is None:
         return ""
-    
+
     return s
 
 def uniWithNone(u):
     if u is None:
         return ""
-    
+
     return u
 
 
@@ -261,7 +261,7 @@ def fileContentToUnicode(content, tryHard=False):
     if isinstance(content, str):
         return content
 
-    try:    
+    try:
         if content.startswith(BOM_UTF8):
             return content[len(BOM_UTF8):].decode("utf-8", "surrogateescape")
         elif content.startswith(BOM_UTF16_BE):
@@ -276,7 +276,7 @@ def fileContentToUnicode(content, tryHard=False):
             return content.decode("utf-8", "strict")
         except UnicodeDecodeError:
             pass
-    
+
         try:
             return content.decode("utf-16", "strict")
         except UnicodeDecodeError:
@@ -329,7 +329,7 @@ def loadEntireTxtFile(filename):
 #         rf = open(pathEnc(filename), "w")
 #     else:
 #         rf = open(pathEnc(filename), "wb")
-# 
+#
 #     try:
 #         rf.write(content)
 #     finally:
@@ -342,10 +342,10 @@ def loadEntireFile(filename, textMode=False):
     """
     with open(pathEnc(filename), "rb") as rf:
         content = rf.read()
-    
+
     if textMode:
         content = lineendToInternal(content)
-    
+
     return content
 
 
@@ -366,7 +366,7 @@ def writeEntireFile(filename, content, textMode=False,
     Write entire file.
     content  can either be a bytestring or a tuple or list of bytestrings
     which are then written one by one to the file.
-    If textMode is True, content can also be a unistring or sequence 
+    If textMode is True, content can also be a unistring or sequence
     of them (no mixed bytestring/unistring sequences allowed!)
     which are then converted to UTF-8 and written to file with prefixed BOM
     for utf-8. In textMode, lineEndings are properly converted to the
@@ -390,27 +390,27 @@ def writeEntireFile(filename, content, textMode=False,
             else:    # content is a sequence
                 try:
                     iCont = iter(content)
-        
+
                     firstContent = next(iCont)
-                    
+
                     unic = False
                     if isinstance(firstContent, str):
                         firstContent = firstContent.encode("utf-8")
                         f.write(BOM_UTF8)
                         unic = True
-    
+
                     assert isinstance(firstContent, BYTETYPES)
                     if textMode:
                         content = lineendToOs(content)
                     f.write(firstContent)
-    
+
                     while True:
                         content = next(iCont)
-    
+
                         if unic:
                             assert isinstance(content, str)
                             content = content.encode("utf-8")
-    
+
                         assert isinstance(content, BYTETYPES)
                         if textMode:
                             content = lineendToOs(content)
@@ -419,23 +419,23 @@ def writeEntireFile(filename, content, textMode=False,
                     pass
         finally:
             f.close()
-        
+
     else:
         from . import TempFileSet
-        
+
         basePath = os.path.split(filename)[0]
         suffix = os.path.splitext(filename)[1]
-    
+
         if basePath == "":
             basePath = "."
-    
+
         tempPath = TempFileSet.createTempFile(content, suffix=suffix, path=basePath,
                 textMode=textMode)
-    
+
         # TODO: What if unlink or rename fails?
         if os.path.exists(filename):
             os.unlink(filename)
-    
+
         os.rename(tempPath, filename)
 
 
@@ -445,24 +445,24 @@ def getFileSignatureBlock(filename, timeCoarsening=None):
     Returns the file signature block for a given file. It is a bytestring
     containing size and modification date of the file and can be compared to a
     db-stored version to check for file changes outside of WikidPad.
-    
+
     The  timeCoarsening  can be a number of seconds (or fractions thereof).
     The modification time is rounded UP to a number divisible by timeCoarsening.
-    
+
     If a wiki is moved between file systems with different time granularity
     (e.g. NTFS uses 100ns, FAT uses 2s for mod. time) the file would be seen as
     dirty and cache data would be rebuild without need without coarsening.
     """
     statinfo = os.stat(pathEnc(filename))
-    
+
     if timeCoarsening is None or timeCoarsening <= 0:
         return pack(">BQd", 0, statinfo.st_size, statinfo.st_mtime)
-    
+
     ct = int(math.ceil(statinfo.st_mtime / timeCoarsening)) * timeCoarsening
-    
+
     return pack(">BQd", 0, statinfo.st_size, ct)
 
-    
+
 
 
 def removeBracketsFilename(fn):
@@ -480,9 +480,9 @@ def revStr(s):
     """
     Return reversed string
     """
-    s = list(s)
-    s.reverse()
-    return "".join(s)
+    #s = list(s)
+    #s.reverse()
+    return s[::-1] #"".join(s)
 
 def splitKeep(s, delim):
     """
@@ -504,7 +504,7 @@ def splitIndentDeepness(text):
     pl = len(text)
     text = text.lstrip()
     return (pl-len(text), text)
-    
+
 def splitIndent(text):
     """
     Return tuple (ind, t) where ind is a string of the indentation characters
@@ -529,8 +529,8 @@ def findLineEnd(text, pos):
         return len(text)
     else:
         return result
-    
-    
+
+
 
 LASTWORDSTART_RE = _re.compile(r"(?:.*\W)?()\w", _re.UNICODE)
 FIRSTWORDEND_RE = _re.compile(r".*?()(?:\W|(?!.))", _re.UNICODE)
@@ -545,7 +545,7 @@ def getNearestWordStart(text, pos):
         return match.start(1)
     else:
         return pos
-        
+
 
 def getNearestWordEnd(text, pos):
     match = FIRSTWORDEND_RE.match(text, pos)
@@ -566,7 +566,7 @@ def styleSelection(text, start, afterEnd, startChars, endChars=None):
     startChars -- Characters to place before selection
     endChars -- Characters to place after selection. If None, startChars
             is used for that, too
-    
+
     Returns tuple (replacement, repStart, repAfterEnd, selStart, selAfterEnd) where
 
         replacement -- replacement text
@@ -582,7 +582,7 @@ def styleSelection(text, start, afterEnd, startChars, endChars=None):
     if start == afterEnd:
         start = getNearestWordStart(text, start)
         afterEnd = getNearestWordEnd(text, start)
-        
+
     emptySelection = start == afterEnd  # is selection empty
 
     replacement = startChars + text[start:afterEnd] + endChars
@@ -597,7 +597,7 @@ def styleSelection(text, start, afterEnd, startChars, endChars=None):
 
     return (replacement, start, afterEnd, cursorPos, cursorPos)
 
-    
+
 
 def splitFill(text, delim, count, fill=""):
     """
@@ -608,7 +608,7 @@ def splitFill(text, delim, count, fill=""):
     result = text.split(delim, count)
     if len(result) < count + 1:
         result += [fill] * (count + 1 - len(result))
-    
+
     return result
 
 
@@ -616,11 +616,11 @@ def splitFill(text, delim, count, fill=""):
 #     """
 #     Split a unified name path and return a list of components.
 #     If a part of the path must contain a slash it is quoted as double slash.
-#     
+#
 #     Some unified names shouldn't be processed by this function, especially
 #     "wikipage/..." unifNames
 #     """
-#     result = 
+#     result =
 
 
 
@@ -684,7 +684,7 @@ class AbstractHtmlItem:
     """
     def __init__(self):
         pass
-    
+
     def asString(self):
         raise NotImplementedError
 
@@ -706,7 +706,7 @@ class HtmlStartTag(AbstractHtmlItem):
         else:
             self.attributes = dict((k, escapeHtml(v).replace("\"", "&quot;"))
                     for k, v in attributes.items())
-    
+
     def addAttribute(self, key, value):
         if value is None:
             value = key
@@ -733,11 +733,11 @@ class HtmlStartTag(AbstractHtmlItem):
         return " ".join(
                 k + "=\"" + v + "\""
                 for k, v in self.attributes.items())
-    
+
     def asString(self):
         if len(self.attributes) == 0:
             return "<" + self.tag + ">"
-        
+
         attrString = self.getStringForAttributes()
         return "<" + self.tag + " " + attrString + ">"
 
@@ -750,11 +750,11 @@ class HtmlEmptyTag(HtmlStartTag):
     """
     Start tag which is also end tag
     """
-    
+
     def asString(self):
         if len(self.attributes) == 0:
             return "<" + self.tag + " />"
-        
+
         attrString = self.getStringForAttributes()
         return "<" + self.tag + " " + attrString + " />"
 
@@ -768,7 +768,7 @@ class HtmlEndTag(AbstractHtmlItem):
     """
     def __init__(self, tag):
         self.tag = tag
-    
+
     def asString(self):
         return "</" + self.tag + ">"
 
@@ -783,19 +783,19 @@ class HtmlEntity(AbstractHtmlItem):
     def __init__(self, entity):
         if entity[0] != "&":
             entity = "&" + entity
-        
+
         if entity[-1] != ";":
             entity += ";"
-        
+
         self.entity = entity
 
     def asString(self):
         return self.entity
-    
+
     def clone(self):
         return HtmlEntity(self.entity)
 
-    
+
 
 def escapeForIni(text, toEscape=""):
     """
@@ -894,16 +894,16 @@ def colorDescToRgbTuple(desc):
 #     desc = desc.strip()
 #     if len(desc) == 0:
 #         return None
-#     
+#
 #     if desc[0] != "#":
 #         desc = desc.replace(" ", "").lower()
 #         desc = _COLORBASE.get(desc)
 #         if desc is None:
 #             return None
-# 
+#
 #     if len(desc) == 4:
 #         desc = "#" + desc[1] + desc[1] + desc[2] + desc[2] + desc[3] + desc[3]
-# 
+#
 #     if len(desc) != 7:
 #         return None
 #     try:
@@ -927,7 +927,7 @@ def base64BlockEncode(data):
     Cut a sequence of base64 characters into chunks of 70 characters
     and join them with newlines. Pythons base64 decoder can read this.
     data -- bytes to encode
-    
+
     returns string
     """
     b64 = base64.b64encode(data)
@@ -959,9 +959,9 @@ def formatWxDate(frmStr, date):
     """
     if frmStr == "":
         return frmStr
-    
+
     resParts = []
-    
+
     for part in EXTENDED_STRFTIME_RE.split(frmStr):
         if not part:
             continue
@@ -989,18 +989,18 @@ def formatTimeT(frmStr, timet=None):
     """
     if frmStr == "":
         return frmStr
-    
+
     resParts = []
-    
+
     if timet is None:
         locTime = time.localtime()
     else:
         locTime = time.localtime(timet)
-    
+
     for part in EXTENDED_STRFTIME_RE.split(frmStr):
         if not part:
             continue
-            
+
         if part == "%u":
             # Create weekday following ISO-8601 (1=Monday, ..., 7=Sunday)
             resParts.append("%i" % (locTime.tm_wday + 1))
@@ -1012,7 +1012,7 @@ def formatTimeT(frmStr, timet=None):
     frmStr = "".join(resParts)
 
     return time.strftime(unescapeWithRe(frmStr), locTime)
-    
+
 
 
 
@@ -1056,7 +1056,7 @@ def getRelativeFilePathAndTestContained(location, toFilePath):
 
 
     Function returns None as first tuple item if an absolute path is needed!
-    
+
     Tests if toFilePath is a file or dir contained in location and returns
         truth value in second tuple item
 
@@ -1086,7 +1086,7 @@ def getRelativeFilePathAndTestContained(location, toFilePath):
     if len(locParts) == locLen:
         # Nothing matches at all, absolute path needed
         return None, False
-        
+
     isContained = len(fileParts) > 0
     if len(locParts) > 0:
         # go back some steps
@@ -1094,7 +1094,7 @@ def getRelativeFilePathAndTestContained(location, toFilePath):
         isContained = False
 
     result += fileParts
-    
+
     if len(result) == 0:
         return "", False
     else:
@@ -1150,7 +1150,7 @@ def flexibleUrlUnquote(link):
     """
     Tries to unquote an url.
     TODO: Faster and more elegantly.
-    
+
     link -- unistring
     """
     if link is None:
@@ -1165,16 +1165,16 @@ def flexibleUrlUnquote(link):
         while i < len(link) and ord(link[i]) < 128:
             asciiPart += chr(ord(link[i]))
             i += 1
-        
+
         result += _asciiFlexibleUrlUnquote(asciiPart)
 
         unicodePart = ""
         while i < len(link) and ord(link[i]) >= 128:
             unicodePart += link[i]
             i += 1
-        
+
         result += unicodePart
-        
+
     return result.value()
 
 
@@ -1187,7 +1187,7 @@ URL_RESERVED = frozenset((";", "?", ":", "@", "&", "=", "+", ",", "/",
 def urlQuote(s, safe='/'):
     """
     Modified version of urllib.quote supporting unicode.
-    
+
     Each part of a URL, e.g. the path info, the query, etc., has a
     different set of reserved characters that must be quoted.
 
@@ -1205,12 +1205,12 @@ def urlQuote(s, safe='/'):
     is reserved, but in typical usage the quote function is being
     called on a path where the existing slash characters are used as
     reserved characters.
-    
+
     The characters u"{", u"}", u"|", u"\", u"^", u"~", u"[", u"]", u"`"
     are considered unsafe and should be quoted as well.
     """
     result = []
-    
+
     for c in s:
         if c not in safe and (ord(c) < 33 or c in URL_RESERVED):
             result.append("%%%02X" % ord(c))
@@ -1226,7 +1226,7 @@ def urlQuoteSpecific(s, toQuote=''):
     Only quote characters in toQuote
     """
     result = []
-    
+
     for c in s:
         if c in toQuote:
             result.append("%%%02X" % ord(c))
@@ -1313,7 +1313,7 @@ else:
     def urlFromPathname(fn, addSafe=''):
         if isinstance(fn, BYTETYPES):
             fn = fileContentToUnicode(fn, tryHard=True)
-            
+
         # riscos not supported
         url = urlQuote(fn, safe='/$' + addSafe)
 #         url.replace("%24", "$")
@@ -1326,7 +1326,7 @@ else:
 def ntPathnameFromUrl(url, testFileType=True):
     r"""
     Modified version of nturl2path.url2pathname.
-    
+
     Convert a URL to a DOS path.
 
             ///C|/foo/bar/spam.foo
@@ -1334,7 +1334,7 @@ def ntPathnameFromUrl(url, testFileType=True):
                     becomes
 
             C:\foo\bar\spam.foo
-            
+
     testFileType -- ensure that URL has type "file" (and starts with "file:")
             throw RuntimeError if not.
     """
@@ -1343,7 +1343,7 @@ def ntPathnameFromUrl(url, testFileType=True):
         url = url[5:]
     elif testFileType:
         raise RuntimeError('Cannot convert non-local URL to pathname')
-        
+
     # Strip fragment or query if present
     url, dummy = decomposeUrlQsFrag(url)
 
@@ -1374,7 +1374,7 @@ def ntPathnameFromUrl(url, testFileType=True):
 #     comp = url.split('|')
 #     if len(comp) == 1:
 #         comp = url.split(':')
-# 
+#
 #     if len(comp) != 2 or len(comp[0]) == 0 or comp[0][-1] not in string.ascii_letters:
 #         error = 'Bad URL: ' + url
 #         raise IOError, error
@@ -1446,7 +1446,7 @@ def elsePathnameFromUrl(url, testFileType=True):
         url = url[5:]
     elif testFileType:
         raise RuntimeError('Cannot convert non-local URL to pathname')
-    
+
     # Strip fragment or query if present
     url, dummy = decomposeUrlQsFrag(url)
 
@@ -1475,7 +1475,7 @@ def decomposeUrlQsFrag(url):
     Returns a 2-tuple with main part and additional part of URL.
     """
     return _DECOMPOSE_URL_RE.match(url).groups()
-    
+
 
 def composeUrlQsFrag(mainUrl, additional):
     """
@@ -1483,7 +1483,7 @@ def composeUrlQsFrag(mainUrl, additional):
     simple function but may become more complex later.
     """
     return mainUrl + additional
-    
+
 
 
 def _quoteChar(c):
@@ -1507,23 +1507,23 @@ def iterCompatibleFilename(baseName, suffix, asciiOnly=False, maxLength=120,
     """
     Generator to create filenames compatible to (hopefully) all major
     OSs/filesystems.
-    
+
     Encode a unicode filename to a filename compatible to (hopefully)
     any filesystem encoding by converting unicode to '%xx' for
     characters up to 250 and '@xxxx' above. Each 'x represents a hex
     character.
-    
+
     If the resulting name is too long it is shortened.
-    
+
     If the first returned filename isn't accepted, a sequence of random
     characters, delimited by a tilde '~' is added. If the filename is then
     too long it is also shortened.
-    
+
     The first random sequence isn't random but a MD5-hash of baseName.
-    
+
     Each time you ask for next filename, a new sequence of random characters
     is created.
-    
+
     baseName - Base name to use for the filename
     suffix - Suffix (must include the dot) of the filename. The suffix must not
             be empty, is not quoted in any way and should follow the
@@ -1566,14 +1566,14 @@ def iterCompatibleFilename(baseName, suffix, asciiOnly=False, maxLength=120,
     if len(baseName) > 0:
         # First try, no random part
         yield "".join(baseQuoted) + suffix
-    
+
     # Add random part to length
     overallLength += 1 + randomLength
-    
+
     # Shorten baseQuoted again
     while overallLength > maxLength:
         overallLength -= len(baseQuoted.pop())
-   
+
     beforeRandom = "".join(baseQuoted) + "~"
 
     # Now we try MD5-Hash. This is one last try to create a filename which
@@ -1591,7 +1591,7 @@ def iterCompatibleFilename(baseName, suffix, asciiOnly=False, maxLength=120,
 
 def _unquoteCharRepl(matchObj):
     s = matchObj.group(0)
-    
+
     if s[0] == "%":
         v = int(s[1:3], 16)
         return chr(v)
@@ -1609,9 +1609,9 @@ def guessBaseNameByFilename(filename, suffix=""):
     Try to guess the basename for a particular file name created by
     iterCompatibleFilename() as far as it can be reconstructed.
     """
-    # Filename may contain a path, so at first, strip it 
+    # Filename may contain a path, so at first, strip it
     filename = os.path.basename(filename)
-    
+
     if filename.endswith(suffix):
         filename = filename[:-len(suffix)]
     # else?
@@ -1637,7 +1637,7 @@ def createRandomString(length):
 
 
 # _RNDBASENOHEX = u"GHIJKLMNOPQRSTUVWXYZ"
-# 
+#
 # def createRandomStringNoHexFirst(length):
 #     """
 #     Create a unicode string of  length  random characters and digits.
@@ -1645,7 +1645,7 @@ def createRandomString(length):
 #     """
 #     if length == 0:
 #         return u""
-# 
+#
 #     return random.choice(_RNDBASENOHEX) + u"".join([random.choice(_RNDBASESEQ)
 #             for i in range(length - 1)])
 
@@ -1654,21 +1654,21 @@ def getMd5B36ByString(text):
     """
     Calculate the MD5 hash of text (if unicode after conversion to utf-8)
     and return it as unistring for numeric base 36.
-    
+
     Based on http://code.activestate.com/recipes/111286/
     """
     if isinstance(text, str):
         text = text.encode("utf-8")
-    
+
 #     digest = hashlib.md5(text).digest()
-# 
+#
 #     # make an integer out of the number
 #     x = 0L
 #     for digit in digest:
 #        x = x*256 + ord(digit)
 
     x = int(hashlib.md5(text).hexdigest(), 16)
-    
+
     # create the result in base len(_RNDBASESEQ) (=36)
     res=""
     if x == 0:
@@ -1727,10 +1727,10 @@ def binToStr(b):
 #         if e in s:
 #             result.append(e)
 #             s.remove(e)
-#     
+#
 #     for e in s:
 #         result.append(e)
-#     
+#
 #     return result
 
 
@@ -1762,11 +1762,11 @@ def wikiUrlToPathWordAndAnchor(url):
 #     filePath = urllib.url2pathname(url)
 
     return (filePath, wikiWordToOpen, anchorToOpen)
-    
-    
+
+
 def pathWordAndAnchorToWikiUrl(filePath, wikiWordToOpen, anchorToOpen):
     url = urlFromPathname(filePath)
-    
+
     queryStringNeeded = (wikiWordToOpen is not None) or \
             (anchorToOpen is not None)
 
@@ -1779,7 +1779,7 @@ def pathWordAndAnchorToWikiUrl(filePath, wikiWordToOpen, anchorToOpen):
             result.append("page=")
             result.append(urlQuote(wikiWordToOpen, safe=""))
             ampNeeded = True
-        
+
         if anchorToOpen is not None:
             if ampNeeded:
                 result.append("&")
@@ -1788,7 +1788,7 @@ def pathWordAndAnchorToWikiUrl(filePath, wikiWordToOpen, anchorToOpen):
             ampNeeded = True
 
     return "".join(result)
-    
+
 
 def joinRegexes(patternList):
     return "(?:(?:" + ")|(?:".join(patternList) + "))"
@@ -1820,7 +1820,7 @@ class SnippetCollector:
                 self.snippets[-1] = self.snippets[-1][:-length]
                 self.length -= length
                 break;
-            
+
             if length >= len(self.snippets[-1]):
                 length -= len(self.snippets[-1])
                 self.length -= len(self.snippets[-1])
@@ -1833,14 +1833,14 @@ class SnippetCollector:
         self.length += len(s)
         self.snippets.append(s)
 
-    
+
     def __iadd__(self, s):
         self.append(s)
         return self
 
     def value(self):
         return self.emptyElement.join(self.snippets)
-    
+
     def __len__(self):
         return self.length
 
@@ -1854,7 +1854,7 @@ class Conjunction:
             whereClause += conjunction() + "word = ? "
         if ...:
             whereClause += conjunction() + "key = ? "
-    
+
     will always create a valid where-clause
     """
     def __init__(self, firstpart, otherpart):
@@ -1995,7 +1995,7 @@ def muDiffToCompact(b, diff):
     result = []
     for (i, ilen, j, jlen) in diff:
         assert ilen > 0 or jlen > 0
-        
+
         if ilen == 0:
             # insert
             result.append((2, i, b[j:(j + jlen)]))
@@ -2005,9 +2005,9 @@ def muDiffToCompact(b, diff):
         else:
             #replace
             result.append((0, i, i + ilen, b[j:(j + jlen)]))
-    
+
     return result
-        
+
 
 
 def muCompactDiff(a, b):
@@ -2019,7 +2019,7 @@ def getBinCompactForDiff(a, b, mode=1):
     Return the binary compact codes to change bytes a to b.
     For bytes a and b (NOT strings) it is always true that
         applyBinCompact(a, getBinCompactForDiff(a, b)) == b
-    
+
     mode -- 0: Use standard library's difflib (yet default)
             1: Use Myers-Ukkonen algorithm (much faster on larger data with
                small changes)
@@ -2036,24 +2036,24 @@ def getBinCompactForDiff(a, b, mode=1):
 
 # UPPERCASE = None
 # LOWERCASE = None
-# 
+#
 # def _fillConsts():
 #     global UPPERCASE, LOWERCASE
 #     from unicodedata import category
-#     
+#
 #     uc = []
 #     lc = []
-#     
+#
 #     for i in range(0, 0x10000):
 #         c = unichr(i)
 #         if category(c) == "Ll":
 #             lc.append(c)
 #         elif category(c) == "Lu":
 #             uc.append(c)
-#     
+#
 #     UPPERCASE = u"".join(uc)
 #     LOWERCASE = u"".join(lc)
-# 
+#
 # _fillConsts()
 
 

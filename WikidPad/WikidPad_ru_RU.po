@@ -2856,7 +2856,7 @@ msgstr "Атрибут '%s' уже определён на вики-страни
 
 #: lib\pwiki\AttributeHandling.py:558
 msgid "Icon name doesn't exist: [%s: %s]"
-msgstr "Такой иконки не существует: [%s: %s]"
+msgstr "Такой иконки не существует: [%s: %s]"
 
 #: lib\pwiki\AttributeHandling.py:565
 msgid "Color name doesn't exist: [%s: %s]"

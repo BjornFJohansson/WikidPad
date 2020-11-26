@@ -7,6 +7,7 @@ import os, sys, traceback, re
 
 import wx
 import aui
+# from wx import aui
 # import wx.xrc as xrc
 
 from .wxHelper import GUI_ID, copyTextToClipboard, getAccelPairFromKeyDown, \
@@ -42,7 +43,10 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         #       * Check how day order is affected when splitting the page
         #
         #aui.AuiNotebook.__init__(self, parent, id, agwStyle=aui.AUI_NB_TAB_MOVE|aui.AUI_NB_TAB_SPLIT|aui.AUI_NB_TAB_FLOAT|aui.AUI_NB_ORDER_BY_ACCESS)
-        aui.AuiNotebook.__init__(self, parent, id, agwStyle=aui.AUI_NB_DEFAULT_STYLE & ~aui.AUI_NB_MIDDLE_CLICK_CLOSE)
+        aui.AuiNotebook.__init__(self,
+                                 parent,
+                                 id,
+                                 style=aui.AUI_NB_DEFAULT_STYLE & ~aui.AUI_NB_MIDDLE_CLICK_CLOSE)
 
 #         nb = wx.PreNotebook()
 #         self.PostCreate(nb)
@@ -52,7 +56,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 #                 aui.AUI_NB_TAB_MOVE |\
 #                 aui.AUI_NB_TAB_EXTERNAL_MOVE |\
 #                 aui.AUI_NB_TAB_FLOAT
-# 
+#
 #         # Playing around (testing different style flags)
 #         self.SetAGWWindowStyleFlag(flags)
 
@@ -83,10 +87,10 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         self.Bind(aui.EVT_AUINOTEBOOK_TAB_MIDDLE_DOWN, self.OnTabMiddleDown, self)
         self.Bind(aui.EVT_AUINOTEBOOK_TAB_DCLICK, self.OnTabDoubleClick, self)
         self.Bind(aui.EVT_AUINOTEBOOK_PAGE_VISIBILITY_CHANGED,
-                self.OnNotebookPageVisibilityChanged)
+                  self.OnNotebookPageVisibilityChanged)
         self.Bind(aui.EVT_AUINOTEBOOK_SET_FOCUS,
-                self.OnNotebookPageSetFocus)
-        
+                   self.OnNotebookPageSetFocus)
+
         # self.Bind(wx.EVT_CONTEXT_MENU, self.OnTabContextMenu)
 
         self.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
@@ -119,18 +123,18 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         # TODO: Some of the code arround this needs to be rewritten as
         #       focus events are not successfully followed
         return self.currentPresenter
-        
+
     def getCurrentSubControlName(self):
         if self.currentPresenter is None:
             return None
-        
+
         return self.currentPresenter.getCurrentSubControlName()
 
 
     def getCurrentSubControl(self):
         if self.currentPresenter is None:
             return None
-        
+
         return self.currentPresenter.getCurrentSubControl()
 
 
@@ -319,7 +323,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         """
         return self.getActivePresenterInTabCtrl(
                 self.getTabCtrlTo(direction, presenter))
-        
+
 
     def getPossibleTabCtrlDirections(self, presenter=None):
         """
@@ -333,7 +337,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
             possible_directions[direction] = self.getTabCtrlTo(direction, presenter)
 
         return possible_directions
-        
+
 
     def updateConfig(self):
         """
@@ -427,14 +431,14 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         self.AddPage(presenter, "    ")
         presenter.getMiscEvent().addListener(self)
 
-        # Is not needed with AuiNotebook (and breaks new background tab 
+        # Is not needed with AuiNotebook (and breaks new background tab
         # compatability)
         #if SystemInfo.isLinux():
         #    presenter.Show(True)
 
         if self.getCurrentPresenter() is None:
             self.prepareCurrentPresenter(presenter)
-            
+
         self.updateConfig()
 
         return presenter
@@ -456,12 +460,12 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         idx = self.getIndexForPresenter(presenter)
         if idx == wx.NOT_FOUND:
             return False
-            
+
         newIdx = -1
         if idx == self.GetSelection():
             switchMru = self.mainControl.getConfig().getboolean("main",
                     "mainTabs_switchMruOrder", True)
-    
+
             if switchMru:
                 # We are closing current active presenter and use MRU order
                 # to switch -> select previous presenter in MRU order
@@ -498,7 +502,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         idx = self.getIndexForPresenter(presenter)
         if idx == wx.NOT_FOUND:
             return
-            
+
         # Actual remove
         self._mruTabWindowDelete(presenter)
         self.RemovePageByIdx(idx)
@@ -512,12 +516,12 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 #         current = self.currentPresenter
 #         if current is None:
 #             return
-# 
+#
 #         if not isinstance(current, BasicDocPagePresenter):
 #             # Current presenter is not a doc page one, so take first doc page
 #             # presenter instead
 #             current = self.getDocPagePresenters()[0]
-# 
+#
 #         # Loop over copy of the presenter list
 #         for presenter in self.getPresenters():
 # #             if isinstance(presenter, BasicDocPagePresenter) and \
@@ -526,21 +530,21 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 # #                 return
 #             if presenter is current:
 #                 continue
-# 
+#
 #             self.closePresenterTab(presenter)
 
     def _closeAllTabs(self):
         """
         Close all tabs.
         """
-        
+
         for idx in range(self.GetPageCount() - 1, -1, -1):
             presenter = self.GetPage(idx)
             presenter.close()
             self.DeletePage(idx)
-            
+
         self._mruTabWindowClear()
-        
+
         self.currentPresenter = None
         proxyEvent = self.getCurrentPresenterProxyEvent()
         proxyEvent.setWatchedEvent(None)
@@ -553,7 +557,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         """
         if self.GetPageIndex(presenter) == wx.NOT_FOUND:
             return
-            
+
         if not isinstance(presenter, BasicDocPagePresenter):
             return
 
@@ -580,7 +584,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 #         if self.preparingPresenter:
 #             evt.Veto()
 #             return
-# 
+#
 #         evt.Skip()
 
     def OnNotebookPageChanged(self, evt):
@@ -590,7 +594,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
             self._mruTabWindowPushToTop(presenter)
             presenter.SetFocus()
 
-        
+
     def OnNotebookPageVisibilityChanged(self, evt):
         evt.GetPageWindow().setLayerVisible(evt.IsVisible())
 
@@ -681,17 +685,17 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 
     def _mruTabWindowClear(self):
         self._mruTabSequence.clear()
-        
+
 
 
     def OnGoTab(self, evt):
         pageCount = self.GetPageCount()
         if pageCount < 2:
             return
-            
+
         switchMru = self.mainControl.getConfig().getboolean("main",
                 "mainTabs_switchMruOrder", True)
-                
+
         newWnd = None
         newIdx = -1
 
@@ -811,10 +815,10 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 
     def getPerspectiveType(self):
         return "MainAreaPanel"
-        
+
     def getStoredPerspective(self):
         # Based on AuiNotebook.SavePerspective()
-        
+
         # Build list of panes/tabs
         # Version code
         tabs = "v1/"
@@ -823,7 +827,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         sel_wnd = self.GetCurrentPage()
 
         paneDescs = []
-        
+
         for pane in all_panes:
             paneDesc = ""
 
@@ -848,7 +852,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
                 page = tabframe._tabs.GetPage(p)
                 if not isinstance(page.window, StorablePerspective):
                     continue
-                    
+
                 tabPerspect = page.window.getStoredPerspective()
                 if tabPerspect is None:
                     continue
@@ -861,16 +865,16 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
                     tabDesc += "+"
                 else:
                     tabDesc += " "
-                    
+
                 tabDesc += escapeForIni(page.window.getPerspectiveType(), "|=,@") + "="
                 tabDesc += escapeForIni(page.caption, "|=,@") + "="
                 tabDesc += str(self._mruTabSequence.find(page.window)) + "="
                 tabDesc += escapeForIni(tabPerspect, "|=,@")
-                
+
                 tabDescs.append(tabDesc)
 
             paneDesc += ",".join(tabDescs)
-            
+
             paneDescs.append(paneDesc)
 
 
@@ -880,8 +884,8 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
         tabs += self._mgr.SavePerspective()
 
         return tabs
-    
-        
+
+
     def setByStoredPerspective(self, perspectType, data, typeFactory):
         """
         Unlike the default LoadPerspective() function the necessary tabs are
@@ -899,7 +903,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 
         # Delete all tab ctrls
         tab_count = self._tabs.GetPageCount()
-        
+
         # Contains a list of windows which should be deleted finally
         # Deletion is postponed as typeFactory may be able to recycle
         # some of them (currently not)
@@ -912,19 +916,19 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
             ctrl, ctrl_idx = self.FindTab(wnd)
             if not ctrl:
                 return False
-                
+
             # remove the tab from ctrl
             if not ctrl.RemovePage(wnd):
                 return False
-                
+
             windowsToDel.append(wnd)
-            
+
         self.RemoveEmptyTabFrames()
-        
+
         self._tabs.RemoveAllPages()
 
         mruList = []
-        
+
         # Main area panel is empty at this point
 
         sel_wnd = None
@@ -1001,12 +1005,12 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
                 page.dis_bitmap = wx.NullBitmap
                 page.active = False
                 page.control = None
-                
+
                 self._tabs.AddPage(page.window, page)
                 # Move tab to pane
                 newpage_idx = dest_tabs.GetPageCount()
                 dest_tabs.InsertPage(page.window, page, newpage_idx)
-                
+
                 # --- begin WikidPad specific ---
                 page.window.getMiscEvent().addListener(self)
                 try:
@@ -1018,7 +1022,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
                 except ValueError:
                     traceback.print_exc()
                 # --- end WikidPad specific ---
-                    
+
                 if c == '+':
                     dest_tabs.SetActivePage(newpage_idx)
                     active_found = True
@@ -1030,7 +1034,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 
             if not active_found:
                 dest_tabs.SetActivePage(0)
-                
+
             # --- begin WikidPad specific ---
             self._mruTabSequence = Utilities.IdentityList(
                     wnd for wnd in mruList if wnd is not None)
@@ -1053,7 +1057,7 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
 
         # Force refresh of selection
         self._curpage = -1
-        
+
         if sel_wnd is None:
             self.SetSelection(0)
         else:
@@ -1061,14 +1065,14 @@ class MainAreaPanel(aui.AuiNotebook, MiscEventSourceMixin, StorablePerspective):
             self._mruTabWindowPushToTop(sel_wnd)
 
         self.UpdateTabCtrlHeight()
-        
+
         # Now delete all orphaned windows
-        
+
         for wnd in windowsToDel:
             if self._tabs.GetIdxFromWindow(wnd) != wx.NOT_FOUND:
                 # Window in again use
                 continue
-        
+
             if isinstance(wnd, StorablePerspective):
                 wnd.deleteForNewPerspective()
             else:

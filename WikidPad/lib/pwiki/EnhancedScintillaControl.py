@@ -28,7 +28,7 @@ class StyleCollector(StringOps.SnippetCollector):
     Helps to collect the style bytes needed to set the syntax coloring in
     Scintilla editor component
     """
-    def __init__(self, defaultStyleNo, text, bytelenSct, startCharPos=0):   
+    def __init__(self, defaultStyleNo, text, bytelenSct, startCharPos=0):
         super(StyleCollector, self).__init__(b"")
         self.defaultStyleNo = defaultStyleNo
         self.text = text
@@ -39,7 +39,7 @@ class StyleCollector(StringOps.SnippetCollector):
     def bindStyle(self, targetCharPos, targetLength, styleNo):
         if targetCharPos < 0:
             return
-        
+
         if targetCharPos < self.charPos:
             # Due to some unknown reason we had overlapping styles and
             # must remove some bytes
@@ -52,7 +52,7 @@ class StyleCollector(StringOps.SnippetCollector):
             self.append(bytes((self.defaultStyleNo,)) * bytestylelen)
 
         self.charPos = targetCharPos + targetLength
-            
+
         bytestylelen = self.bytelenSct(self.text[targetCharPos:self.charPos])
         self.append(bytes((styleNo,)) * bytestylelen)
 
@@ -68,6 +68,7 @@ class StyleCollector(StringOps.SnippetCollector):
 
 
 class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
+
     def __init__(self, parent, ID):
         wx.stc.StyledTextCtrl.__init__(self, parent, ID, style=wx.WANTS_CHARS | wx.TE_PROCESS_ENTER)
 
@@ -88,20 +89,20 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
         if text:
             self.ReplaceSelection(text)
             return True
-        
+
         return False
 
 
     def _resetKeyBindings(self):
-        
+
         self.CmdKeyClearAll()
-        
+
         # Register general keyboard commands (minus some which may lead to problems
         for key, mod, action in _DEFAULT_STC_KEYS:
             self.CmdKeyAssign(key, mod, action)
-            
+
         self.allowRectExtend(True)
-        
+
         if isOSX():
             for key, mod, action in _MACOS_ADD_STC_KEYS:
                 self.CmdKeyAssign(key, mod, action)
@@ -141,7 +142,7 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
 
     def showSelectionByCharPos(self, start, end):
         """
-        Same as SetSelectionByCharPos(), but scrolls to position correctly 
+        Same as SetSelectionByCharPos(), but scrolls to position correctly
         """
         text = self.GetText()
         bs = bytelenSct(text[:start])
@@ -170,7 +171,7 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
         """
         text = self.GetText()
         return bytelenSct(text[:charPos])
-                
+
 
     def GetSelectionCharPos(self):
         """
@@ -202,11 +203,11 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
         """
         Set scroll bars according to given pixel positions
         """
-        
+
         # Bad hack: First scroll to position to avoid a visible jump
         #   if scrolling works, then update display,
         #   then scroll again because it may have failed the first time
-        
+
         self.SetScrollPos(wx.HORIZONTAL, scrollPosX, False)
         screvt = wx.ScrollWinEvent(wx.wxEVT_SCROLLWIN_THUMBTRACK,
                 scrollPosX, wx.HORIZONTAL)
@@ -214,7 +215,7 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
         screvt = wx.ScrollWinEvent(wx.wxEVT_SCROLLWIN_THUMBRELEASE,
                 scrollPosX, wx.HORIZONTAL)
         self.ProcessEvent(screvt)
-        
+
         self.SetScrollPos(wx.VERTICAL, scrollPosY, True)
         screvt = wx.ScrollWinEvent(wx.wxEVT_SCROLLWIN_THUMBTRACK,
                 scrollPosY, wx.VERTICAL)
@@ -232,7 +233,7 @@ class EnhancedScintillaControl(wx.stc.StyledTextCtrl):
         screvt = wx.ScrollWinEvent(wx.wxEVT_SCROLLWIN_THUMBRELEASE,
                 scrollPosX, wx.HORIZONTAL)
         self.ProcessEvent(screvt)
-        
+
         self.SetScrollPos(wx.VERTICAL, scrollPosY, True)
         screvt = wx.ScrollWinEvent(wx.wxEVT_SCROLLWIN_THUMBTRACK,
                 scrollPosY, wx.VERTICAL)

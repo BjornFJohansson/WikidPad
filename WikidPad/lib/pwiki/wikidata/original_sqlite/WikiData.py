@@ -1,7 +1,7 @@
 """
 
 Used terms:
-    
+
     wikiword -- a string matching one of the wiki word regexes
     wiki page -- real existing content stored and associated with a wikiword
             (which is the page name). Sometimes page is synonymous for page name
@@ -53,15 +53,15 @@ class WikiData:
         self.dataDir = dataDir
         self.resolveCaseNormed = False
         self.cachedWikiPageLinkTermDict = None
-        
+
         dbPath = self.wikiDocument.getWikiConfig().get("wiki_db", "db_filename",
                 "").strip()
-                
+
         if (dbPath == ""):
             dbPath = "wikiovw.sli"
 
         dbfile = join(dataDir, dbPath)   # means "wiki overview"
-        
+
         try:
             if (not exists(longPathEnc(dbfile))):
                 DbStructure.createWikiDB(None, dataDir,
@@ -83,7 +83,7 @@ class WikiData:
         # (line endings as CR/LF, LF or CR)
         # If false, LF is used always
         self.editorTextMode = False
-        
+
         # Set temporary directory if this is first sqlite use after prog. start
         if not GetApp().sqliteInitFlag:
             globalConfig = GetApp().getGlobalConfig()
@@ -99,7 +99,7 @@ class WikiData:
                     tempMode = "config"
                 else:
                     tempMode = "system"
-            
+
             if tempMode == "memory":
                 self.connWrap.execSql("pragma temp_store = 2")
             elif tempMode == "given":
@@ -202,7 +202,7 @@ class WikiData:
                 traceback.print_exc()
                 raise DbReadAccessError(e2)
             raise DbReadAccessError(e)
-            
+
         if lastException:
             raise lastException
 
@@ -211,7 +211,7 @@ class WikiData:
         """
         Actual initialization or reinitialization after rebuildWiki()
         """
-        pass        
+        pass
 
 
     def _createTempTables(self):
@@ -228,7 +228,7 @@ class WikiData:
 
 
     # ---------- Direct handling of page data ----------
-    
+
     def getContent(self, word):
         """
         Function must work for read-only wiki.
@@ -260,7 +260,7 @@ class WikiData:
         ti = time()
         if moddate is None:
             moddate = ti
-        
+
         try:
             data = self.connWrap.execSqlQuery("select word from wikiwords "
                     "where word = ?", (word,))
@@ -388,7 +388,7 @@ class WikiData:
             dates = self.connWrap.execSqlQuery(
                     "select modified, created, visited from wikiwords where word = ?",
                     (word,))
-    
+
             if len(dates) > 0:
                 return (float(dates[0][0]), float(dates[0][1]), float(dates[0][2]))
             else:
@@ -448,7 +448,7 @@ class WikiData:
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
             raise DbWriteAccessError(e)
-        
+
 
     def getWikiWordReadOnly(self, word):
         """
@@ -514,10 +514,10 @@ class WikiData:
                         for row in self.connWrap.execSqlQuery(sql, (wikiWord,))]
             else:
                 dbresult = self.connWrap.execSqlQuerySingleColumn(sql, (wikiWord,))
-            
+
             if len(dbresult) == 0:
                 raise WikiWordNotFoundException(wikiWord)
-            
+
             return dbresult[0]
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
@@ -551,7 +551,7 @@ class WikiData:
         """
         delete everything about the wikiword passed in. an exception is raised
         if you try and delete the wiki root node.
-        
+
         delContent -- Should actual content be deleted as well? (Parameter is
                 not part of official API)
         """
@@ -562,7 +562,7 @@ class WikiData:
                     # don't delete the relations to the word since other
                     # pages still have valid outward links to this page.
                     # just delete the content
-    
+
                     self.deleteChildRelationships(word)
                     self.deleteAttributes(word)
                     self.deleteTodos(word)
@@ -637,7 +637,7 @@ class WikiData:
             raise DbReadAccessError(e)
 
 
-    def validateFileSignatureForWikiPageName(self, word, setMetaDataDirty=False, 
+    def validateFileSignatureForWikiPageName(self, word, setMetaDataDirty=False,
             refresh=False):
         """
         Returns True if file signature stored in DB matches the file
@@ -695,10 +695,10 @@ class WikiData:
 
 #             self.execSql("update wikiwords set filesignature = ?, "
 #                     "metadataprocessed = ? where word = ?", (fileSig, 0, word))
-# 
+#
 #                     fileSig = self.wikiDocument.getFileSignatureBlock(fullPath)
 
-    
+
 
     # ---------- Handling of relationships cache ----------
 
@@ -783,12 +783,12 @@ class WikiData:
 #                 "from wikirelations as parent left join wikirelations as child "
 #                 "on parent.relation=child.word where parent.word = ? "
 #                 "group by parent.relation")
-#         
+#
 # #         return self.connWrap.execSqlQuerySingleColumn(sql, (wikiWord,))
 #         return self.connWrap.execSqlQuery(sql, (wikiWord,))
-#         
-# 
-# 
+#
+#
+#
 #     def getChildRelationshipsAndHasChildren(self, wikiWord, existingonly=False,
 #             selfreference=False):
 #         """
@@ -797,7 +797,7 @@ class WikiData:
 #             a node in the tree control. If cycles are forbidden in the
 #             tree, a True in the "children" flag must be checked
 #             for cycles, a False is always correct.
-# 
+#
 #         existingonly -- List only existing wiki words
 #         selfreference -- List also wikiWord if it references itself
 #         """
@@ -809,11 +809,11 @@ class WikiData:
 #                     "where word = relation) or exists "+\
 #                     "(select value from wikiwordattrs "+\
 #                     "where value = relation and key = 'alias'))"
-# 
+#
 #         if not selfreference:
 #             innersql += " and relation != word"
-# 
-# 
+#
+#
 #         outersql = "select relation, exists(%s) from wikirelations where word = ?"
 #         if existingonly:
 #             # filter to only words in wikiwords or aliases
@@ -821,13 +821,13 @@ class WikiData:
 #                     "where word = relation) or exists "+\
 #                     "(select value from wikiwordattrs "+\
 #                     "where value = relation and key = 'alias'))"
-# 
+#
 #         if not selfreference:
 #             outersql += " and relation != word"
-# 
+#
 #         outersql = outersql % innersql
-# 
-# 
+#
+#
 #         return self.connWrap.execSqlQuery(outersql, (wikiWord,))
 
 
@@ -855,11 +855,11 @@ class WikiData:
 #             # Plus parents of aliases
 #             aliases = [v for k, v in self.getAttributesForWord(wikiWord)
 #                     if k == u"alias"]
-#     
+#
 #             for al in aliases:
 #                 parents.update(self.connWrap.execSqlQuerySingleColumn(
 #                     "select word from wikirelations where relation = ?", (al,)))
-#     
+#
 #             return list(parents)
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
@@ -964,7 +964,7 @@ class WikiData:
                 for w in (self.getWikiPageNameForLinkTerm(w) for w in words)
                 if w is not None]
         checkList.reverse()
-        
+
         resultSet = {}
         result = []
 
@@ -975,13 +975,13 @@ class WikiData:
 
             result.append(toCheck)
             resultSet[toCheck] = None
-            
+
             if level > -1 and chLevel >= level:
                 continue  # Don't go deeper
-            
+
             children = self.getChildRelationships(toCheck, existingonly=True,
                     selfreference=False)
-                    
+
             children = [(self.getWikiPageNameForLinkTerm(c), chLevel + 1)
                     for c in children]
             children.reverse()
@@ -1000,13 +1000,13 @@ class WikiData:
         writes to temporary table.
         """
         # TODO Aliases supported?
-        
+
         if word == toWord:
             return [word]
         try:
             # Clear temporary table
             self.connWrap.execSql("delete from temppathfindparents")
-    
+
             self.connWrap.execSql("insert into temppathfindparents "+
                     "(word, child, steps) select word, relation, 1 from wikirelations "+
                     "where relation = ?", (word,))
@@ -1014,7 +1014,7 @@ class WikiData:
             step = 1
             while True:
                 changes = self.connWrap.rowcount
-    
+
                 if changes == 0:
                     # No more (grand-)parents
                     return []
@@ -1024,7 +1024,7 @@ class WikiData:
                     # Path found
                     result = [toWord]
                     crumb = toWord
-    
+
                     while crumb != word:
                         crumb = self.connWrap.execSqlQuerySingleItem(
                                 "select child from temppathfindparents where "+
@@ -1032,12 +1032,12 @@ class WikiData:
                         result.append(crumb)
 
                     # print "findBestPathFromWordToWord result", word, toWord, repr(result)
-    
+
                     # Clear temporary table
                     self.connWrap.execSql("delete from temppathfindparents")
 
                     return result
-    
+
                 self.connWrap.execSql("""
                     insert or ignore into temppathfindparents (word, child, steps)
                     select wikirelations.word, temppathfindparents.word, ? from
@@ -1045,9 +1045,9 @@ class WikiData:
                         temppathfindparents.word == wikirelations.relation where
                         temppathfindparents.steps == ?
                     """, (step+1, step))
-    
+
                 step += 1
-        
+
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
             raise DbReadAccessError(e)
@@ -1065,7 +1065,7 @@ class WikiData:
                             "select word from wikiwords where word = ?",
                             (wikiWord + "~" + rand,)):
                         continue
-                    
+
                     return wikiWord + "~" + rand
 
                 return None
@@ -1102,7 +1102,7 @@ class WikiData:
             thisStr = sqlite.escapeForGlob(thisStr)
 
             return self.connWrap.execSqlQuerySingleColumn(
-                    "select word from wikiwords where word glob (? || '*')", 
+                    "select word from wikiwords where word glob (? || '*')",
                     (thisStr,))
 
         except (IOError, OSError, sqlite.Error) as e:
@@ -1127,19 +1127,19 @@ class WikiData:
         because there may be a DB entry without a file or vice versa.
         The function tries to conserve additional informations
         (creation/modif. date) if possible.
-        
-        It is mainly called during rebuilding of the wiki 
+
+        It is mainly called during rebuilding of the wiki
         so it must not rely on the presence of other cache
         information (e.g. relations).
 
         The self.cachedWikiPageLinkTermDict is invalidated.
-        
+
         deleteFully -- if true, all cache information related to a no
             longer existing word is also deleted
         """
         diskFiles = frozenset(self._getAllWikiFileNamesFromDisk())
         dbFiles = frozenset(self._getAllWikiFileNamesFromDb())
-        
+
         self.cachedWikiPageLinkTermDict = None
         try:
             # Delete words for which no file is present anymore
@@ -1164,26 +1164,26 @@ class WikiData:
 
             # Add new words:
             ti = time()
-            
+
             for path in (diskFiles - dbFiles):
                 fullPath = os.path.join(self.dataDir, path)
                 st = os.stat(longPathEnc(fullPath))
-                
+
                 wikiWord = self._findNewWordForFile(path)
-                
+
                 if wikiWord is not None:
                     fileSig = self.wikiDocument.getFileSignatureBlock(fullPath)
-                    
+
                     self.connWrap.execSql("insert into wikiwords(word, created, "
                             "modified, filepath, filenamelowercase, "
                             "filesignature, metadataprocessed) "
                             "values (?, ?, ?, ?, ?, ?, 0)",
                             (wikiWord, ti, st.st_mtime, path, path.lower(),
                                     sqlite.Binary(fileSig)))
-                                    
+
                     page = self.wikiDocument.getWikiPage(wikiWord)
                     page.refreshSyncUpdateMatchTerms()
-                    
+
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
             raise DbWriteAccessError(e)
@@ -1200,7 +1200,7 @@ class WikiData:
                 self.cacheNonExistent = set()
                 self.cacheComplete = False
                 self.resolveCaseNormed = self.outer.resolveCaseNormed
-                    
+
 
             def get(self, key, default=None):
                 if self.cacheComplete:
@@ -1208,15 +1208,15 @@ class WikiData:
 
                 if key in self.cache:
                     return self.cache.get(key, default)
-                    
+
                 if key in self.cacheNonExistent:
                     return default
-                
+
                 value = self._lookup(key)
-                
+
                 if value is None and self.resolveCaseNormed:
                     value = self._lookupCaseNormed(key)
-                
+
                 if value is not None:
                     self.cache[key] = value
                     return value
@@ -1228,7 +1228,7 @@ class WikiData:
             def _lookup(self, key):
                 if self.outer.isDefinedWikiPageName(key):
                     return key
-                
+
                 try:
                     return self.outer.connWrap.execSqlQuerySingleItem(
                             "select word from wikiwordmatchterms "
@@ -1237,7 +1237,7 @@ class WikiData:
                 except (IOError, OSError, sqlite.Error) as e:
                     traceback.print_exc()
                     raise DbReadAccessError(e)
-                
+
             def _lookupCaseNormed(self, key):
                 try:
                     return self.outer.connWrap.execSqlQuerySingleItem(
@@ -1296,7 +1296,7 @@ class WikiData:
 #                         "where (type & 2) != 0 and not matchterm in "
 #                         "(select word from wikiwords)"))
 #                 # Consts.WIKIWORDMATCHTERMS_TYPE_ASLINK == 2
-# 
+#
 #             return self.cachedWikiPageLinkTermDict
 #         except (IOError, OSError, sqlite.Error), e:
 #             traceback.print_exc()
@@ -1314,9 +1314,9 @@ class WikiData:
 #                 word = pathDec(basename(file))
 #                 if word.endswith(self.pagefileSuffix):
 #                     word = word[:-len(self.pagefileSuffix)]
-#                 
+#
 #                 result.append(word)
-#             
+#
 #             return result
 
         except (IOError, OSError, sqlite.Error) as e:
@@ -1362,7 +1362,7 @@ class WikiData:
         try:
             path = longPathEnc(join(self.dataDir,
                     self.getWikiWordFileNameRaw(wikiWord)))
-    
+
             if mustExist and \
                     (not os.path.exists(path) or not os.path.isfile(path)):
                  raise WikiFileNotFoundException(
@@ -1373,7 +1373,7 @@ class WikiData:
                     "wikiPageFiles_gracefulOutsideAddAndRemove", True):
                 # Refresh content names and try again
                 self.refreshWikiPageLinkTerms(deleteFully=True)
-            
+
                 path = longPathEnc(join(self.dataDir,
                         self.getWikiWordFileNameRaw(wikiWord)))
 
@@ -1395,7 +1395,7 @@ class WikiData:
         """
         asciiOnly = self.wikiDocument.getWikiConfig().getboolean("main",
                 "wikiPageFiles_asciiOnly", False)
-                
+
         maxFnLength = self.wikiDocument.getWikiConfig().getint("main",
                 "wikiPageFiles_maxNameLength", 120)
 
@@ -1426,14 +1426,14 @@ class WikiData:
         try:
             asciiOnly = self.wikiDocument.getWikiConfig().getboolean("main",
                     "wikiPageFiles_asciiOnly", False)
-                    
+
             maxFnLength = self.wikiDocument.getWikiConfig().getint("main",
                     "wikiPageFiles_maxNameLength", 120)
 
             # Try first with current ascii-only setting
             icf = iterCompatibleFilename(wikiWord, self.pagefileSuffix,
                     asciiOnly=asciiOnly, maxLength=maxFnLength)
-    
+
             for i in range(2):
                 fileName = next(icf)
 
@@ -1450,7 +1450,7 @@ class WikiData:
             # Then the same with opposite ascii-only setting
             icf = iterCompatibleFilename(wikiWord, self.pagefileSuffix,
                     asciiOnly=not asciiOnly, maxLength=maxFnLength)
-    
+
             for i in range(2):
                 fileName = next(icf)
 
@@ -1463,7 +1463,7 @@ class WikiData:
                     continue
 
                 return fileName
-            
+
             return None
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
@@ -1499,7 +1499,7 @@ class WikiData:
         """
         if caseNormed is None:
             caseNormed = self.resolveCaseNormed
-        
+
         if caseNormed:
             thisStr = sqlite.escapeForGlob(thisStr.lower())   # TODO More general normcase function
 
@@ -1507,7 +1507,7 @@ class WikiData:
                 return self.connWrap.execSqlQuerySingleColumn(
                         "select matchterm from wikiwordmatchterms "
                         "where matchtermnormcase glob (? || '*') and "
-                        "(type & 2) != 0", 
+                        "(type & 2) != 0",
                         (thisStr,))
                 # Consts.WIKIWORDMATCHTERMS_TYPE_ASLINK == 2
 
@@ -1523,13 +1523,13 @@ class WikiData:
                         "select matchterm from wikiwordmatchterms "
                         "where matchterm glob (? || '*') and "
                         "(type & 2) != 0 union "
-                        "select word from wikiwords where word glob (? || '*')", 
+                        "select word from wikiwords where word glob (? || '*')",
                         (thisStr,thisStr))
                 # Consts.WIKIWORDMATCHTERMS_TYPE_ASLINK == 2
-                
+
                 # To ensure that at least all real wikiwords are found,
                 # the wikiwords table is also read
-                
+
             except (IOError, OSError, sqlite.Error) as e:
                 traceback.print_exc()
                 raise DbReadAccessError(e)
@@ -1563,7 +1563,7 @@ class WikiData:
         A time value of 0.0 is not taken into account.
         If there are no wikiwords with time value != 0.0, (None, None) is
         returned.
-        
+
         stampType -- 0: Modification time, 1: Creation, 2: Last visit
         """
         field = self._STAMP_TYPE_TO_FIELD.get(stampType)
@@ -1590,7 +1590,7 @@ class WikiData:
         """
         Get a list of tuples of wiki words and dates related to a particular
         time before stamp.
-        
+
         stampType -- 0: Modification time, 1: Creation, 2: Last visit
         limit -- How much words to return or None for all
         """
@@ -1598,10 +1598,10 @@ class WikiData:
         if field is None:
             # Visited not supported yet
             return []
-            
+
         if limit is None:
             limit = -1
-            
+
         try:
             return self.connWrap.execSqlQuery(
                     ("select word, %s from wikiwords where %s > 0 and %s < ? "
@@ -1616,7 +1616,7 @@ class WikiData:
         """
         Get a list of of tuples of wiki words and dates related to a particular
         time after OR AT stamp.
-        
+
         stampType -- 0: Modification time, 1: Creation, 2: Last visit
         limit -- How much words to return or None for all
         """
@@ -1624,7 +1624,7 @@ class WikiData:
         if field is None:
             # Visited not supported yet
             return []
-            
+
         if limit is None:
             limit = -1
 
@@ -1732,8 +1732,8 @@ class WikiData:
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
             raise DbReadAccessError(e)
-    
-    
+
+
     def getAttributeTriples(self, word, key, value,
             withFields=("word", "key", "value")):
         """
@@ -1747,21 +1747,21 @@ class WikiData:
         for field in withFields:
             if field in ("word", "key", "value"):
                 cols.append(field)
-        
+
         if len(cols) == 0:
             return []
-        
+
         colTxt = ", ".join(cols)
-        
+
         conjunction = StringOps.Conjunction("where ", "and ")
-        
+
         query = "select distinct " + colTxt + " from wikiwordattrs "
         parameters = []
-        
+
         if word is not None:
             parameters.append(word)
             query += conjunction() + "word = ? "
-        
+
         if key is not None:
             parameters.append(key)
             query += conjunction() + "key = ? "
@@ -1803,7 +1803,7 @@ class WikiData:
             traceback.print_exc()
             raise DbReadAccessError(e)
 
-            
+
     def _setAttribute(self, word, key, value):
         try:
             self.connWrap.execSql(
@@ -1857,7 +1857,7 @@ class WikiData:
             raise DbWriteAccessError(e)
 
     # TODO: 2.3: remove "property"-compatibility
-    getPropertyNames = getAttributeNames  
+    getPropertyNames = getAttributeNames
     getPropertyNamesStartingWith = getAttributeNamesStartingWith
     getGlobalProperties = getGlobalAttributes
     getDistinctPropertyValues = getDistinctAttributeValues
@@ -1875,7 +1875,7 @@ class WikiData:
         """
         Set if non-existing wiki words should be resolved to an existing
         word which only differs in case when calling getWikiPageNameForLinkTerm().
-        
+
         Additionally the default setting of the "caseNormed" parameter
         is set to this value for the functions getWikiPageLinkTermsStartingWith()
         """
@@ -1987,7 +1987,7 @@ class WikiData:
                         "from wikiwordmatchterms inner join wikiwords "
                         "on wikiwordmatchterms.word = wikiwords.word where "
                         "matchtermnormcase glob (? || '*')", (thisStr,))
-    
+
                 result2 = self.connWrap.execSqlQuery(
                         "select matchterm, type, wikiwordmatchterms.word, "
                         "firstcharpos, charlength, visited "
@@ -2005,7 +2005,7 @@ class WikiData:
                         "select matchterm, type, word, firstcharpos, charlength "
                         "from wikiwordmatchterms where "
                         "matchtermnormcase glob (? || '*')", (thisStr,))
-    
+
                 result2 = self.connWrap.execSqlQuery(
                         "select matchterm, type, word, firstcharpos, charlength "
                         "from wikiwordmatchterms where "
@@ -2020,7 +2020,7 @@ class WikiData:
 
         coll.sortByFirst(result1)
         coll.sortByFirst(result2)
-        
+
         if orderBy == "visited":
             result1.sort(key=lambda k: k[5], reverse=descend)
             result2.sort(key=lambda k: k[5], reverse=descend)
@@ -2079,12 +2079,12 @@ class WikiData:
         """
         try:
             startingWith = sqlite.escapeForGlob(startingWith)
-            
+
             return self.connWrap.execSqlQuerySingleColumn(
                     "select distinct(unifiedname) from datablocks where "
                     "unifiedname glob (? || '*') union "
                     "select distinct(unifiedname) from datablocksexternal where "
-                    "unifiedname glob (? || '*')", 
+                    "unifiedname glob (? || '*')",
                     (startingWith, startingWith))
 
         except (IOError, OSError, sqlite.Error) as e:
@@ -2104,11 +2104,11 @@ class WikiData:
                     (unifName,))
             if datablock is not None:
                 return datablock
-            
+
             filePath = self.connWrap.execSqlQuerySingleItem(
                     "select filepath from datablocksexternal where unifiedname = ?",
                     (unifName,))
-            
+
             if filePath is None:
                 return None  # TODO exception?
 
@@ -2148,7 +2148,7 @@ class WikiData:
         """
         Store newdata under unified name. If previously data was stored under the
         same name, it is deleted.
-        
+
         unifName -- unistring. Unified name to store data under
         newdata -- Data to store, either bytestring or unistring. The latter one
             will be converted using utf-8 before storing and the file gets
@@ -2156,10 +2156,10 @@ class WikiData:
         storeHint -- Hint if data should be stored intern in table or extern
             in a file (using DATABLOCK_STOREHINT_* constants from Consts.py).
         """
-        
+
         if storeHint is None:
             storeHint = Consts.DATABLOCK_STOREHINT_INTERN
-            
+
         if storeHint == Consts.DATABLOCK_STOREHINT_INTERN:
             try:
                 datablock = self.connWrap.execSqlQuerySingleItem(
@@ -2183,7 +2183,7 @@ class WikiData:
 
                 # It may be in external data blocks
                 self.deleteDataBlock(unifName)
-                
+
                 self.connWrap.execSql("insert into datablocks(unifiedname, data) "
                         "values (?, ?)", (unifName, sqlite.Binary(newdata)))
 
@@ -2238,7 +2238,7 @@ class WikiData:
                     break
                 else:
                     return None
-                
+
                 filePath = join(self.dataDir, fileName)
                 writeEntireFile(filePath, newdata,
                         self.editorTextMode and isinstance(newdata, str),
@@ -2288,7 +2288,7 @@ class WikiData:
 
         if datablock is not None:
             return Consts.DATABLOCK_STOREHINT_EXTERN
-        
+
         return None
 
 
@@ -2301,7 +2301,7 @@ class WikiData:
         try:
             self.connWrap.execSql(
                     "delete from datablocks where unifiedname = ?", (unifName,))
-            
+
             filePath = self.connWrap.execSqlQuerySingleItem(
                     "select filepath from datablocksexternal "
                     "where unifiedname = ?", (unifName,))
@@ -2333,7 +2333,7 @@ class WikiData:
         sarOp.beginWikiSearch() must be called before calling this function,
         sarOp.endWikiSearch() must be called after calling this function.
         Function must work for read-only wiki.
-        
+
         exclusionSet -- set of wiki words for which their pages shouldn't be
         searched here and which must not be part of the result set
         """
@@ -2348,7 +2348,7 @@ class WikiData:
                 except WikiFileNotFoundException:
                     # some error in cache (should not happen)
                     continue
-    
+
                 if sarOp.testWikiPage(word, fileContents) == True:
                     result.add(word)
         else:
@@ -2360,7 +2360,7 @@ class WikiData:
                     result.add(word)
 
         return result
-        
+
 
     # ---------- Miscellaneous ----------
 
@@ -2369,7 +2369,7 @@ class WikiData:
         "compactify": 1,     # = sqlite vacuum
         "filePerPage": 1,   # Uses a single file per page
 #         "versioning": 1,     # (old versioning)
-#         "plain text import":1   # Is already plain text      
+#         "plain text import":1   # Is already plain text
         }
 
 
@@ -2388,10 +2388,10 @@ class WikiData:
         If true, forces the editor to write platform dependent files to disk
         (line endings as CR/LF, LF or CR).
         If false, LF is used always.
-        
+
         Must be implemented if checkCapability returns a version number
         for "filePerPage".
-        """           
+        """
         self.editorTextMode = mode
 
 
@@ -2469,7 +2469,7 @@ class WikiData:
             traceback.print_exc()
             raise DbWriteAccessError(e)
 
-        
+
     def close(self):
         """
         Function must work for read-only wiki.
@@ -2477,7 +2477,7 @@ class WikiData:
         try:
             self.connWrap.syncCommit()
             self.connWrap.close()
-    
+
             self.connWrap = None
         except (IOError, OSError, sqlite.Error) as e:
             traceback.print_exc()
@@ -2493,7 +2493,7 @@ class WikiData:
 
         Must be implemented if checkCapability returns a version number
         for "rebuild".
-        
+
         progresshandler -- Object, fulfilling the GuiProgressHandler
             protocol
         """
@@ -2512,41 +2512,41 @@ class WikiData:
 #         indexes = self.connWrap.execSqlQuerySingleColumn(
 #                 "select name from sqlite_master where type='index'")
 #         indexes = map(string.upper, indexes)
-#         
+#
 #         if not "WIKIWORDCONTENT_PKEY" in indexes:
 #             # Maybe we have multiple pages with the same name in the database
-#             
+#
 #             # Copy valid creation date to all pages
 #             self.connWrap.execSql("update wikiwordcontent set "
 #                     "created=(select max(created) from wikiwordcontent as "
 #                     "inner where inner.word=wikiwordcontent.word)")
-#             
+#
 #             # Delete all but the newest page
 #             self.connWrap.execSql("delete from wikiwordcontent where "
 #                     "ROWID not in (select max(ROWID) from wikiwordcontent as "
 #                     "outer where modified=(select max(modified) from "
 #                     "wikiwordcontent as inner where inner.word=outer.word) "
 #                     "group by outer.word)")
-#                     
+#
 #             DbStructure.rebuildIndices(self.connWrap)
 
        # TODO: More repair operations
 
 
 #         self.cachedWikiPageLinkTermDict = {}
-# 
+#
 #         # cache aliases
 #         aliases = self.getAllAliases()
 #         for alias in aliases:
 #             self.cachedWikiPageLinkTermDict[alias] = 2
-# 
+#
 #         # recreate word caches
 #         for word in self.getAllDefinedContentNames():
 #             self.cachedWikiPageLinkTermDict[word] = 1
 
 
 
-#         finally:            
+#         finally:
 #             progresshandler.close()
 
 
@@ -2575,9 +2575,9 @@ class WikiData:
     def vacuum(self):
         """
         Reorganize the database, free unused space.
-        
+
         Must be implemented if checkCapability returns a version number
-        for "compactify".        
+        for "compactify".
         """
         try:
             self.connWrap.syncCommit()
@@ -2606,5 +2606,5 @@ def getWikiDataHandler(name):
     """
     if name == "original_sqlite":
         return WikiData, createWikiDB
-    
+
     return (None, None)

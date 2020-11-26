@@ -15,7 +15,9 @@ import wx, wx.html, wx.xrc
 from .wxHelper import *
 
 try:
-    from . import sqlite3api as sqlite
+    #from . import sqlite3api as sqlite
+    import sqlite
+    print("*"*500)
 except:
     sqlite = None
 
@@ -48,7 +50,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
         self.wikiWord = None
         self.listContent = []
         self.ignoreTextChange = 0
-        
+
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, parent, "SelectWikiWordDialog")
 
@@ -59,7 +61,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
 
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
 
@@ -81,7 +83,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
             self.listContent = self.pWiki.getWikiData()\
                     .getWikiWordMatchTermsWith("")
             return
-        
+
         # Filter out anything else than real words and explicit aliases
         self.listContent = self.pWiki.getWikiData().getWikiWordMatchTermsWith(
                 searchTxt)
@@ -94,7 +96,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
             self.wikiWord = term[2]
         else:
             self.wikiWord = self.ctrls.text.GetValue()
-    
+
             if not self.pWiki.getWikiDocument().isDefinedWikiLinkTerm(
                     self.wikiWord):
                 self._fillListContent(self.wikiWord)
@@ -105,7 +107,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
                             self.pWiki.getWikiDefaultWikiLanguage())
                     wikiWord = langHelper.extractWikiWordFromLink(self.wikiWord,
                             self.pWiki.getWikiDocument())
-    
+
                     if wikiWord is None:
                         # Entered text is not a valid wiki word
                         # TODO Error message?
@@ -115,8 +117,8 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
                     self.wikiWord = wikiWord
 
         self.EndModal(wx.ID_OK)
-        
-                
+
+
     def GetValue(self):
         return self.wikiWord
 
@@ -172,7 +174,7 @@ class SelectWikiWordDialog(wx.Dialog, ModalDialogMixin):
         else:
             evt.Skip()
 
-     
+
 
 class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
     def __init__(self, pWiki, parent, ID, title=None,
@@ -193,13 +195,13 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
             self.SetTitle(title)
 
         self.ctrls = XrcControls(self)
-        
+
         self.ctrls.chSort.SetSelection(self.pWiki.getConfig().getint("main",
                 "openWikiWordDialog_sortOrder", 0))
 
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
 
@@ -225,9 +227,9 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
         if len(searchTxt) == 0:
             self.listContent = []
             return
-        
+
         orderChoice = self.ctrls.chSort.GetSelection()
-        
+
         if orderChoice == 1:
             # Newest visited
             orderBy = "visited"
@@ -331,7 +333,7 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
             return
 
         text = self.ctrls.text.GetValue()  # evt.GetString())
-        
+
         listBox = self.ctrls.lb
 
         listBox.Freeze()
@@ -388,7 +390,7 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
             self.ctrls.text.SetSelection(-1, -1)
         else:
             evt.Skip()
-            
+
     def OnKeyDownListBox(self, evt):
         accP = getAccelPairFromKeyDown(evt)
         if accP in ((wx.ACCEL_NORMAL, wx.WXK_DELETE),
@@ -397,7 +399,7 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
         else:
             evt.Skip()
 
-            
+
     def OnCreate(self, evt):
         """
         Create new WikiWord
@@ -413,7 +415,7 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
                     entered)
             self.ctrls.text.SetFocus()
             return
-        
+
         if not self.pWiki.getWikiDocument().isCreatableWikiWord(wikiWord):
             self.pWiki.displayErrorMessage(_("'%s' exists already") % wikiWord)
             self.ctrls.text.SetFocus()
@@ -447,9 +449,9 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
                 if delword is not None:
                     page = self.pWiki.getWikiDocument().getWikiPage(delword)
                     page.deletePageToTrashcan()
-                    
+
                     # self.pWiki.getWikiData().deleteWord(delword)
-        
+
                     # trigger hooks
                     self.pWiki.hooks.deletedWikiWord(self.pWiki, delword)
 
@@ -458,13 +460,13 @@ class OpenWikiWordDialog(wx.Dialog, ModalDialogMixin):
 #                     p2["deleted wiki page"] = True
 #                     p2["wikiWord"] = delword
 #                     self.pWiki.fireMiscEventProps(p2)
-            
+
 #             self.pWiki.pageHistory.goAfterDeletion()
 
             self.EndModal(wx.ID_OK)
 
- 
- 
+
+
     def OnNewTab(self, evt):
         if self.activateSelectedWikiWords(2):
             self.EndModal(wx.ID_OK)
@@ -485,18 +487,18 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
 #         self.PostCreate(d)
 
         wx.Dialog.__init__(self)
-        
+
         self.pWiki = pWiki
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, self.pWiki, "ChooseWikiWordDialog")
-        
+
         self.ctrls = XrcControls(self)
-        
+
         if title is not None:
             self.SetTitle(title)
 
         self.ctrls.staTitle.SetLabel(title)
-        
+
         self.motionType = motionType
         self.unsortedWords = words
 
@@ -505,7 +507,7 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
                 "chooseWikiWordDialog_sortOrder") == "AlphaAsc")
 
         self._sortAndFillWords()
-        
+
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
 
@@ -540,7 +542,7 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
                         _("Do you want to delete %i wiki page(s)?") % sellen,
                         ("Delete Wiki Page(s)"),
                         wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION, self)
-    
+
                 if answer != wx.YES:
                     return
 
@@ -554,12 +556,12 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
                 if delword is not None:
                     page = self.pWiki.getWikiDocument().getWikiPage(delword)
                     page.deletePageToTrashcan()
-                    
+
                     # self.pWiki.getWikiData().deleteWord(delword)
-        
+
                     # trigger hooks
                     self.pWiki.hooks.deletedWikiWord(self.pWiki, delword)
-                    
+
 #             self.pWiki.pageHistory.goAfterDeletion()
 
             self.EndModal(wx.ID_OK)
@@ -570,7 +572,7 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
 #         sels = self.ctrls.lb.GetSelections()
 #         if len(sels) != 1:
 #             return # We can only go to exactly one wiki word
-#             
+#
 #         wikiWord = self.words[sels[0]]
 #         try:
 #             self.pWiki.openWikiPage(wikiWord, forceTreeSyncFromRoot=True,
@@ -582,7 +584,7 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
     def OnNewTab(self, evt):
         self.activateSelected(True)
 
-        
+
     def activateSelected(self, allNewTabs):
         """
         allNewTabs -- True: All selected words go to newly created tabs,
@@ -608,14 +610,14 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
         finally:
             self.EndModal(wx.ID_OK)
 
- 
+
     def OnCbSortAlphabetically(self, evt):
         self.pWiki.getConfig().set("main",
                 "chooseWikiWordDialog_sortOrder", ("AlphaAsc" if
                 self.ctrls.cbSortAlphabetically.GetValue() else "None"))
         self._sortAndFillWords()
 
- 
+
     def _sortAndFillWords(self):
         """
         Sort words according to settings in dialog.
@@ -623,7 +625,7 @@ class ChooseWikiWordDialog(wx.Dialog, ModalDialogMixin):
         self.words = self.unsortedWords[:]
         if self.ctrls.cbSortAlphabetically.GetValue():
             self.pWiki.getCollator().sort(self.words)
-        
+
         self.ctrls.lb.Set(self.words)
 
 
@@ -635,33 +637,33 @@ class FindSimilarNamedWikiWordDialog(wx.Dialog, ModalDialogMixin):
     def __init__(self, docPage, ID, search_word, motionType, title=None,
                  pos=wx.DefaultPosition, size=wx.DefaultSize):
         wx.Dialog.__init__(self)
-        
+
         self.docPage = docPage
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, self.docPage, "FindSimilarNamedWikiWordDialog")
-        
+
         self.ctrls = XrcControls(self)
-        
+
         if title is not None:
             self.SetTitle(title)
 
         #self.ctrls.staTitle.SetLabel(title)
 
         self.search_word = search_word
-        
+
         self.motionType = motionType
 
         matchtermsDict = self.docPage.getWikiDocument().getWikiData() \
                 .getAllDefinedWikiMatchTermsNormcase()
 
-        similar = difflib.get_close_matches(search_word.lower(), 
+        similar = difflib.get_close_matches(search_word.lower(),
                 matchtermsDict.keys(), n=100, cutoff=0.8)
 
         self.similarWords = similar
         self.words = [matchtermsDict[i] for i in similar]
 
         self._fillWords()
-        
+
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
 
@@ -704,7 +706,7 @@ class FindSimilarNamedWikiWordDialog(wx.Dialog, ModalDialogMixin):
     def OnNewTab(self, evt):
         self.activateSelected(True)
 
-        
+
     def activateSelected(self, allNewTabs):
         """
         allNewTabs -- True: All selected words go to newly created tabs,
@@ -737,9 +739,9 @@ class FindSimilarNamedWikiWordDialog(wx.Dialog, ModalDialogMixin):
 
         def formatWords(matchterm, word):
             return "{0} ({1})".format(matchterm, word)
-            
+
         formatted_words = list(map(formatWords, self.similarWords, self.words))
-        
+
         self.ctrls.lb.Set(formatted_words)
 
 
@@ -791,7 +793,7 @@ class RenameWikiWordDialog(wx.Dialog, ModalDialogMixin):
 
 
 #         self.Bind(wx.EVT_BUTTON, self.OnOk, id=wx.ID_OK)
-# 
+#
 #         self.ctrls.text.Bind(wx.EVT_CHAR, self.OnCharText)
 #         self.ctrls.lb.Bind(wx.EVT_CHAR, self.OnCharListBox)
 #         self.Bind(wx.EVT_LISTBOX, self.OnListBox, id=ID)
@@ -809,13 +811,13 @@ class RenameWikiWordDialog(wx.Dialog, ModalDialogMixin):
             return
 
         toWikiWord = self.ctrls.tfToWikiWord.GetValue()
-        
+
         try:
             modifyText = (ModifyText.off, ModifyText.advanced, ModifyText.simple)[
                     self.ctrls.chModifyLinks.GetSelection()]
         except IndexError:
             modifyText = ModifyText.off
-        
+
 #         if self.ctrls.cbModifyLinks.GetValue():
 #             modifyText = ModifyText.advanced
 #         else:
@@ -831,7 +833,7 @@ class RenameWikiWordDialog(wx.Dialog, ModalDialogMixin):
                     wx.OK | wx.ICON_HAND, self)
             return
         except WikiDataException as e:
-            traceback.print_exc()                
+            traceback.print_exc()
             self.displayErrorMessage(str(e))
         except (IOError, OSError, DbAccessError):
             pass
@@ -855,7 +857,7 @@ class RenameWikiWordDialog(wx.Dialog, ModalDialogMixin):
 
         if not toWikiWord or len(toWikiWord) == 0:
             return "" # No error message, but disable OK
-            
+
         langHelper = wx.GetApp().createWikiLanguageHelper(
                 self.mainControl.getWikiDefaultWikiLanguage())
 
@@ -893,13 +895,13 @@ class SelectIconDialog(wx.Dialog, ModalDialogMixin):
 
         self.iconCache = iconCache
         self.iconImageList = self.iconCache.iconImageList
-        
+
         self.iconNames = [n for n in list(self.iconCache.iconLookupCache.keys())
                 if not n.startswith("tb_")]
 #         filter(lambda n: not n.startswith("tb_"),
 #                 self.iconCache.iconLookupCache.keys())
         self.iconNames.sort()
-        
+
         # Now continue with the normal construction of the dialog
         # contents
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -909,9 +911,9 @@ class SelectIconDialog(wx.Dialog, ModalDialogMixin):
 
         box = wx.BoxSizer(wx.VERTICAL)
 
-        self.lc = wx.ListCtrl(self, -1, wx.DefaultPosition, wx.Size(145, 200), 
+        self.lc = wx.ListCtrl(self, -1, wx.DefaultPosition, wx.Size(145, 200),
                 style = wx.LC_REPORT | wx.LC_NO_HEADER)    ## | wx.BORDER_NONE
-                
+
         self.lc.SetImageList(self.iconImageList, wx.IMAGE_LIST_SMALL)
         self.lc.InsertColumn(0, _("Icon"))
 
@@ -920,8 +922,8 @@ class SelectIconDialog(wx.Dialog, ModalDialogMixin):
                     self.iconCache.lookupIconIndex(icn))
 #         self.lc.SetColumnWidth(0, wx.LIST_AUTOSIZE)
         autosizeColumn(self.lc, 0)
-        
-        
+
+
         box.Add(self.lc, 1, wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND, 5)
 
         sizer.Add(box, 1, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
@@ -945,7 +947,7 @@ class SelectIconDialog(wx.Dialog, ModalDialogMixin):
         sizer.Fit(self)
 
         self.value = None
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
 
@@ -965,7 +967,7 @@ class SelectIconDialog(wx.Dialog, ModalDialogMixin):
             self.value = self.iconNames[no]
         else:
             self.value = None
-            
+
         self.EndModal(wx.ID_OK)
 
 
@@ -1046,25 +1048,25 @@ class DateformatDialog(wx.Dialog):
         deffmt -- Initial value for format string
         """
         wx.Dialog.__init__(self)
-        
+
         self.mainControl = mainControl
-        self.value = ""     
+        self.value = ""
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, parent, "DateformatDialog")
 
         if title is not None:
             self.SetTitle(title)
-        
+
         # Create HTML explanation
         html = wx.html.HtmlWindow(self, -1)
         html.SetPage(_(self.FORMATHELP))
         res.AttachUnknownControl("htmlExplain", html, self)
-        
+
         self.ctrls = XrcControls(self)
-        
+
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
-        
+
         # Set dropdown list of recent time formats
         tfs = self.mainControl.getConfig().get("main", "recent_time_formats")
         self.recentFormats = [unescapeForIni(s) for s in tfs.split(";")]
@@ -1073,12 +1075,12 @@ class DateformatDialog(wx.Dialog):
 
         self.ctrls.fieldFormat.SetValue(deffmt)
         self.OnText(None)
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
-        
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, id=wx.ID_OK)
-        self.Bind(wx.EVT_TEXT, self.OnText, id=XRCID("fieldFormat")) 
+        self.Bind(wx.EVT_TEXT, self.OnText, id=XRCID("fieldFormat"))
 
 
     def OnText(self, evt):
@@ -1092,21 +1094,21 @@ class DateformatDialog(wx.Dialog):
             pass
 
         self.ctrls.fieldPreview.SetLabel(preview)
-        
-        
+
+
     def GetValue(self):
         return self.value
-        
-    
+
+
     def OnOk(self, evt):
         if self.value != "":
             # Update recent time formats list
-            
+
             try:
                 self.recentFormats.remove(self.value)
             except ValueError:
                 pass
-                
+
             self.recentFormats.insert(0, self.value)
             if len(self.recentFormats) > 10:
                 self.recentFormats = self.recentFormats[:10]
@@ -1153,7 +1155,7 @@ class FontFaceDialog(wx.Dialog):
 
         for f in facelist:
             self.ctrls.lbFacenames.Append(f)
-            
+
         if len(facelist) > 0:
             try:
                 # In wxPython, this can throw an exception if self.value
@@ -1164,10 +1166,10 @@ class FontFaceDialog(wx.Dialog):
                 self.ctrls.lbFacenames.SetSelection(0)
 
             self.OnFaceSelected(None)
-            
+
         # Fixes focus bug under Linux
         self.SetFocus()
-            
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, id=wx.ID_OK)
         self.Bind(wx.EVT_LISTBOX, self.OnFaceSelected, id=GUI_ID.lbFacenames)
         self.Bind(wx.EVT_LISTBOX_DCLICK, self.OnOk, id=GUI_ID.lbFacenames)
@@ -1177,7 +1179,7 @@ class FontFaceDialog(wx.Dialog):
         self.value = self.ctrls.lbFacenames.GetStringSelection()
         evt.Skip()
 
-        
+
     def OnFaceSelected(self, evt):
         face = self.ctrls.lbFacenames.GetStringSelection()
         font = wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, face)
@@ -1199,14 +1201,14 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 #         self.PostCreate(d)
 
         wx.Dialog.__init__(self)
-        
+
         self.mainControl = mainControl
         self.value = None
-        
+
         self.listPagesOperation = SearchReplaceOperation()
         self.continuousExport = continuousExport
         self.savedExports = None
-        
+
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, self.mainControl, "ExportDialog")
 
@@ -1232,7 +1234,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             panel = obtp[3]
             if panel is None:
                 if self.emptyPanel is None:
-                    # Necessary to avoid a crash        
+                    # Necessary to avoid a crash
                     self.emptyPanel = wx.Panel(self.ctrls.additOptions)
 
                 panel = self.emptyPanel
@@ -1256,7 +1258,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
 #         self.ctrls.additOptions.Fit()
 #         mins = self.ctrls.additOptions.GetMinSize()
-# 
+#
 #         self.ctrls.additOptions.SetMinSize(wx.Size(mins.width+10, mins.height+10))
 #         self.Fit()
 
@@ -1264,7 +1266,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
-        
+
         defdir = self.mainControl.getConfig().get("main", "export_default_dir",
                 "")
         if defdir == "":
@@ -1276,7 +1278,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             e[3].Show(False)
             e[3].Enable(False)
             self.ctrls.chExportTo.Append(e[2])
-            
+
 #         # Enable first addit. options panel
 #         self.exporterList[0][3].Enable(True)
 #         self.exporterList[0][3].Show(True)
@@ -1353,7 +1355,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
     def OnOk(self, evt):
         self._runExporter()
 
-        
+
     def _runExporter(self):
         # Run exporter
         ob, etype, desc, panel = \
@@ -1367,7 +1369,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
                 self.mainControl.displayErrorMessage(
                         _("Destination directory does not exist"))
                 return
-            
+
             if not isdir(pathEnc(self.ctrls.tfDestination.GetValue())):
                 self.mainControl.displayErrorMessage(
                         _("Destination must be a directory"))
@@ -1396,15 +1398,15 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
                         sarOp, etype, self.ctrls.tfDestination.GetValue(),
                         self.ctrls.compatFilenames.GetValue(), ob.getAddOpt(panel),
                         pgh)
-    
+
                 self.value = ob
             else:
                 wordList = self.mainControl.getWikiDocument().searchWiki(sarOp,
                         True)
-        
+
                 try:
-                    ob.export(self.mainControl.getWikiDocument(), wordList, etype, 
-                            self.ctrls.tfDestination.GetValue(), 
+                    ob.export(self.mainControl.getWikiDocument(), wordList, etype,
+                            self.ctrls.tfDestination.GetValue(),
                             self.ctrls.compatFilenames.GetValue(), ob.getAddOpt(panel),
                             pgh)
                 except ExportException as e:
@@ -1415,7 +1417,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             pgh.close()
             self.EndModal(wx.ID_OK)
 
-        
+
     def OnSelectDest(self, evt):
         ob, etype, desc, panel = \
                 self.exporterList[self.ctrls.chExportTo.GetSelection()][:4]
@@ -1427,7 +1429,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             seldir = wx.DirSelector(_("Select Export Directory"),
                     self.ctrls.tfDestination.GetValue(),
                     style=wx.DD_DEFAULT_STYLE|wx.DD_NEW_DIR_BUTTON, parent=self)
-                
+
             if seldir:
                 self.ctrls.tfDestination.SetValue(seldir)
 
@@ -1437,12 +1439,12 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             for wd, wp in expDestWildcards:
                 wcs.append(wd)
                 wcs.append(wp)
-                
+
             wcs.append(_("All files (*.*)"))
             wcs.append("*")
-            
+
             wcs = "|".join(wcs)
-            
+
             selfile = wx.FileSelector(_("Select Export File"),
                     self.ctrls.tfDestination.GetValue(),
                     default_filename = "", default_extension = "",
@@ -1515,9 +1517,9 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
     def OnSaveExport(self, evt):
         defValue = ""
-        
+
         sels = self.ctrls.lbSavedExports.GetSelections()
-        
+
         if len(sels) == 1:
             defValue = self.savedExports[sels[0]][0]
 
@@ -1526,7 +1528,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
                     _("Choose export title"), defValue, self)
             if title == "":
                 return  # Cancel
-                
+
             if ("savedexport/" + title) in self.mainControl.getWikiData()\
                     .getDataBlockUnifNamesStartingWith(
                     "savedexport/" + title):
@@ -1544,22 +1546,22 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
             xmlNode = self._buildSavedExport(xmlHead, xmlDoc)
             if xmlNode is None:
                 return
-            
+
             xmlDoc.appendChild(xmlNode)
             content = xmlDoc.toxml("utf-8")
             xmlDoc.unlink()
             self.mainControl.getWikiData().storeDataBlock(
                     "savedexport/" + title, content,
                     storeHint=DATABLOCK_STOREHINT_INTERN)
-            
+
             self._refreshSavedExportsList()
             return
 
 
     def OnLoadExport(self, evt):
         self._loadExport()
-        
-        
+
+
     def OnLoadAndRunExport(self, evt):
         if self._loadExport():
             self._runExporter()
@@ -1567,7 +1569,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
     def OnDeleteExports(self, evt):
         sels = self.ctrls.lbSavedExports.GetSelections()
-        
+
         if len(sels) == 0:
             return
 
@@ -1586,7 +1588,7 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
     def _loadExport(self):
         sels = self.ctrls.lbSavedExports.GetSelections()
-        
+
         if len(sels) != 1:
             return False
 
@@ -1603,9 +1605,9 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 
         ob, etype, desc, panel = \
                 self.exporterList[self.ctrls.chExportTo.GetSelection()][:4]
-        
+
         addOptVer = ob.getAddOptVersion()
-        
+
         if addOptVer == -1:
             # An addOpt version of -1 means that the addOpt value does not
             # have a defined format and therefore can't be stored
@@ -1666,32 +1668,32 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
                         "options than current export\nExport type: '%s'\n"
                         "Saved export version: %i\nCurrent export version: %i") %
                         (etypeProfile, addOptVersion, ob.getAddOptVersion()))
-                return False 
+                return False
 
             if addOptXml.getAttribute("type") != "simpleTuple":
                 self.mainControl.displayErrorMessage(
                         _("Type of additional option storage ('%s') is unknown") %
                         addOptXml.getAttribute("type"))
                 return False
-    
+
             pageSetXml = Serialization.findXmlElementFlat(xmlNode, "pageSet")
-            
+
             sarOp = SearchReplaceOperation()
-    
+
             sarOp.serializeFromXml(pageSetXml)
-    
+
             addOpt = Serialization.convertTupleFromXml(addOptXml)
-    
+
             self.listPagesOperation = sarOp
             self.ctrls.chSelectedSet.SetSelection(3)
             self.ctrls.chExportTo.SetSelection(sel)
             ob.setAddOpt(addOpt, panel)
-    
+
             self.ctrls.tfDestination.SetValue(
                     Serialization.serFromXmlUnicode(xmlNode, "destinationPath"))
-                    
+
             self._refreshForEtype()
-            
+
             return True
         except SerializationException as e:
             self.mainControl.displayErrorMessage(_("Error during retrieving "
@@ -1702,24 +1704,24 @@ class ExportDialog(wx.Dialog, ModalDialogMixin):
 class ImportDialog(wx.Dialog):
     def __init__(self, parent, ID, mainControl, title="Import",
                  pos=wx.DefaultPosition, size=wx.DefaultSize):
-                    
+
         wx.Dialog.__init__(self)
 
         from . import Importers
 
         self.parent = parent
         self.mainControl = mainControl
-        
+
         res = wx.xrc.XmlResource.Get()
         res.LoadDialog(self, self.parent, "ImportDialog")
 
         self.ctrls = XrcControls(self)
 
         self.emptyPanel = None
-        
+
         importerList = [] # List of tuples (<importer object>, <import tag=type>,
                           # <readable description>, <additional options panel>)
-        
+
         addOptSizer = LayerSizer()
 
         for ob in Importers.describeImporters(self.mainControl):   # TODO search plugins
@@ -1727,7 +1729,7 @@ class ImportDialog(wx.Dialog):
                 panel = tp[2]
                 if panel is None:
                     if self.emptyPanel is None:
-                        # Necessary to avoid a crash        
+                        # Necessary to avoid a crash
                         self.emptyPanel = wx.Panel(self.ctrls.additOptions)
                         # self.emptyPanel.Fit()
                     panel = self.emptyPanel
@@ -1748,29 +1750,29 @@ class ImportDialog(wx.Dialog):
 
 #         self.ctrls.additOptions.Fit()
 #         mins = self.ctrls.additOptions.GetMinSize()
-#         
+#
 #         self.ctrls.additOptions.SetMinSize(wx.Size(mins.width+10, mins.height+10))
 #         self.Fit()
 
-        
+
         self.importerList = importerList
 
         self.ctrls.btnOk.SetId(wx.ID_OK)
         self.ctrls.btnCancel.SetId(wx.ID_CANCEL)
-        
+
         self.ctrls.tfSource.SetValue(self.mainControl.getLastActiveDir())
-        
+
         for e in self.importerList:
             e[3].Show(False)
             e[3].Enable(False)
             self.ctrls.chImportFormat.Append(e[2])
-            
+
 #         # Enable first addit. options panel
 #         self.importerList[0][3].Enable(True)
 #         self.importerList[0][3].Show(True)
         self.ctrls.chImportFormat.SetSelection(0)
         self._refreshForItype()
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
 
@@ -1815,7 +1817,7 @@ class ImportDialog(wx.Dialog):
         # Run importer
         ob, itype, desc, panel = \
                 self.importerList[self.ctrls.chImportFormat.GetSelection()][:4]
-                
+
         if not exists(self.ctrls.tfSource.GetValue()):
             self.mainControl.displayErrorMessage(
                     _("Source does not exist"))
@@ -1825,7 +1827,7 @@ class ImportDialog(wx.Dialog):
         impSrcWildcards = ob.getImportSourceWildcards(itype)
         if impSrcWildcards is None:
             # Import from a directory
-            
+
             if not isdir(self.ctrls.tfSource.GetValue()):
                 self.mainControl.displayErrorMessage(
                         _("Source must be a directory"))
@@ -1840,8 +1842,8 @@ class ImportDialog(wx.Dialog):
             panel = None
 
         try:
-            ob.doImport(self.mainControl.getWikiDocument(), itype, 
-                    self.ctrls.tfSource.GetValue(), 
+            ob.doImport(self.mainControl.getWikiDocument(), itype,
+                    self.ctrls.tfSource.GetValue(),
                     False, ob.getAddOpt(panel))
         except ImportException as e:
             self.mainControl.displayErrorMessage(_("Error while importing"),
@@ -1849,7 +1851,7 @@ class ImportDialog(wx.Dialog):
 
         self.EndModal(wx.ID_OK)
 
-        
+
     def OnSelectSrc(self, evt):
         ob, itype, desc, panel = \
                 self.importerList[self.ctrls.chImportFormat.GetSelection()][:4]
@@ -1871,12 +1873,12 @@ class ImportDialog(wx.Dialog):
             for wd, wp in impSrcWildcards:
                 wcs.append(wd)
                 wcs.append(wp)
-                
+
             wcs.append(_("All files (*.*)"))
             wcs.append(_("*"))
-            
+
             wcs = "|".join(wcs)
-            
+
             selfile = wx.FileSelector(_("Select Import File"),
                     self.ctrls.tfSource.GetValue(),
                     default_filename = "", default_extension = "",
@@ -1979,15 +1981,15 @@ class NewWikiSettings(wx.Dialog, ModalDialogMixin):
     def OnOk(self, evt):
         dbSel = self.ctrls.lbDatabaseType.GetSelection()
         langSel = self.ctrls.lbWikiLanguage.GetSelection()
-        
+
         dbH = None
         wlH = None
-        
+
         if dbSel != wx.NOT_FOUND:
             dbH = self.dbHandlers[dbSel][0]
         if langSel != wx.NOT_FOUND:
             wlH = self.wikiLanguages[langSel][0]
-        
+
         self.value = (dbH, wlH, self.ctrls.cbWikiPageFilesAsciiOnly.GetValue())
 
         self.EndModal(wx.ID_OK)
@@ -2004,12 +2006,12 @@ class ShowStaticHtmlTextDialog(wx.Dialog, ModalDialogMixin):
         which is escaped to html
         """
         wx.Dialog.__init__(self, parent, -1, title, size=size)
-        
+
         if htmlContent is None and textContent is not None:
             htmlContent = escapeHtml(textContent)
-            
+
         html = wx.html.HtmlWindow(self, -1)
-        
+
         if htmlContent is not None:
             html.SetPage(htmlContent)
 
@@ -2034,7 +2036,7 @@ class ShowStaticHtmlTextDialog(wx.Dialog, ModalDialogMixin):
         self.SetAutoLayout(True)
         self.Layout()
         self.CentreOnParent(wx.BOTH)
-        
+
         # Fixes focus bug under Linux
         self.SetFocus()
 
@@ -2056,7 +2058,7 @@ class AboutDialog(ShowStaticHtmlTextDialog):
 
         <p>
 wikidPad is a Wiki-like notebook for storing your thoughts, ideas, todo lists, contacts, or anything else you can think of to write down.
-What makes wikidPad different from other notepad applications is the ease with which you can cross-link your information.        </p>        
+What makes wikidPad different from other notepad applications is the ease with which you can cross-link your information.        </p>
         <br><br>
 
         <table border=0 cellpadding=1 cellspacing=0>
@@ -2079,17 +2081,17 @@ What makes wikidPad different from other notepad applications is the ease with w
             <tr><td width="30%%" align="right"><font size="3"><b>Swedish:</b></font></td><td nowrap><font size="3">Stefan Berg</font></td></tr>
         </table>
     </center>
-    
-    
 
-    
+
+
+
     <hr />
-    
+
     <p>Your configuration directory is: <b>%s</b><br />
     Sqlite version: <b>%s</b><br />
     wxPython version: <b>%s</b>
     </p>
-    
+
 </body>
 </html>
 ''')
@@ -2097,7 +2099,7 @@ What makes wikidPad different from other notepad applications is the ease with w
     def __init__(self, pWiki):
 #         wx.Dialog.__init__(self, pWiki, -1, _(u'About WikidPad'),
 #                           size=(470, 330) )
-        
+
         if sqlite is None:
             sqliteVer = _("N/A")
         else:
@@ -2138,7 +2140,7 @@ class SimpleInfoDialog(wx.Dialog):
         inputsizer.Add((0, 0), 1)   # Stretchable spacer
 
         mainsizer.Add(inputsizer, 0, wx.ALL | wx.EXPAND, 0)
-        
+
         self.Bind(wx.EVT_BUTTON, self.OnOk, id=wx.ID_OK)
         self.Bind(wx.EVT_BUTTON, self.OnOk, id=wx.ID_CANCEL)
 
@@ -2173,18 +2175,18 @@ class SimpleInfoDialog(wx.Dialog):
 
     # Compatiblity.  TODO: 2.4: Remove
     _addLine = _addTextLine
-        
+
     def fillInfoLines(self):
         raise NotImplementedError #abstract
-        
-        
+
+
     def close(self):
         pass
-    
+
     def OnOk(self, evt):
         self.close()
         evt.Skip()
-        
+
 
 
 
@@ -2243,7 +2245,7 @@ class WikiPropertiesDialog(SimpleInfoDialog):
                     value = _("Can't write wiki config.:") + " " + str(e)
             else:
                 value = _("Unknown reason")
-            
+
             self._addTextLine(label, value, multiLine=True)
 
 
@@ -2257,7 +2259,7 @@ class WikiJobDialog(SimpleInfoDialog):
 
         SimpleInfoDialog.__init__(self, parent, id, _('Jobs'),
                           size=(470, 330) )
-                          
+
         wd = self.mainControl.getWikiDocument()
         if wd is not None:
             exe = wd.getUpdateExecutor()
@@ -2276,7 +2278,7 @@ class WikiJobDialog(SimpleInfoDialog):
 #     def OnOk(self, evt):
 #         evt.Skip()
 #         self.timer.Stop()
-        
+
 
     def fillInfoLines(self):
         self.jobTxtCtrl = self._addTextLine(_("Number of Jobs:"), "0")
@@ -2299,5 +2301,5 @@ class WikiJobDialog(SimpleInfoDialog):
                 exe.stopDoneJobCount()
 
         SimpleInfoDialog.close(self)
-        
-        
+
+
