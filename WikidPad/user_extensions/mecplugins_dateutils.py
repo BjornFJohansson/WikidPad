@@ -44,6 +44,7 @@ def describeMenuItems(wiki):
             (nextmonth,           _(u"mecplugins|Date utils|next month"),                  _(u"next month")),
             (nextyear,            _(u"mecplugins|Date utils|next year"),                   _(u"next year")),
             (inserttime,          _(u"mecplugins|Date utils|insert time"),                 _(u"insert time")),
+            (insertdate,          _(u"mecplugins|Date utils|insert date"),                 _(u"insert date")),
             (weekday_list,        _(u"mecplugins|Date utils|weekday list"),                _(u"weekday list")),
             )
 
@@ -60,7 +61,8 @@ def describeToolbarItemsV02(wiki):
             (copylink,                  _(u"copy link"),                _(u"copy link"),                ("mec_anchor",),),
             (thisweek,                  _(u"thisweek"),                 _(u"this week"),                ("mec_thisweekandnext",), None,   None, nextweek),
             (nextyear,                  _(u"last or next year"),        _(u"last or next year"),        ("user",),                None,   None, lastyear),
-            (inserttime,                _(u"insert or parse time"),     _(u"insert or parse time"),     ("time",),                None,   None, parsedate),
+            (insertdate,                _(u"insert or parse date"),     _(u"insert or parse date"),     ("date",),                None,   None, parsedate),
+            (inserttime,                _(u"insert or parse time"),     _(u"insert or parse time"),     ("time",),                None,   None, parsetime),
             )
 
 
@@ -82,8 +84,18 @@ def inserttime(wiki, evt):
     return
 
 
-def parsedate(wiki, evt):
+def insertdate(wiki, evt):
+    wiki.getActiveEditor().ReplaceSelection(datetime.datetime.now().strftime("%Y-%m-%d"))
+    return
+
+
+def parsetime(wiki, evt):
     wiki.getActiveEditor().ReplaceSelection(dateparser.parse(wiki.getActiveEditor().GetSelectedText()).strftime("%H:%M:%S"))
+    return
+
+
+def parsedate(wiki, evt):
+    wiki.getActiveEditor().ReplaceSelection(dateparser.parse(wiki.getActiveEditor().GetSelectedText()).strftime("%Y-%m-%d"))
     return
 
 
