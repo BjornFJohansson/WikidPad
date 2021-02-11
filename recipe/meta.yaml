@@ -31,8 +31,10 @@ requirements:
     - pyparsing
     - pillow
     - sqlite
+    - natsort
     - pydna
     - pyenchant
+    - dateparser
 
 test:
   imports:

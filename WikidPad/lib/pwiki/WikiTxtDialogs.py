@@ -66,7 +66,7 @@ class IncrementalSearchDialog(wx.Frame):
         self.Bind(wx.EVT_TEXT, self.OnText, id=GUI_ID.INC_SEARCH_TEXT_FIELD)
         self.tfInput.Bind(wx.EVT_KEY_DOWN, self.OnKeyDownInput)
         self.tfInput.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
-        self.Bind(wx.EVT_TIMER, self.OnTimerIncSearchClose, 
+        self.Bind(wx.EVT_TIMER, self.OnTimerIncSearchClose,
                 id=GUI_ID.TIMER_INC_SEARCH_CLOSE)
         self.tfInput.Bind(wx.EVT_MOUSE_EVENTS, self.OnMouseAnyInput)
 
@@ -349,7 +349,7 @@ class ImagePasteSaver:
         if self.formatNo < 1 or self.formatNo > 2:
             return None
 
-        img.SetOptionInt("quality", self.quality)
+        img.SetOption("quality", self.quality)  # HACK Changed here !
 
         tempFileSet = TempFileSet()
 
@@ -395,7 +395,7 @@ class ImagePasteSaver:
         """
         if WindowsHacks is None:
             return False
-        
+
         return WindowsHacks.isWmfAvailableOnClipboard()
 
 

@@ -55,20 +55,20 @@ def describeMenuItems(wiki):
         - the filename of a bitmap (if file not found, no icon is used)
         - a tuple of filenames, first existing file is used
     """
-    
+
     kb = wiki.getKeyBindings()
-    
+
     return ((autoNewNumbered, _("Create new page") + "\t" +
             kb.Plugin_AutoNew_Numbered, _("Create new page")),)
 
 
-_testRE = re.compile(r"^New[0-9]{3}$")  # changed here !
+_testRE = re.compile(r"^New[0-9]+$")  # changed here !
 
 
 def autoNewNumbered(wiki, evt):
     wiki.saveAllDocPages()
     candidates = wiki.getWikiData().getWikiPageLinkTermsStartingWith("New")
-            
+
     candidates = [w for w in candidates if _testRE.match(w)]
     numbers = [int(w[3:]) for w in candidates]
 
@@ -76,7 +76,7 @@ def autoNewNumbered(wiki, evt):
         nextNumber = 1
     else:
         nextNumber = max(numbers) + 1
-    wiki.openWikiPage('New{0:03d}'.format(nextNumber)) # changed here !
+    wiki.openWikiPage('New{}'.format(nextNumber)) # changed here !
     dpp = wiki.getCurrentDocPagePresenter()
     if dpp is None:
         return

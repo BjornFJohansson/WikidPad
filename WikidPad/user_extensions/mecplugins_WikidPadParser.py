@@ -31,7 +31,7 @@ WIKI_LANGUAGE_NAME = "wikidpad_mec_2_0"                # HACK changed here !
 WIKI_HR_LANGUAGE_NAME = "WikidPad mec 2.0"             # HACK changed here !
 
 
-LETTERS = UPPERCASE + LOWERCASE
+LETTERS = UPPERCASE + LOWERCASE + "_" # HACK changed here !
 
 
 # The specialized optimizer in WikiPyParsing can't handle automatic whitespace
@@ -246,7 +246,7 @@ def actionHeading(s, l, st, t):
 
 headingEnd = buildRegex(r"\n")
 
-heading = buildRegex(r"^(?:\+{1,15}(?!\+)|\#{1,15}(?!\#))") + Optional(buildRegex(r" ")) + \
+heading = buildRegex(r"^(?:\#{1,15}(?!\#))") + Optional(buildRegex(r" ")) + \
         headingContent + headingEnd # HACK changed here !
 heading = heading.setResultsNameNoCopy("heading").setParseAction(actionHeading)
 
@@ -783,8 +783,12 @@ WikiWordNccRevPAT = r"[^\\\[\]\|\000-\037=:;#!]+?"  # r"[\w\-\_ \t.]+?"
 
 
 
+# WikiWordCcPAT = (f"(?:[{UPPERCASE}]+[ LOWERCASE ]+[ UPPERCASE ]+[ LETTERS +"
+#                  f"string.digits] UPPERCASE ]{2,}[ LOWERCASE ])")
+
 
 # HACK changed here !
+
 WikiWordCcPAT = (r"(?:"
 +r"\d+(\-\d+)+|"
 +r"[" + LETTERS + r"]+((\-|\d+)(\w+|\d)?)+|"
@@ -793,14 +797,8 @@ WikiWordCcPAT = (r"(?:"
 +r"[" + UPPERCASE + r"]{2,30}"
 +r")")
 
-
-
-
-
-
-
 UrlPAT = r'(?:(?:https?|ftp|rel|wikirel)://|mailto:|Outlook:\S|wiki:/|file:/)'\
-        r'(?:(?![.,;:!?)]+(?:["\s]|$))[^"\s|\]<>])*'
+         r'(?:(?![.,;:!?)]+(?:["\s]|$))[^"\s|\]<>])*'
 
 
 UrlInBracketsPAT = r'(?:(?:https?|ftp|rel|wikirel)://|mailto:|Outlook:\S|wiki:/|file:/)'\
@@ -1243,8 +1241,8 @@ AutoLinkRelaxJoinFlags = re.IGNORECASE | re.UNICODE
 
 # For spell checking
 TextWordRE = re.compile(r"(?P<negative>[0-9]+|"+ UrlPAT + "|\b(?<!~)" +
-        WikiWordCcPAT + r"\b)|\b[\w']+",
-        re.DOTALL | re.UNICODE | re.MULTILINE)
+                        WikiWordCcPAT + r"\b)|\b[\w']+",
+                        re.DOTALL | re.UNICODE | re.MULTILINE)
 
 
 
