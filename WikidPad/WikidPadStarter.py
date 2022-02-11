@@ -10,9 +10,9 @@
 
 import sys,os
 
-def reexec_with_pythonw():
-    if sys.platform == 'darwin' and not sys.executable.endswith('MacOS/Python'):
-        os.execvp('pythonw',['pythonw',__file__] + sys.argv[1:])
+# def reexec_with_pythonw():
+#     if sys.platform == 'darwin' and not sys.executable.endswith('MacOS/Python'):
+#         os.execvp('pythonw',['pythonw',__file__] + sys.argv[1:])
 
 import traceback, os.path, glob, shutil, imp, warnings, configparser
 
@@ -20,13 +20,13 @@ if not hasattr(sys, 'frozen'):
     origin = __spec__.origin
     if origin is None:
         origin = sys.argv[0]
-    
+
     origin = os.path.dirname(os.path.abspath(origin))
-    
+
     # Not the cleanest way to handle things
     sys.path.insert(0, origin)
     sys.path.insert(1, os.path.join(origin, "lib"))
-    
+
     del origin
 #     sys.path.append("lib")
 #     sys.path.append(r"C:\Daten\Projekte\Wikidpad\Current\lib")
@@ -34,7 +34,7 @@ if not hasattr(sys, 'frozen'):
     os.environ["PATH"] = os.path.dirname(os.path.abspath(sys.argv[0])) + \
             os.pathsep + os.environ["PATH"]
 
-from Consts import CONFIG_FILENAME, CONFIG_GLOBALS_DIRNAME
+from WikidPad.Consts import CONFIG_FILENAME, CONFIG_GLOBALS_DIRNAME
 
 # imports VERSION_TUPLE for plugins which may expect it here
 from Consts import VERSION_STRING, VERSION_TUPLE
@@ -122,7 +122,7 @@ from pwiki.MainApp import App, findDirs
 if len(sys.argv) == 2 and sys.argv[1] == "--deleteconfig":
     # Special option, called by deinstaller on request to delete personal
     # configuration files
-    
+
     # We need a dummy app to call findDirs()
     dummyApp = wx.App(0)
     dummyApp.SetAppName("WikidPad")
@@ -131,7 +131,7 @@ if len(sys.argv) == 2 and sys.argv[1] == "--deleteconfig":
 
     if globalConfigDir is None:
         sys.exit(1)
-        
+
     try:
         try:
             globalConfigSubDir = os.path.join(globalConfigDir,
@@ -167,7 +167,7 @@ if len(sys.argv) == 2 and sys.argv[1] == "--deleteconfig":
             os.remove(os.path.join(globalConfigDir, "." + CONFIG_FILENAME))
         except:
             pass
-            
+
         if wikiAppDir != globalConfigDir:
             try:
                 os.rmdir(globalConfigDir)
@@ -175,7 +175,7 @@ if len(sys.argv) == 2 and sys.argv[1] == "--deleteconfig":
                 pass
 
         sys.exit(0)
-    
+
     except SystemExit:
         raise
     except:
@@ -185,16 +185,16 @@ elif len(sys.argv) >= 3 and sys.argv[1] == "--updtrans":
     try:
         # Update translation from .pot file
         args = sys.argv[2:]
-    
+
         # We need a dummy app to call findDirs()
         dummyApp = wx.App(0)
         dummyApp.SetAppName("WikidPad")
-    
+
         wikiAppDir, globalConfigDir = findDirs()
-    
+
         if len(args) == 1:
             args.append(os.path.join(wikiAppDir, "WikidPad.pot"))
-        
+
         from pwiki import I18nPoUpdater
         I18nPoUpdater.main(args)
 
@@ -204,8 +204,8 @@ elif len(sys.argv) >= 3 and sys.argv[1] == "--updtrans":
     except:
         traceback.print_exc()
         sys.exit(1)
-   
-    
+
+
 
 #     # Start initial localization support before reading config
 #     gettext.install("WikidPad", os.path.join(wikiAppDir, "Lang"), True)
@@ -222,7 +222,7 @@ class ErrorFrame(wx.Frame):
         dlg_m.Destroy()
         self.Close()
 
-class Error(wx.App):   
+class Error(wx.App):
     def OnInit(self):
         errorFrame = ErrorFrame(None, -1, _("Error"))
         self.SetTopWindow(errorFrame)
@@ -241,21 +241,20 @@ def main():
         app.MainLoop()
         del app
     #     srePersistent.saveCodeCache()
-        
+
     except Exception as e:
         traceback.print_exc()
         exception = e
         error = Error(0)
         error.MainLoop()
         del error
-        
+
 
     # Ugly hack but prevents mysterious application crashes on Windows
-    for m in tuple(m2 for m2 in sys.modules if m2.startswith("wx")):
-        del sys.modules[m]
-        
-    import gc
-    
-    gc.collect()
-    gc.disable()
+    # for m in tuple(m2 for m2 in sys.modules if m2.startswith("wx")):
+    #   del sys.modules[m]
 
+    #import gc
+
+    #gc.collect()
+    #gc.disable()

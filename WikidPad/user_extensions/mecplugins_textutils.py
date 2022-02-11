@@ -17,13 +17,25 @@ def describeMenuItems(wiki):
                 (expandtabs, _(u"mecplugins|Text utils|Expand tabs to spaces for selected text")     , _(u"expand tabs")),
                 (togglecase, _(u"mecplugins|Text utils|Toggle case\tCtrl-U") , _(u"toggle case")),
                 (wordcount,  _(u"mecplugins|Text utils|Count words in page") , _(u"count words")),
+                (underscore,     _(u"mecplugins|Text utils|underscore") , _(u"underscore")),
                 )
 
 def describeToolbarItems(wiki):
     return (    #(wordcount, 		_(u"Count words in page"), 	_(u"Count words in page"),	u"count"),
                 #(togglecase, 		_(u"toggle case"), 		_(u"toggle case"), 		u"swap_case"),
-		 (dewrap, 		_(u"dewrap"), 			_(u"dewrap"), 			u"mec_dewrap"),
+                 (dewrap, 		_(u"dewrap"), 			_(u"dewrap"), 			u"mec_dewrap"),
+                 (underscore, 	_(u"underscore"), 		_(u"underscore"), 		u"gopher"),
                 )
+
+
+def underscore(wiki, evt):
+    import re
+    if wiki.getCurrentWikiWord() is None:
+        return
+    content = wiki.getActiveEditor().GetSelectedText()
+    new = re.sub(r'\s', '_', content)
+    print(new)
+    wiki.getActiveEditor().ReplaceSelection(new)
 
 
 def expandtabs(wiki, evt):

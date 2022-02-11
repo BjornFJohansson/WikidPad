@@ -2,7 +2,6 @@
 from setuptools import setup, find_packages
 import os
 from glob import glob
-
 from WikidPad import Consts
 
 DESCRIPTION = 'Single user wiki notepad'
@@ -25,7 +24,11 @@ try:
 except ImportError:
     wikidpadWinBin = None
 
-
+import re     # pip list --format=freeze > requirements.txt
+install_requires = []
+with open("requirements.txt", "r") as f:
+    for line in f.readlines():
+        install_requires.append(re.split("(=|>|<)=", line)[0])
 
 excludes = ["win32api", "win32con", "win32pipe", "gadfly"]
 
@@ -65,15 +68,7 @@ setup(
         ],
 
 
-    install_requires =["wxpython",
-                       "pillow",
-                       "biopython",
-                       "pyparsing",
-                       "pydna",
-                       "natsort",
-                       "scipy",
-                       "matplotlib",
-                       "dateparser"],
+    install_requires = install_requires,
 
     include_package_data=False,
     package_data={
@@ -94,10 +89,9 @@ setup(
 
     data_files=None,
 
-    classifiers = [ 'Development Status      :: 3 - Alpha',
-                    'Intended Audience       :: End Users/Desktop',
-                    'Operating System        :: OS Independent',
-                    'License :: OSI Approved :: BSD License',
-                    "Programming Language :: Python :: 3.7",
+    classifiers = [ "Development Status :: 3 - Alpha",
+                    "Intended Audience :: End Users/Desktop",
+                    "Operating System :: OS Independent",
+                    "License :: OSI Approved :: BSD License",
                     "Programming Language :: Python :: 3.8",
-                    'Topic                   :: Office/Business',],)
+                    "Topic :: Office/Business",] ,)

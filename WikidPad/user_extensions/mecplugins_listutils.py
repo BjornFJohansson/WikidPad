@@ -91,9 +91,10 @@ def remove_duplicates(wiki, evt):
     if not content:
         return
     rows = content.split('\n')
-    rows = list(set(rows))
-    wiki.getActiveEditor().ReplaceSelection(str('\n'.join(rows)))
-    wiki.getActiveEditor().SetSelection(start, end)
+    rows = list(dict.fromkeys(rows)) # ordered set ...
+    text = str('\n'.join(rows))
+    wiki.getActiveEditor().ReplaceSelection(text)
+    wiki.getActiveEditor().SetSelection(start, start+len(text))
 
 
 def sortSelection(wiki, evt):
@@ -133,7 +134,7 @@ def ziplists(wiki, evt):
     even = rows[             :len(rows)//2]
     odd  = rows[ len(rows)//2:            ]
 
-    merged = list(itertools.chain(*list(itertools.izip_longest(even,odd,fillvalue=""))))
+    merged = list(itertools.chain(*list(itertools.zip_longest(even,odd,fillvalue=""))))
 
     wiki.getActiveEditor().ReplaceSelection("\n".join(merged))
     wiki.getActiveEditor().SetSelectionByCharPos(start, end+2)

@@ -94,7 +94,7 @@ __version__ = "%d.%d.%d%s" % (__ver_major__,__ver_minor__,
                               __ver_patch__,__ver_sub__)
 
 
-# from enchant import _enchant as _e
+# from enchant import _enchant as e
 import sys, os, os.path
 from threading import RLock
 from ctypes import *

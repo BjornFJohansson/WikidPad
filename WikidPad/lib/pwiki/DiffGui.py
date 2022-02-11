@@ -470,7 +470,7 @@ class InlineDiffControl(SearchableScintillaControl):
         """
         Stops further styling requests from Scintilla until text is modified
         """
-        self.StartStyling(self.GetLength() # , 0xff)  # changed here !
+        self.StartStyling(self.GetLength()) # , 0xff)  # changed here !
         self.SetStyling(0, 0)
 
 

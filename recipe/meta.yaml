@@ -21,6 +21,7 @@ requirements:
     - wxpython >=4.0.7
     - setuptools
     - pip
+#    - pyenchant
     - python.app  #[osx]
 
   run:
@@ -33,7 +34,7 @@ requirements:
     - sqlite
     - natsort
     - pydna
-    - pyenchant
+#    - pyenchant
     - dateparser
 
 test:

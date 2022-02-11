@@ -1,4 +1,4 @@
-﻿++ Wikid Pad Help
+﻿## Wikid Pad Help
 
 *Description*
 

@@ -25,12 +25,12 @@ def google(wiki,evt):
 
     final_url = base_url + quote(query)
 
-    print(final_url)
+    # print(final_url)
 
     # https://www.google.com/search?q=%22Stack+Exchange%22+OR+StackOverflow
-    #  http://www.google.com/search?q=%22Stack+Exchange%22+OR+StackOverflow
-    #  http://www.google.com/search?q=%22Stack%2BExchange%22%2BOR%2BStackOverflow
-    #  http://www.google.com/search?q=%22Stack%20Exchange%22%20OR%20StackOverflow
+    # http://www.google.com/search?q=%22Stack+Exchange%22+OR+StackOverflow
+    # http://www.google.com/search?q=%22Stack%2BExchange%22%2BOR%2BStackOverflow
+    # http://www.google.com/search?q=%22Stack%20Exchange%22%20OR%20StackOverflow
 
     webbrowser.open(final_url, new=new)
 

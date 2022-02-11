@@ -62,7 +62,7 @@ class ColumnExtension(GObject.GObject, Verne.MenuProvider):
     def menu_activate_cb(self, menu, files):
         today = str(datetime.date.today())
         print(today)
-        today_dir = os.path.join("/home/bjorn/files/ARCHIVE/", today)
+        today_dir = os.path.join("/home/bjorn/files/", today)
         print(today_dir)
         try:
             os.makedirs(today_dir)

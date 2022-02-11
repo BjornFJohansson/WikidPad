@@ -33,7 +33,13 @@ http://wiki.services.openoffice.org/wiki/Dictionaries
 
 should work as well.
 
-A dictionary consists of a .dic and an .aff file with the same name (like e.g. "en_US"). To install a new one, go to the installation directory of WikidPad, then in dir. "share" down in dir. "enchant". There you will see directories "ispell" and "myspell". Just copy the .dic and .aff files into the directory for the appropriate spell checker (ispell or myspell). After that WikidPad should be ready to use the dictionary.
+A dictionary consists of a .dic and an .aff file with the same name
+(like e.g. "en_US"). To install a new one, go to the installation
+directory of WikidPad, then in dir. "share" down in dir. "enchant".
+There you will see directories "ispell" and "myspell". Just copy the
+.dic and .aff files into the directory for the appropriate spell
+checker (ispell or myspell). After that WikidPad should be ready to
+use the dictionary.
 
 
 
@@ -121,8 +127,18 @@ Each line contains a word to ignore during spell checking. You can add, modify o
 
 ++ Spell check while type
 
-Instead of using the dialog you can also let WikidPad highlight all unknown words by jiggled red underlines. Just check "Spell Check While Type" from "Edit" menu to start it. The underlining is updated dynamically.
+Instead of using the dialog you can also let WikidPad highlight all
+unknown words by jiggled red underlines. Just check "Spell Check While
+Type" from "Edit" menu to start it. The underlining is updated
+dynamically.
 
-For this spell check mode same rules about defining of language and word as above apply. When right-clicking on an unknown word the context menu shows some suggestions for the correct spelling (if available). Below that you see menu entries to ignore the word, add it globally or add it locally with the same meanings as in the spell check dialog.
+For this spell check mode same rules about defining of language and
+word as above apply. When right-clicking on an unknown word the
+context menu shows some suggestions for the correct spelling (if
+available). Below that you see menu entries to ignore the word, add it
+globally or add it locally with the same meanings as in the spell
+check dialog.
 
-This spell check mode holds its own ignore list which is cleared when the wiki or WikidPad is closed or if "Clear ignore list" in "Edit" menu is called explicitly.
+This spell check mode holds its own ignore list which is cleared when
+the wiki or WikidPad is closed or if "Clear ignore list" in "Edit"
+menu is called explicitly.

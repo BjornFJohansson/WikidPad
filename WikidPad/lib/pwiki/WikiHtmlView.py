@@ -41,7 +41,7 @@ try:
             WikiHtmlViewWK = None
             import ExceptionLogger
             ExceptionLogger.logOptionalComponentException("Initialize webkit HTML renderer")
-            
+
 
 except:
 #         traceback.print_exc()
@@ -69,7 +69,7 @@ class LinkConverterForPreview:
     """
     def __init__(self, wikiDocument):
         self.wikiDocument = wikiDocument
-        
+
     def getLinkForWikiWord(self, word, default = None):
         if self.wikiDocument.isDefinedWikiLinkTerm(word):
             return "internaljump:wikipage/%s" % word
@@ -91,7 +91,7 @@ def createWikiHtmlView(presenter, parent, ID):
         config.set("main", "html_preview_renderer", str(pvRenderer))
         config.saveGlobalConfig()
         return hvIe
-        
+
     elif WikiHtmlViewWK and pvRenderer == 3:
         return WikiHtmlViewWK.WikiHtmlViewWK(presenter, parent, ID)
 
@@ -113,11 +113,11 @@ class WikiHtmlView(wx.html.HtmlWindow):
                 ("opened wiki", self.onOpenedWiki),
                 ("closing current wiki", self.onClosingCurrentWiki)
         ), self.presenter.getMiscEvent())
-        
+
         self.__sinkApp = wxKeyFunctionSink((
                 ("options changed", self.onOptionsChanged),
         ), wx.GetApp().getMiscEvent())
-        
+
         self.__sinkDocPage = wxKeyFunctionSink((
                 ("updated wiki page", self.onUpdatedWikiPage),
                 ("changed live text", self.onChangedLiveText)
@@ -132,14 +132,14 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
         self.anchor = None  # Name of anchor to jump to when view gets visible
         self.contextHref = None  # Link href on which context menu was opened
-        
+
         # TODO Should be changed to presenter as controller
         self.exporterInstance = PluginManager.getExporterTypeDict(
                 self.presenter.getMainControl(), False)["html_single"][0]\
                 (self.presenter.getMainControl())
 
         self._DEFAULT_FONT_SIZES = self.presenter.getMainControl().presentationExt.INTHTML_FONTSIZES
-        
+
         # TODO More elegantly
         self.exporterInstance.exportType = "html_previewWX"
         self.exporterInstance.styleSheet = ""
@@ -159,7 +159,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
         self.Bind(wx.EVT_MENU, lambda evt: self.SelectAll(), id=GUI_ID.CMD_SELECT_ALL)
         self.Bind(wx.EVT_MENU, lambda evt: self.addZoom(1), id=GUI_ID.CMD_ZOOM_IN)
         self.Bind(wx.EVT_MENU, lambda evt: self.addZoom(-1), id=GUI_ID.CMD_ZOOM_OUT)
-        self.Bind(wx.EVT_MENU, self.OnActivateThis, id=GUI_ID.CMD_ACTIVATE_THIS)        
+        self.Bind(wx.EVT_MENU, self.OnActivateThis, id=GUI_ID.CMD_ACTIVATE_THIS)
         self.Bind(wx.EVT_MENU, self.OnActivateNewTabThis,
                 id=GUI_ID.CMD_ACTIVATE_NEW_TAB_THIS)
         self.Bind(wx.EVT_MENU, self.OnActivateNewTabBackgroundThis,
@@ -184,7 +184,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
         if not self.visible and vis:
             self.outOfSync = True   # Just to be sure
             self.refresh()
-            
+
         if not vis:
             self.exporterInstance.tempFileSet.clear()
 
@@ -194,8 +194,8 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
     if isWindows():
         _RE_RIGHT_FILE_URL = re.compile("file:/[a-zA-Z]:")
-        
-        def OnOpeningURL(self, typ, url):
+
+        def OnHTMLOpeningURL(self, typ, url):
             if url.startswith("file:"):
                 if self._RE_RIGHT_FILE_URL.match(url):
                     return wx.html.HTML_OPEN
@@ -203,11 +203,11 @@ class WikiHtmlView(wx.html.HtmlWindow):
                 # opinion how a local file URL should look like
                 # than Python.
                 # The same processing is done already by the exporter
-                # for WikidPad URL but not for URLs in HTML tags. 
+                # for WikidPad URL but not for URLs in HTML tags.
                 p = pathnameFromUrl(url)
                 url = wx.FileSystem.FileNameToURL(p)
                 return url
-    
+
             return wx.html.HTML_OPEN
 
 
@@ -220,7 +220,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
 
 # This doesn't work for wxPython 2.8 and newer, constants are missing
-#     _DEFAULT_FONT_SIZES = (wx.html.HTML_FONT_SIZE_1, wx.html.HTML_FONT_SIZE_2, 
+#     _DEFAULT_FONT_SIZES = (wx.html.HTML_FONT_SIZE_1, wx.html.HTML_FONT_SIZE_2,
 #             wx.html.HTML_FONT_SIZE_3, wx.html.HTML_FONT_SIZE_4,
 #             wx.html.HTML_FONT_SIZE_5, wx.html.HTML_FONT_SIZE_6,
 #             wx.html.HTML_FONT_SIZE_7)
@@ -244,7 +244,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
     def refresh(self):
         ## _prof.start()
-        
+
         # Store position of currently displayed page, if any
         if self.currentLoadedWikiWord:
             try:
@@ -263,10 +263,10 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
         if self.outOfSync:
             self.currentLoadedWikiWord = None
-    
+
             if wikiPage is None:
                 return  # TODO Do anything else here?
-                
+
             word = wikiPage.getWikiWord()
             if word is None:
                 return  # TODO Do anything else here?
@@ -282,13 +282,13 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
             wx.GetApp().getInsertionPluginManager().taskEnd()
 
-    
+
             # TODO Reset after open wiki
             zoom = self.presenter.getConfig().getint("main", "preview_zoom", 0)
             lx, ly = self.getIntendedViewStart()
             self.SetFonts("", "", [max(s + 2 * zoom, 1)
                     for s in self._DEFAULT_FONT_SIZES])
-                    
+
 #             print "-- refresh8", html.encode("mbcs", "ignore")
             self.SetPage(html)
             self.scrollDeferred(lx, ly)
@@ -318,8 +318,8 @@ class WikiHtmlView(wx.html.HtmlWindow):
         self.anchor = anchor
         if self.visible:
             self.refresh()
-            
-    
+
+
     def GetSelectedText(self):
         return self.SelectionToText()
 
@@ -385,7 +385,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
         self.outOfSync = True
         if self.visible:
             self.refresh()
-            
+
     def onChangedLiveText(self, miscevt):
         self.outOfSync = True
 
@@ -400,11 +400,11 @@ class WikiHtmlView(wx.html.HtmlWindow):
             self.Freeze()
             self.deferredScrollPos = (lx, ly)
             wx.CallAfter(self._scrollAndThaw)
-        
+
     def _scrollAndThaw(self):
         if wxHelper.isDead(self):
             return
-            
+
         self.Scroll(self.deferredScrollPos[0], self.deferredScrollPos[1])
         self.Thaw()
         self.deferredScrollPos = None
@@ -438,19 +438,19 @@ class WikiHtmlView(wx.html.HtmlWindow):
             if linkInfo is not None:
                 evt.Skip()
                 return
-                
+
         pres = self.presenter
         mc = pres.getMainControl()
-                
+
         paramDict = {"page": pres.getDocPage(), "presenter": pres,
                 "main control": mc}
-                
+
         mc.getUserActionCoord().reactOnUserEvent(
                 "mouse/leftdoubleclick/preview/body", paramDict)
 
 #         self.presenter.switchSubControl("textedit")
 
-        
+
     def OnMiddleDown(self, evt):
         pos = self.CalcUnscrolledPosition(evt.GetPosition())
         cell = self.GetInternalRepresentation().FindCellByPos(pos.x, pos.y)
@@ -483,7 +483,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
                 appendToMenuByMenuDesc(menu, _CONTEXT_MENU_INTERNAL_JUMP)
             else:
                 appendToMenuByMenuDesc(menu, "Activate;CMD_ACTIVATE_THIS")
-                
+
                 if href.startswith("file:") or \
                         href.startswith("rel://"):
 
@@ -494,7 +494,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
             self.PopupMenuXY(menu, evt.GetX(), evt.GetY())
         else:
             # Jump to another wiki page
-            
+
             # First check for an anchor. In URLs, anchors are always
             # separated by '#' regardless which character is used
             # in the wiki syntax (normally '!')
@@ -524,14 +524,14 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
     def _activateLink(self, href, tabMode=0):
         """
-        Called if link was activated by clicking in the context menu, 
+        Called if link was activated by clicking in the context menu,
         therefore only links starting with "internaljump:wikipage/" can be
         handled.
         tabMode -- 0:Same tab; 2: new tab in foreground; 3: new tab in background
         """
         if href.startswith("internaljump:wikipage/"):
             # Jump to another wiki page
-            
+
             # First check for an anchor. In URLs, anchors are always
             # separated by '#' regardless which character is used
             # in the wiki syntax (normally '!')
@@ -624,7 +624,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
     def OnKeyUp(self, evt):
         acc = getAccelPairFromKeyDown(evt)
-        if acc == (wx.ACCEL_CTRL, ord('C')): 
+        if acc == (wx.ACCEL_CTRL, ord('C')):
             # Consume original clipboard copy function
             pass
         else:
@@ -684,7 +684,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
                 href = linkInfo.GetHref()
                 if href.startswith("internaljump:wikipage/"):
                     # Jump to another wiki page
-                    
+
                     # First check for an anchor. In URLs, anchors are always
                     # separated by '#' regardless which character is used
                     # in the wiki syntax (normally '!')
@@ -696,7 +696,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
                         anchor = None
 
                     wikiWord = flexibleUrlUnquote(wikiWord)
-                    
+
                     wikiDocument = self.presenter.getWikiDocument()
                     if wikiDocument is None:
                         return
@@ -708,7 +708,7 @@ class WikiHtmlView(wx.html.HtmlWindow):
 
                         if len(propList) > 0:
                             callTip = propList[-1][2]
-                        
+
                         status = _("Link to page: %s") % wikiWord
                 else:
                     status = href

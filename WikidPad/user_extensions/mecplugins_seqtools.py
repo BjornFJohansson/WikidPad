@@ -14,22 +14,18 @@
 WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1), )
 
-import string
 import textwrap
 import datetime
 import re
 
 from Bio.Seq                        import Seq
-from Bio.SeqUtils                   import GC, seq3
-from Bio.SeqUtils.MeltingTemp       import Tm_staluc
 
 from Bio.SeqUtils.MeltingTemp       import Tm_Wallace
-from pydna.tm                       import tmbresluc
-from pydna.utils                    import seq31
+from pydna.tm                       import tm_default
 
+from Bio.SeqUtils                   import GC
 from pydna.parsers                  import parse
 from pydna.amplify                  import Anneal
-from pydna.amplify                  import pcr
 
 from pydna.genbankfixer import gbtext_clean
 from pydna.readers import read
@@ -113,24 +109,22 @@ def tm(wiki, evt):
     raw_sequence = wiki.getActiveEditor().GetSelectedText()
     primer = "".join([char for char in raw_sequence if char in "ACBEDGFIHKJMLONQPSRUTWVYXZacbedgfihkjmlonqpsrutwvyxz"])
 
-    if primer and 1<len(primer)<13:
-        wiki.displayMessage("Primer melting temperature","primer 1<length<13")
-        return
+    temp_pydna  = round(tm_default(primer),2)
 
-    temp_staluc  = round(Tm_staluc(primer),2)
-    temp_bresluc = round(tmbresluc(primer,primerc=1000),2)
     temp_wallace = round(Tm_Wallace(primer),2)
     GCcontent = round(GC(primer),0)
 
     wiki.displayMessage(u"Primer melting temperature",
                         textwrap.dedent(
                         u'''
-                        Nearest Neighbour StLucia 1998: \t{} °C
-                        Bresl 1986 + StLucia 1998 1µM: \t{} °C
-                        (A+T)*2+(G+C)*4: \t{} °C
-                        GC: \t{}
-                        length: \t{}-mer
-                        '''.format(temp_staluc,temp_bresluc,temp_wallace,GCcontent,len(primer))))
+                        tm (pydna): {} °C
+                        (A+T)*2+(G+C)*4: {} °C
+                        GC: {}
+                        length: {}-mer
+                        '''.format(temp_pydna,
+                                   temp_wallace,
+                                   GCcontent,
+                                   len(primer))))
     return
 
 def tab(wiki, evt):
@@ -173,6 +167,8 @@ def toggle_format(wiki, evt):
         else:
             format_ = "fasta"
     else:
+        letters= 'GATCRYWSMKHBVDN'
+        content = "".join(c for c in content if c.upper() in letters)
         content = ">seq_{}bp\n{}".format(len(content), content)
         format_="fasta"
 
@@ -227,7 +223,11 @@ def pcr_(wiki, evt):
     assert report_for_each_amplicon
 
     #join all text together; remove sequence records with no sequence
-    sequences = [rec for rec in parse("\n\n".join(lines)+"\n\n") if rec.seq]
+    
+    text = "\n".join(lines)+"\n\n"
+    
+    sequences = [rec for rec in parse(text) if rec.seq]
+    
     #if there is no template separator, the last sequence is considered the template
     template = sequences.pop()
     primer_sequences = sequences
@@ -256,13 +256,18 @@ def pcr_(wiki, evt):
 
     result_text=""
 
-    number_of_products = len(ann.forward_primers) * len(ann.reverse_primers)
+    products = ann.products
+    number_of_products = len(products)
+    
+    print(number_of_products)
+    print(cutoff_detailed_figure)
+    print(cutoff_featured_template)
 
     if number_of_products==0:
         result_text="\n"+ann.report()
     elif 1<=number_of_products<=cutoff_detailed_figure:
         message_template += report_for_each_simulation
-        for amplicon in ann.products:
+        for amplicon in products:
             message_template += report_for_each_amplicon
             result_text+=message_template.format(
                 anneal_primers                = ann,
@@ -274,18 +279,18 @@ def pcr_(wiki, evt):
                 product_sequence              = amplicon.seq,
                 template_name                 = ann.template.name,
                 template_sequence             = ann.template.seq,
-                figure                        = amplicon.figure())
+                figure                        = amplicon.figure(),
+                program                       = amplicon.program())
 
             message_template=''
 
-    elif  number_of_products>cutoff_featured_template:
-        print("ann:", ann)
+    elif number_of_products >= cutoff_featured_template:
         result_text+="\n"+ann.template.format("gb")
 
 
     wiki.getActiveEditor().gotoCharPos(end)
     wiki.getActiveEditor().AddText(result_text)
-    wiki.getActiveEditor().SetSelectionByCharPos(end, end+len(result_text))
+    wiki.getActiveEditor().SetSelectionByCharPos(end+1, end+len(result_text))
     return
 
 def reanal(wiki, evt):

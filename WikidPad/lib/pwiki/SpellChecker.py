@@ -14,22 +14,21 @@ from .wxHelper import GUI_ID, XrcControls, autosizeColumn, wxKeyFunctionSink
 
 from .WikiPyparsing import buildSyntaxNode
 
-from enchant import Dict
-import enchant as EnchantDriver
+try:
+    #from .EnchantDriver import Dict
+    #from . import EnchantDriver
+    import enchant as EnchantDriver
+    from enchant import Dict
+except (AttributeError, ImportError, WindowsError):
+    import ExceptionLogger
+    ExceptionLogger.logOptionalComponentException(
+            "Initialize enchant driver (spell checking)")
+    Dict = None
 
-# try:
-#     from .EnchantDriver import Dict
-#     from . import EnchantDriver
-# except (AttributeError, ImportError, WindowsError):
-#     import ExceptionLogger
-#     ExceptionLogger.logOptionalComponentException(
-#             "Initialize enchant driver (spell checking)")
-#     Dict = None
+    # traceback.print_exc()
 
-#     # traceback.print_exc()
-
-#     # WindowsError may happen if an incomplete enchant installation is found
-#     # in the system
+    # WindowsError may happen if an incomplete enchant installation is found
+    # in the system
 
 
 from .DocPages import AliasWikiPage, WikiPage

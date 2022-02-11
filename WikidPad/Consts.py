@@ -38,7 +38,7 @@ class Enumeration:
     def __getattr__(self, attr):
         if attr not in self.lookup:
             raise AttributeError
-            
+
         setattr(self, attr, self.lookup[attr])
         return self.lookup[attr]
     def whatis(self, value):
@@ -70,8 +70,8 @@ class Enumeration:
 # (1, 9, 104, 2) is something after 1.9beta04
 # (2, 0, 300, 0) is 2.0final
 
-VERSION_TUPLE = ("wikidPad", 2, 4, 1, 0)
-VERSION_STRING = "wikidPad 2.4alpha01dev1"
+VERSION_TUPLE = ("wikidPad", 2, 4, 1, 2)
+VERSION_STRING = "wikidPad 2.4alpha01dev2"
 HOMEPAGE = "http://wikidpad.sourceforge.net"
 
 CONFIG_FILENAME = "WikidPad.config"
@@ -83,7 +83,7 @@ DEADBLOCKTIMEOUT = 1800
 
 
 # For use in isinstance(v, BYTETYPES)
-BYTETYPES = (bytes, bytearray) 
+BYTETYPES = (bytes, bytearray)
 
 
 
