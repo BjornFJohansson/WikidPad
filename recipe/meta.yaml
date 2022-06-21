@@ -18,7 +18,7 @@ source:
 requirements:
   build:
     - python
-    - wxpython >=4.0.7
+    - wxpython >=4.1.1
     - setuptools
     - pip
 #    - pyenchant
@@ -27,7 +27,7 @@ requirements:
   run:
     - python
     - python.app  #[osx]
-    - wxpython >=4.0.7
+    - wxpython >=4.1.1
     - biopython
     - pyparsing
     - pillow

@@ -51,7 +51,6 @@ def growth(wiki, evt):
             # µmax maximum growth rate (1/h)
             return x0 * np.exp(µmax * t)
         
-        
         def inv_exp_growth(X, x0, µmax):
             # x0 initial optical density
             # t = time (h)

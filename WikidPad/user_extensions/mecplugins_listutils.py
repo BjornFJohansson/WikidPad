@@ -42,13 +42,13 @@ def bullet_list(wiki, evt):
     newbullets = []
     newunordered = []
 
-    all_bullets = all( re.match("\d+\..*",r) for r in contentlist )
+    all_bullets = all( re.match("\d+\..*", r) for r in contentlist )
     no_bullets  = not any( re.match("^\d+\..*|(\-|\*|\+)\s.*",r) for r in contentlist )
     all_unordered = all( re.match("(\-|\*|\+)\s.*",r) for r in contentlist )
 
     for i,r in enumerate(contentlist):
         row = re.split("^\d+\.",r)[-1]
-        row = re.split("(\-|\*|\+)\s",row)[-1]
+        row = re.split("^(\-|\*|\+)\s", row)[-1]
         print(row)
         wobullets.append(row.strip())
         newbullets.append(f"{i+1}. {row.strip()}")
