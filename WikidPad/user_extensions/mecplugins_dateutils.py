@@ -12,7 +12,6 @@
 #WIKIDPAD_PLUGIN = (("MenuFunctions",1),)
 WIKIDPAD_PLUGIN = (("ToolbarFunctions",2), ("ToolbarFunctions",1), ("MenuFunctions",1))
 
-import dateparser
 import time
 import wx
 import wx.stc
@@ -26,6 +25,11 @@ import sys
 #from pwiki.wikidata.WikiDataManager import WikiDataManager
 from WikidPad.lib.pwiki.wxHelper  import copyTextToClipboard
 from WikidPad.lib.pwiki.StringOps import strftimeUB
+
+try:
+	import dateparser
+except ModuleNotFoundError:
+    print("dateparser not installed.")
 
 def describeMenuItems(wiki):
     return (

@@ -9,7 +9,7 @@ import itertools
 try:
     import pydna
 except ModuleNotFoundError:
-    pass
+    print("pydna not installed.")
 else:
     from pydna.utils import parse_text_table
     from pydna.utils import join_list_to_table
@@ -19,6 +19,7 @@ try:
     from natsort import natsorted
 except ModuleNotFoundError:
     natsorted = sorted
+    print("natsorted not installed.")
 
 def describeMenuItems(wiki):
     return (	(sortSelection,	    _(u"mecplugins|List utils|Sort selected lines")	   , _(u"sort selection")),
