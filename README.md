@@ -13,7 +13,7 @@ These are located in the WikidPad/user_extensions directory.
 These files are named mecplugins_*.py and are useful for using Wikidpad as a dated notebook.
 These files are not necessary and can be removed.
 
-The requirements are (in requirements.txt) are:
+The requirements are python 3.8 and (in requirements.txt):
 
 	wxPython==4.1.1
 
@@ -32,11 +32,11 @@ These are needed for some of the mec_plugins
 
     pip install -r requirements_optional.txt
 
-## Installation with Anaconda
+## Installation with Mambaforge
 
-1. Install [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+1. Install [Mambaforge](https://mamba.readthedocs.io/en/latest/installation.html).
 
-2. Create a new conda environment with python 3.8 `conda create python=3.8 -n wp38`
+2. Create a new conda environment with python 3.8 `mamba create python=3.8 -n wp38`
 
 3. Activate this environment `conda activate wp38`
 
@@ -44,22 +44,50 @@ These are needed for some of the mec_plugins
 
 5. run from terminal by `~/anaconda3/envs/wp38/bin/wikidpad`
 
-6. conda info
 
-(bjorn39) bjorn@bjorn-ThinkPad-T450s:~$ conda info
 
-     active environment : bjorn39
-    active env location : /home/bjorn/anaconda3/envs/bjorn39
-            shell level : 2
+
+(wp38) ✔ ~/python_packages/WikidPad [pypi|✚ 1]
+11:17 $ mamba info
+
+                  __    __    __    __
+                 /  \  /  \  /  \  /  \
+                /    \/    \/    \/    \
+███████████████/  /██/  /██/  /██/  /████████████████████████
+              /  / \   / \   / \   / \  \____
+             /  /   \_/   \_/   \_/   \    o \__,
+            / _/                       \_____/  `
+            |/
+        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
+        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
+        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
+        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
+        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
+        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
+
+        mamba (1.1.0) supported by @QuantStack
+
+        GitHub:  https://github.com/mamba-org/mamba
+        Twitter: https://twitter.com/QuantStack
+
+█████████████████████████████████████████████████████████████
+
+
+     active environment : wp38
+    active env location : /home/bjorn/anaconda3/envs/wp38
+            shell level : 3
        user config file : /home/bjorn/.condarc
  populated config files : /home/bjorn/.condarc
-          conda version : 4.9.2
-    conda-build version : 3.20.5
-         python version : 3.8.3.final.0
-       virtual packages : __glibc=2.31=0
+          conda version : 22.9.0
+    conda-build version : 3.23.1
+         python version : 3.9.15.final.0
+       virtual packages : __linux=5.15.0=0
+                          __glibc=2.31=0
                           __unix=0=0
                           __archspec=1=x86_64
        base environment : /home/bjorn/anaconda3  (writable)
+      conda av data dir : /home/bjorn/anaconda3/etc/conda
+  conda av metadata url : None
            channel URLs : https://conda.anaconda.org/conda-forge/linux-64
                           https://conda.anaconda.org/conda-forge/noarch
                           https://repo.anaconda.com/pkgs/main/linux-64
@@ -73,18 +101,17 @@ These are needed for some of the mec_plugins
        envs directories : /home/bjorn/anaconda3/envs
                           /home/bjorn/.conda/envs
                platform : linux-64
-             user-agent : conda/4.9.2 requests/2.25.1 CPython/3.8.3 Linux/5.4.0-64-generic linuxmint/20.1 glibc/2.31
+             user-agent : conda/22.9.0 requests/2.28.1 CPython/3.9.15 Linux/5.15.0-56-generic linuxmint/20.3 glibc/2.31
                 UID:GID : 1000:1000
              netrc file : None
            offline mode : False
 
+(wp38) ✔ ~/python_packages/WikidPad [pypi|✚ 1]
+11:17 $
 
 
 
-active env location : /home/bjorn/anaconda3/envs/bjorn39
-
-
-.desktop file for linux:
+My .desktop file for linux:
 
     #!/usr/bin/env xdg-open
     [Desktop Entry]
@@ -106,9 +133,11 @@ active env location : /home/bjorn/anaconda3/envs/bjorn39
 
 WikidPadMP can also be run from source in editable mode by downloading this repository:
 
-    conda install wxpython pillow matplotlib natsort scipy dateparser appdirs biopython prettytable networkx pyparsing gspread
+    conda install wxpython natsort dateparser
 
     pip install --editable . --no-deps
+
+
 
 
 

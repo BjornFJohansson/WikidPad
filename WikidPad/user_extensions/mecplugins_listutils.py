@@ -6,10 +6,19 @@ WIKIDPAD_PLUGIN = (("MenuFunctions",1), ("ToolbarFunctions",1))
 import re
 import itertools
 
-from pydna.utils import parse_text_table
-from pydna.utils import join_list_to_table
-from pydna.utils import expandtolist
-from natsort import natsorted
+try:
+    import pydna
+except ModuleNotFoundError:
+    pass
+else:
+    from pydna.utils import parse_text_table
+    from pydna.utils import join_list_to_table
+    from pydna.utils import expandtolist
+
+try:
+    from natsort import natsorted
+except ModuleNotFoundError:
+    natsorted = sorted
 
 def describeMenuItems(wiki):
     return (	(sortSelection,	    _(u"mecplugins|List utils|Sort selected lines")	   , _(u"sort selection")),
@@ -104,7 +113,7 @@ def sortSelection(wiki, evt):
     content = wiki.getActiveEditor().GetSelectedText()
     if not content:
         content = wiki.getActiveEditor().GetText()
-    rows = natsorted( content.splitlines(),key=str.lower)
+    rows = natsorted(content.splitlines(), key=str.lower)
 
     wiki.getActiveEditor().ReplaceSelection( u'\n'.join(rows))
     wiki.getActiveEditor().SetSelection(start, end)
