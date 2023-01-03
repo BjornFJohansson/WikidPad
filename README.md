@@ -125,5 +125,6 @@ My .desktop file for linux:
 ## Where is what?
 
 - [pypi](https://pypi.org/project/WikidPadMP)
+- [conda](https://anaconda.org/bjornfjohansson/wikidpadmp)
 - [Source repository on Github](https://github.com/WikidPad/WikidPad/)
 - [Main website](http://wikidpad.sourceforge.net/)
