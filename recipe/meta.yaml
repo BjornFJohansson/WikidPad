@@ -27,9 +27,8 @@ requirements:
     - python
     - python.app  #[osx]
     - wxpython >=4.1.1
-    - natsort
 #    - pyenchant
-    - dateparser
+
 
 test:
   imports:
