@@ -44,34 +44,8 @@ These are needed for some of the mec_plugins
 
 5. run from terminal by `~/anaconda3/envs/wp38/bin/wikidpad`
 
-
-
-
-(wp38) ✔ ~/python_packages/WikidPad [pypi|✚ 1]
+```
 11:17 $ mamba info
-
-                  __    __    __    __
-                 /  \  /  \  /  \  /  \
-                /    \/    \/    \/    \
-███████████████/  /██/  /██/  /██/  /████████████████████████
-              /  / \   / \   / \   / \  \____
-             /  /   \_/   \_/   \_/   \    o \__,
-            / _/                       \_____/  `
-            |/
-        ███╗   ███╗ █████╗ ███╗   ███╗██████╗  █████╗
-        ████╗ ████║██╔══██╗████╗ ████║██╔══██╗██╔══██╗
-        ██╔████╔██║███████║██╔████╔██║██████╔╝███████║
-        ██║╚██╔╝██║██╔══██║██║╚██╔╝██║██╔══██╗██╔══██║
-        ██║ ╚═╝ ██║██║  ██║██║ ╚═╝ ██║██████╔╝██║  ██║
-        ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝
-
-        mamba (1.1.0) supported by @QuantStack
-
-        GitHub:  https://github.com/mamba-org/mamba
-        Twitter: https://twitter.com/QuantStack
-
-█████████████████████████████████████████████████████████████
-
 
      active environment : wp38
     active env location : /home/bjorn/anaconda3/envs/wp38
@@ -106,11 +80,6 @@ These are needed for some of the mec_plugins
              netrc file : None
            offline mode : False
 
-(wp38) ✔ ~/python_packages/WikidPad [pypi|✚ 1]
-11:17 $
-
-
-
 My .desktop file for linux:
 
     #!/usr/bin/env xdg-open
@@ -125,25 +94,7 @@ My .desktop file for linux:
     Categories=Office;
 
 
-
-
-
-
-## Conda packages
-
-WikidPadMP can also be run from source in editable mode by downloading this repository:
-
-    conda install wxpython natsort dateparser
-
-    pip install --editable . --no-deps
-
-
-
-
-
-
-
-
+```
 # Where is what?
 
 * [Main website](http://wikidpad.sourceforge.net/)
