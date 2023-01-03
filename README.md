@@ -17,12 +17,19 @@ The requirements are python 3.8 and (in requirements.txt):
 
 	wxPython==4.1.1
 
-Optional requirements are (in requirements.txt) are:
+Optional requirements are (in requirements_optional.txt) are:
 
     dateparser>=1.1.5
     natsort>=8.2.0
 
-These are needed for some of the mec_plugins
+These are needed for some of the mec_plugins.
+
+The only absolute requirement is wxpython. I have found that a combination between python 3.8 and
+wxpython 4.1.1 works very well on linux mint. The only think that does not work on linux is the spell checking.
+
+This also works quite well on windows. Several attempts
+have been made to make it work on MacOS, but so far not successfully afaik.
+
 
 ## Installation with pip
 
@@ -38,11 +45,11 @@ These are needed for some of the mec_plugins
 
 2. Create a new conda environment with python 3.8 `mamba create python=3.8 -n wp38`
 
-3. Activate this environment `conda activate wp38`
+3. Activate this environment `mamba activate wp38`
 
-4. Install wikidpad by `conda install -c bjornfjohansson wikidpadmp`
+4. Install WikidPad by `mamba install -c bjornfjohansson wikidpadmp`
 
-5. run from terminal by `~/anaconda3/envs/wp38/bin/wikidpad`
+5. run from terminal by the command: `wikidpad`
 
 ```
 11:17 $ mamba info
@@ -95,12 +102,28 @@ My .desktop file for linux:
 
 
 ```
-# Where is what?
 
-* [Main website](http://wikidpad.sourceforge.net/)
-* [Downloads (Windows binary and source)](http://sourceforge.net/projects/wikidpad/files/?source=navbar)
-* Installation hints for [Windows from source](http://trac.wikidpad2.webfactional.com/wiki/InstallWindows),
-  [Linux](http://trac.wikidpad2.webfactional.com/wiki/InstallLinux),
-  [MacOS](http://trac.wikidpad2.webfactional.com/wiki/InstallMacosxNew)
-* [WikidPad's own wiki](http://trac.wikidpad2.webfactional.com/)
-* [Source repository on Github](https://github.com/WikidPad/WikidPad/)
+## Build a setuptools package
+
+
+	python setup.py bdist_wheel
+
+	twine upload dist/WikidPadMP-2.4a1.dev5-py3-none-any.whl
+
+
+
+## Build a conda package
+
+
+	mamba build recipe/meta.yaml --no-include-recipe
+
+
+    anaconda upload /home/bjorn/anaconda3/conda-bld/noarch/wikidpadmp-2.4alpha01dev5-py_0.tar.bz2
+
+
+
+## Where is what?
+
+- [pypi](https://pypi.org/project/WikidPadMP)
+- [Source repository on Github](https://github.com/WikidPad/WikidPad/)
+- [Main website](http://wikidpad.sourceforge.net/)
