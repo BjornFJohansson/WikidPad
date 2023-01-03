@@ -5,7 +5,7 @@
 *.pyc
 
 *~
-
+/WikidPad/WikidPadHelp/WikidPadHelp.wiki
 
 # Byte-compiled / optimized
 __pycache__/
