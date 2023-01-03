@@ -9,6 +9,7 @@ build:
   script: python setup.py install --single-version-externally-managed --record=record.txt
   include_recipe: False
   osx_is_app: True
+  noarch: python
   entry_points:
     - wikidpad = WikidPad.WikidPadStarter:main
 
@@ -17,8 +18,8 @@ source:
 
 requirements:
   build:
-    - python
-    - wxpython >=4.1.1
+    - python==3.8
+    - wxpython>=4.1.1
     - setuptools
     - pip
 #    - pyenchant
