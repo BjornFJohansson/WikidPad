@@ -19,7 +19,7 @@ import datetime
 import re
 
 from Bio.Seq                        import Seq
-
+from Bio.SeqUtils                   import seq3
 from Bio.SeqUtils.MeltingTemp       import Tm_Wallace
 from pydna.tm                       import tm_default
 
@@ -98,6 +98,8 @@ def translate(wiki, evt):
     sequence = Seq(raw_string)
     protein_sequence = str(sequence.translate(to_stop=True))
     protein_sequence ="".join([i+"  " for i in protein_sequence])
+    if len(sequence) == 3:
+        protein_sequence = f" {seq3(protein_sequence.strip()).upper()} "
 
     padding = len(raw_sequence)-len(protein_sequence)
     wiki.getActiveEditor().ReplaceSelection(protein_sequence+" "*padding)
