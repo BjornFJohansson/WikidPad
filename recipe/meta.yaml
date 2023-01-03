@@ -19,22 +19,15 @@ source:
 requirements:
   build:
     - python==3.8
-    - wxpython>=4.1.1
     - setuptools
     - pip
-#    - pyenchant
     - python.app  #[osx]
 
   run:
     - python
     - python.app  #[osx]
     - wxpython >=4.1.1
-    - biopython
-    - pyparsing
-    - pillow
-    - sqlite
     - natsort
-    - pydna
 #    - pyenchant
     - dateparser
 

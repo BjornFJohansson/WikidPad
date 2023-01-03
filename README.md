@@ -5,14 +5,32 @@ See the original repository for more information [here](https://github.com/Wikid
 
 There are two important differences between this version and the original (see at the end of this page).
 
-1. The original wikidpad is usually installed via a binary installer. This version is installed as a conda or pip package.
+1. The original wikidpad is usually installed via a binary installer.
+This version is installed as a setuptools or conda package.
+
+2. A series of plugins (mec_plugins) are distributed along with WikidPadMP.
+These are located in the WikidPad/user_extensions directory.
+These files are named mecplugins_*.py and are useful for using Wikidpad as a dated notebook.
+These files are not necessary and can be removed.
+
+The requirements are (in requirements.txt) are:
+
+	wxPython==4.1.1
+
+Optional requirements are (in requirements.txt) are:
+
+    dateparser>=1.1.5
+    natsort>=8.2.0
+
+These are needed for some of the mec_plugins
+
+## Installation with pip
 
     pip install WikidPadMP
 
-2. A series of plugins are distributed along with wikidpad.
-These are located in the WikidPad/user_extensions directory and can be removed.
+## Installation of optional requirements
 
-We call these plugins "mecplugins" and they help us with biology and molecular biology work.
+    pip install -r requirements_optional.txt
 
 ## Installation with Anaconda
 
