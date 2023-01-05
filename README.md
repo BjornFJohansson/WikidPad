@@ -94,7 +94,7 @@ WikidPadMP can also be run from source in editable mode by downloading this repo
 
 
 
-
+	mamba install biopython dateparser matplotlib natsort Pillow pyparsing scipy wxPython prettytable appdirs pyperclip networkx
 
 
 # Where is what?
