@@ -6,4 +6,5 @@ migrating. Obsidian is not as snappy as WikidPad was, but the other functionalit
 
 ## Setuptools (pip) package for WikidPad (WikidPadMP)
 
-This was a setuptools package for wikidpad. It not maintained any more. 
+This was a setuptools package for wikidpad. It not maintained any more. See [orphaned WikidPad resources
+ #107](https://github.com/WikidPad/WikidPad/issues/107)
